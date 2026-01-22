@@ -8,12 +8,15 @@ const Hero = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        {/* Pill mark echo */}
+        <div className="absolute left-1/2 top-24 -translate-x-1/2 w-[520px] h-[220px] rounded-full border border-primary/20 blur-[0.5px]" />
+        <div className="absolute left-1/2 top-28 -translate-x-1/2 w-[520px] h-[220px] rounded-full border border-primary/10" />
       </div>
 
       <div className="container mx-auto px-6 py-20 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary mb-8 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-up">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span className="text-sm text-secondary-foreground">Built for freedom-first founders</span>
           </div>
