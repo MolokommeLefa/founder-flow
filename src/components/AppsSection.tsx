@@ -9,6 +9,7 @@ import {
   Zap
 } from "lucide-react";
 import AppCard from "./AppCard";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const apps = [
   {
@@ -65,25 +66,20 @@ const AppsSection = () => {
   return (
     <section id="apps" className="py-24 bg-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             One ecosystem. <span className="text-gradient">Infinite possibilities.</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Like Apple's ecosystem, every app works together seamlessly. Data flows between them, so you never have to switch context.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {apps.map((app, index) => (
-            <AppCard
-              key={app.name}
-              icon={app.icon}
-              name={app.name}
-              description={app.description}
-              color={app.color}
-              delay={index * 0.05}
-            />
+            <ScrollReveal key={app.name} delayMs={80 + index * 60}>
+              <AppCard icon={app.icon} name={app.name} description={app.description} color={app.color} />
+            </ScrollReveal>
           ))}
         </div>
       </div>

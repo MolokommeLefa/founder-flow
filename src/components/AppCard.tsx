@@ -11,8 +11,7 @@ interface AppCardProps {
 const AppCard = ({ icon: Icon, name, description, color, delay = 0 }: AppCardProps) => {
   return (
     <div 
-      className="group p-6 rounded-2xl gradient-card border border-border hover:shadow-card transition-all duration-300 hover:-translate-y-1 animate-fade-up cursor-pointer"
-      style={{ animationDelay: `${delay}s` }}
+      className="group p-6 rounded-2xl gradient-card border border-border hover:shadow-card transition-all duration-300 hover:-translate-y-1 cursor-pointer"
     >
       <div 
         className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
