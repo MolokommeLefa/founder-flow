@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.png";
 
 const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">F</span>
+          <div className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center shadow-soft">
+            <img src={logo} alt="FounderOS logo" className="w-7 h-7 object-contain" />
           </div>
-          <span className="font-semibold text-foreground">FounderOS</span>
+          <span className="font-semibold text-foreground tracking-tight">FounderOS</span>
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
