@@ -1,4 +1,5 @@
 import { TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const MetricCard = ({ 
   icon: Icon, 
@@ -45,18 +46,19 @@ const DashboardPreview = () => {
   return (
     <section id="dashboard" className="py-24 gradient-hero">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <ScrollReveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Everything at a <span className="text-gradient">glance.</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Your personalized command center. See what matters, act on what's important.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Dashboard mockup */}
         <div className="max-w-5xl mx-auto">
-          <div className="rounded-2xl border border-border bg-card shadow-elevated overflow-hidden animate-fade-up">
+          <ScrollReveal>
+            <div className="rounded-2xl border border-border bg-card shadow-elevated overflow-hidden">
             {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3 bg-secondary/50 border-b border-border">
               <div className="flex gap-1.5">
@@ -108,7 +110,8 @@ const DashboardPreview = () => {
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
