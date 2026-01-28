@@ -5,7 +5,6 @@ import {
   AlertCircle,
   CheckSquare,
   Calendar,
-  Wallet,
   Users,
   BarChart3,
   FolderOpen,
@@ -13,7 +12,12 @@ import {
   Zap,
   LayoutDashboard,
   Settings,
-  Search
+  Search,
+  ImageIcon,
+  FileText,
+  Play,
+  File,
+  MoreHorizontal
 } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
@@ -21,10 +25,11 @@ const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", active: true },
   { icon: CheckSquare, name: "Tasks", badge: 3 },
   { icon: Calendar, name: "Calendar" },
-  { icon: Wallet, name: "Finance" },
+  { icon: FolderOpen, name: "Projects" },
+  { icon: ImageIcon, name: "Media Library" },
+  { icon: FileText, name: "Documents" },
   { icon: Users, name: "Team" },
   { icon: BarChart3, name: "Analytics" },
-  { icon: FolderOpen, name: "Documents" },
   { icon: MessageSquare, name: "Inbox", badge: 12 },
   { icon: Zap, name: "Automations" },
 ];
@@ -85,7 +90,7 @@ const MetricCard = ({
 const TaskItem = ({ title, status, priority }: { title: string; status: 'done' | 'pending' | 'urgent'; priority: string }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
     {status === 'done' ? (
-      <CheckCircle2 className="w-5 h-5 text-green-500" />
+      <CheckCircle2 className="w-5 h-5 text-success" />
     ) : status === 'urgent' ? (
       <AlertCircle className="w-5 h-5 text-primary" />
     ) : (
@@ -97,6 +102,50 @@ const TaskItem = ({ title, status, priority }: { title: string; status: 'done' |
     <span className="text-xs text-muted-foreground">{priority}</span>
   </div>
 );
+
+const assetFiles: { name: string; type: 'pdf' | 'video' | 'file' | 'folder' | 'image'; size?: string; date: string; count?: number }[] = [
+  { name: "Brand Guidelines.pdf", type: "pdf", size: "2.4 MB", date: "Today" },
+  { name: "Hero Video.mp4", type: "video", size: "48 MB", date: "Yesterday" },
+  { name: "Logo Pack.zip", type: "file", size: "12 MB", date: "2 days ago" },
+  { name: "Product Shots", type: "folder", count: 24, date: "This week" },
+];
+
+const AssetItem = ({ name, type, size, date, count }: { name: string; type: 'pdf' | 'video' | 'file' | 'folder' | 'image'; size?: string; date: string; count?: number }) => {
+  const getIcon = () => {
+    switch (type) {
+      case 'video': return <Play className="w-4 h-4" />;
+      case 'folder': return <FolderOpen className="w-4 h-4" />;
+      case 'image': return <ImageIcon className="w-4 h-4" />;
+      default: return <File className="w-4 h-4" />;
+    }
+  };
+  
+  const getPreviewBg = () => {
+    switch (type) {
+      case 'video': return 'bg-gradient-to-br from-primary/20 to-primary/5';
+      case 'folder': return 'bg-gradient-to-br from-warning/20 to-warning/5';
+      case 'image': return 'bg-gradient-to-br from-success/20 to-success/5';
+      default: return 'bg-gradient-to-br from-muted/50 to-muted/20';
+    }
+  };
+  
+  return (
+    <div className="group flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer">
+      <div className={`w-10 h-10 rounded-lg ${getPreviewBg()} flex items-center justify-center text-muted-foreground`}>
+        {getIcon()}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-foreground truncate">{name}</div>
+        <div className="text-xs text-muted-foreground">
+          {count ? `${count} items` : size} · {date}
+        </div>
+      </div>
+      <button className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-secondary transition-all">
+        <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+      </button>
+    </div>
+  );
+};
 
 const DashboardPreview = () => {
   return (
@@ -181,18 +230,33 @@ const DashboardPreview = () => {
                   <MetricCard icon={AlertCircle} label="Pending Items" value="5" change="-3 from yesterday" positive />
                 </div>
 
-                {/* Tasks section */}
-                <div className="rounded-xl border border-border p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-foreground">Today's Focus</h4>
-                    <span className="text-xs text-primary font-medium">View all →</span>
+                {/* Two column layout for Tasks and Assets */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* Tasks section */}
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-semibold text-foreground">Today's Focus</h4>
+                      <span className="text-xs text-primary font-medium cursor-pointer hover:underline">View all →</span>
+                    </div>
+                    <div className="space-y-1">
+                      <TaskItem title="Finalize brand guidelines" status="urgent" priority="High" />
+                      <TaskItem title="Review client feedback" status="pending" priority="High" />
+                      <TaskItem title="Export final renders" status="pending" priority="Medium" />
+                      <TaskItem title="Team creative sync" status="done" priority="Medium" />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <TaskItem title="Review Q4 financial projections" status="urgent" priority="High" />
-                    <TaskItem title="Call with potential investor" status="pending" priority="High" />
-                    <TaskItem title="Approve new hire onboarding" status="pending" priority="Medium" />
-                    <TaskItem title="Weekly team sync" status="done" priority="Medium" />
-                    <TaskItem title="Update product roadmap" status="done" priority="Low" />
+
+                  {/* Assets/Files section */}
+                  <div className="rounded-xl border border-border p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-semibold text-foreground">Recent Files</h4>
+                      <span className="text-xs text-primary font-medium cursor-pointer hover:underline">Browse all →</span>
+                    </div>
+                    <div className="space-y-1">
+                      {assetFiles.map((file) => (
+                        <AssetItem key={file.name} {...file} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
