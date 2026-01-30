@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -19,8 +22,12 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm">Sign In</Button>
-          <Button variant="default" size="sm">Get Started</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
+            Sign In
+          </Button>
+          <Button variant="default" size="sm" onClick={() => navigate("/auth?mode=signup")}>
+            Get Started
+          </Button>
         </div>
       </div>
     </header>
