@@ -1,0 +1,149 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import { TrendingUp, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import MetricCard from "@/components/dashboard/MetricCard";
+import TaskItem from "@/components/dashboard/TaskItem";
+import AssetItem from "@/components/dashboard/AssetItem";
+
+const tasks = [
+  { title: "Finalize brand guidelines", status: "urgent" as const, priority: "High" },
+  { title: "Review client feedback", status: "pending" as const, priority: "High" },
+  { title: "Export final renders", status: "pending" as const, priority: "Medium" },
+  { title: "Team creative sync", status: "done" as const, priority: "Medium" },
+];
+
+const assetFiles = [
+  { name: "Brand Guidelines.pdf", type: "pdf" as const, size: "2.4 MB", date: "Today" },
+  { name: "Hero Video.mp4", type: "video" as const, size: "48 MB", date: "Yesterday" },
+  { name: "Logo Pack.zip", type: "file" as const, size: "12 MB", date: "2 days ago" },
+  { name: "Product Shots", type: "folder" as const, count: 24, date: "This week" },
+];
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+        
+        if (!session?.user) {
+          navigate("/auth");
+        }
+      }
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+      
+      if (!session?.user) {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const userName = user.email?.split("@")[0] || "there";
+
+  return (
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar - hidden on mobile */}
+      <div className="hidden md:block">
+        <DashboardSidebar />
+      </div>
+
+      {/* Main content */}
+      <main className="flex-1 p-6 md:p-8 overflow-auto">
+        <DashboardHeader userName={userName} />
+
+        {/* Metrics grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <MetricCard 
+            icon={TrendingUp} 
+            label="Monthly Revenue" 
+            value="$48.2K" 
+            change="+12.5%" 
+            positive 
+          />
+          <MetricCard 
+            icon={CheckCircle2} 
+            label="Tasks Done" 
+            value="24/32" 
+            change="+8 today" 
+            positive 
+          />
+          <MetricCard 
+            icon={Clock} 
+            label="Hours Saved" 
+            value="18h" 
+            change="this week" 
+            positive 
+          />
+          <MetricCard 
+            icon={AlertCircle} 
+            label="Pending Items" 
+            value="5" 
+            change="-3 from yesterday" 
+            positive 
+          />
+        </div>
+
+        {/* Two column layout for Tasks and Assets */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Tasks section */}
+          <div className="rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-foreground">Today's Focus</h2>
+              <button className="text-xs text-primary font-medium hover:underline">
+                View all →
+              </button>
+            </div>
+            <div className="space-y-1">
+              {tasks.map((task) => (
+                <TaskItem key={task.title} {...task} />
+              ))}
+            </div>
+          </div>
+
+          {/* Assets/Files section */}
+          <div className="rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-foreground">Recent Files</h2>
+              <button className="text-xs text-primary font-medium hover:underline">
+                Browse all →
+              </button>
+            </div>
+            <div className="space-y-1">
+              {assetFiles.map((file) => (
+                <AssetItem key={file.name} {...file} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Dashboard;

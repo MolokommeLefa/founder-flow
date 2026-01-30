@@ -23,14 +23,14 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.user) {
-          navigate("/");
+          navigate("/dashboard");
         }
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -61,7 +61,7 @@ const Auth = () => {
 
     try {
       if (mode === "signup") {
-        const redirectUrl = `${window.location.origin}/`;
+        const redirectUrl = `${window.location.origin}/dashboard`;
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
