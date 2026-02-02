@@ -88,6 +88,7 @@ const Dashboard = () => {
           />
           <MetricCard 
             icon={CheckCircle2} 
+            iconClassName="text-green-500"
             label="Tasks Done" 
             value="24/32" 
             change="+8 today" 
