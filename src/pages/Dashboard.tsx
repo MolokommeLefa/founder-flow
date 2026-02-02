@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { TrendingUp, CheckCircle2, Clock } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MetricCard from "@/components/dashboard/MetricCard";
@@ -78,7 +78,7 @@ const Dashboard = () => {
         <DashboardHeader userName={userName} />
 
         {/* Metrics grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           <MetricCard 
             icon={TrendingUp} 
             label="Monthly Revenue" 
@@ -98,13 +98,6 @@ const Dashboard = () => {
             label="Hours Saved" 
             value="18h" 
             change="this week" 
-            positive 
-          />
-          <MetricCard 
-            icon={AlertCircle} 
-            label="Pending Items" 
-            value="5" 
-            change="-3 from yesterday" 
             positive 
           />
         </div>

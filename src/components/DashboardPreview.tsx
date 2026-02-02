@@ -223,11 +223,10 @@ const DashboardPreview = () => {
                 </div>
 
                 {/* Metrics grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-3 gap-4 mb-8">
                   <MetricCard icon={TrendingUp} label="Monthly Revenue" value="$48.2K" change="+12.5%" positive />
                   <MetricCard icon={CheckCircle2} label="Tasks Done" value="24/32" change="+8 today" positive />
                   <MetricCard icon={Clock} label="Hours Saved" value="18h" change="this week" positive />
-                  <MetricCard icon={AlertCircle} label="Pending Items" value="5" change="-3 from yesterday" positive />
                 </div>
 
                 {/* Two column layout for Tasks and Assets */}
