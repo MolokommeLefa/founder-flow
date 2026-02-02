@@ -1,17 +1,20 @@
 import { cn } from "@/lib/utils";
+import SparklineChart from "./SparklineChart";
 
 interface MetricCardProps {
-  icon: React.ElementType;
+  icon?: React.ElementType;
   label: string;
   value: string;
   change: string;
   positive: boolean;
+  sparklineData?: number[];
 }
 
-const MetricCard = ({ icon: Icon, label, value, change, positive }: MetricCardProps) => (
+const MetricCard = ({ icon: Icon, label, value, change, positive, sparklineData }: MetricCardProps) => (
   <div className="p-5 rounded-xl bg-card border border-border">
     <div className="flex items-center justify-between mb-3">
-      <Icon className="w-5 h-5 text-muted-foreground" />
+      {Icon && <Icon className="w-5 h-5 text-muted-foreground" />}
+      {!Icon && <div />}
       <span className={cn(
         "text-xs font-medium",
         positive ? "text-green-600" : "text-red-500"
@@ -19,8 +22,13 @@ const MetricCard = ({ icon: Icon, label, value, change, positive }: MetricCardPr
         {change}
       </span>
     </div>
-    <div className="text-2xl font-bold text-foreground">{value}</div>
-    <div className="text-sm text-muted-foreground">{label}</div>
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="text-2xl font-bold text-foreground">{value}</div>
+        <div className="text-sm text-muted-foreground">{label}</div>
+      </div>
+      {sparklineData && <SparklineChart data={sparklineData} positive={positive} />}
+    </div>
   </div>
 );
 

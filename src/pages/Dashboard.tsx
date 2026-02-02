@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, CheckCircle2, Clock } from "lucide-react";
+import { CheckCircle2, Clock } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MetricCard from "@/components/dashboard/MetricCard";
@@ -80,11 +80,11 @@ const Dashboard = () => {
         {/* Metrics grid */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <MetricCard 
-            icon={TrendingUp} 
             label="Monthly Revenue" 
             value="$48.2K" 
             change="+12.5%" 
             positive 
+            sparklineData={[30, 25, 35, 28, 40, 38, 48]}
           />
           <MetricCard 
             icon={CheckCircle2} 
