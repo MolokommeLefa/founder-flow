@@ -27,7 +27,7 @@ const generateMockData = () => {
 };
 
 const getIntensityClass = (hours: number) => {
-  if (hours === 0) return "bg-muted/30";
+  if (hours === 0) return "bg-gray-100/30";
   if (hours <= 2) return "bg-green-900/60";
   if (hours <= 4) return "bg-green-700/80";
   if (hours <= 6) return "bg-green-500";
