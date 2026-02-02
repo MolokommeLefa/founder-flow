@@ -3,6 +3,7 @@ import SparklineChart from "./SparklineChart";
 
 interface MetricCardProps {
   icon?: React.ElementType;
+  iconClassName?: string;
   label: string;
   value: string;
   change: string;
@@ -10,10 +11,10 @@ interface MetricCardProps {
   sparklineData?: number[];
 }
 
-const MetricCard = ({ icon: Icon, label, value, change, positive, sparklineData }: MetricCardProps) => (
+const MetricCard = ({ icon: Icon, iconClassName, label, value, change, positive, sparklineData }: MetricCardProps) => (
   <div className="p-5 rounded-xl bg-card border border-border">
     <div className="flex items-center justify-between mb-3">
-      {Icon && <Icon className="w-5 h-5 text-muted-foreground" />}
+      {Icon && <Icon className={cn("w-5 h-5", iconClassName || "text-muted-foreground")} />}
       {!Icon && <div />}
       <span className={cn(
         "text-xs font-medium",
