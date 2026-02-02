@@ -19,14 +19,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const sidebarApps = [
-  { icon: LayoutDashboard, name: "Dashboard", active: true },
+  { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
   { icon: CheckSquare, name: "Tasks", badge: 3 },
   { icon: Calendar, name: "Calendar" },
   { icon: FolderOpen, name: "Projects" },
   { icon: ImageIcon, name: "Media Library" },
   { icon: FileText, name: "Documents" },
   { icon: Users, name: "Team" },
-  { icon: BarChart3, name: "Analytics" },
+  { icon: BarChart3, name: "Analytics", href: "/analytics" },
   { icon: MessageSquare, name: "Inbox", badge: 12 },
   { icon: Zap, name: "Automations" },
 ];
@@ -37,29 +37,46 @@ interface SidebarItemProps {
   active?: boolean;
   badge?: number;
   onClick?: () => void;
+  href?: string;
 }
 
-const SidebarItem = ({ icon: Icon, name, active = false, badge, onClick }: SidebarItemProps) => (
-  <button
-    onClick={onClick}
-    className={cn(
-      "flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left",
-      active 
-        ? "bg-primary/10 text-primary" 
-        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-    )}
-  >
-    <Icon className="w-4 h-4" />
-    <span className="text-sm font-medium flex-1">{name}</span>
-    {badge && (
-      <span className="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
-        {badge}
-      </span>
-    )}
-  </button>
-);
+const SidebarItem = ({ icon: Icon, name, active = false, badge, onClick, href }: SidebarItemProps) => {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (href) {
+      navigate(href);
+    }
+  };
 
-const DashboardSidebar = () => {
+  return (
+    <button
+      onClick={handleClick}
+      className={cn(
+        "flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors w-full text-left",
+        active 
+          ? "bg-primary/10 text-primary" 
+          : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+      )}
+    >
+      <Icon className="w-4 h-4" />
+      <span className="text-sm font-medium flex-1">{name}</span>
+      {badge && (
+        <span className="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+};
+
+interface DashboardSidebarProps {
+  activeItem?: string;
+}
+
+const DashboardSidebar = ({ activeItem = "Dashboard" }: DashboardSidebarProps) => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -88,8 +105,9 @@ const DashboardSidebar = () => {
             key={app.name} 
             icon={app.icon} 
             name={app.name} 
-            active={app.active}
+            active={app.name === activeItem}
             badge={app.badge}
+            href={app.href}
           />
         ))}
       </div>
