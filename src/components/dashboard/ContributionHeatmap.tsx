@@ -134,7 +134,7 @@ const ContributionHeatmap = ({ data }: ContributionHeatmapProps) => {
                         <Tooltip key={dayIndex}>
                           <TooltipTrigger asChild>
                             <div
-                              className={`w-[11px] h-[11px] rounded-sm cursor-pointer transition-all hover:ring-1 hover:ring-foreground/50 ${getIntensityClass(dayData.hours)}`}
+                              className={`w-[9px] h-[9px] rounded-sm cursor-pointer transition-all hover:ring-1 hover:ring-foreground/50 ${getIntensityClass(dayData.hours)}`}
                             />
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs">
