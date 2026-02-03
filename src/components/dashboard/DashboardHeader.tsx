@@ -1,4 +1,5 @@
 import { Clock } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -20,9 +21,12 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
         </h1>
         <p className="text-muted-foreground">You have 3 priorities for today</p>
       </div>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Clock className="w-4 h-4" />
-        <span>Focus time: 4h 32m</span>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="w-4 h-4" />
+          <span>Focus time: 4h 32m</span>
+        </div>
+        <ThemeToggle />
       </div>
     </div>
   );
