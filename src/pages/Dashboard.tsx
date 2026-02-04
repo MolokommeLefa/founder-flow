@@ -64,7 +64,9 @@ const Dashboard = () => {
     return null;
   }
 
-  const userName = user.email?.split("@")[0] || "there";
+  const emailPrefix = user.email?.split("@")[0] || "there";
+  const firstName = emailPrefix.split(/[._-]/)[0];
+  const userName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 
   return (
     <div className="min-h-screen bg-background flex">
