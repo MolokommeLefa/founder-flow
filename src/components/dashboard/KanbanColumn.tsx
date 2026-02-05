@@ -27,7 +27,7 @@ const KanbanColumn = ({ title, status, tasks, count }: KanbanColumnProps) => {
       {/* Column Header */}
       <div className="flex items-center justify-between mb-4">
         <div className={cn(
-          "flex items-center gap-2 px-3 py-1.5 rounded-full",
+          "flex items-center gap-1.5 px-2 py-1 rounded-full",
           statusBadgeStyles[status]
         )}>
           <div className={cn("w-2 h-2 rounded-full", statusDotStyles[status])} />
