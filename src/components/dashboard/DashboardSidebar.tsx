@@ -20,7 +20,7 @@ import { toast } from "sonner";
 
 const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
-  { icon: CheckSquare, name: "Tasks", badge: 3 },
+  { icon: CheckSquare, name: "Tasks", badge: 3, href: "/tasks" },
   { icon: Calendar, name: "Calendar" },
   { icon: FolderOpen, name: "Projects" },
   { icon: ImageIcon, name: "Media Library" },
