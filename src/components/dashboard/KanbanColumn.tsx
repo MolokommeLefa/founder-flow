@@ -2,12 +2,13 @@
  import { Plus } from "lucide-react";
  import KanbanCard, { Task } from "./KanbanCard";
  
- interface KanbanColumnProps {
-   title: string;
-   status: "not_started" | "in_progress" | "completed";
-   tasks: Task[];
-   count: number;
- }
+interface KanbanColumnProps {
+  title: string;
+  status: "not_started" | "in_progress" | "completed";
+  tasks: Task[];
+  count: number;
+  onAddTask?: () => void;
+}
  
 const statusDotStyles = {
   not_started: "bg-muted-foreground",
@@ -21,7 +22,7 @@ const statusBadgeStyles = {
   completed: "bg-green-500/10",
 };
  
-const KanbanColumn = ({ title, status, tasks, count }: KanbanColumnProps) => {
+const KanbanColumn = ({ title, status, tasks, count, onAddTask }: KanbanColumnProps) => {
   return (
     <div className="flex-1 min-w-[280px] max-w-[360px]">
       {/* Column Header */}
@@ -37,7 +38,10 @@ const KanbanColumn = ({ title, status, tasks, count }: KanbanColumnProps) => {
           <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
             {count}
           </span>
-          <button className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+          <button
+            className="p-1.5 rounded-lg hover:bg-secondary transition-colors"
+            onClick={onAddTask}
+          >
             <Plus className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
