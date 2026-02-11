@@ -10,6 +10,7 @@ const Analytics = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -55,7 +56,7 @@ const Analytics = () => {
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - hidden on mobile */}
       <div className="hidden md:block">
-        <DashboardSidebar activeItem="Analytics" />
+        <DashboardSidebar activeItem="Analytics" collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
       </div>
 
       {/* Main content */}

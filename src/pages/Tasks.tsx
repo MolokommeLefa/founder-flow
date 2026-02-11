@@ -20,6 +20,7 @@ const Tasks = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<DbTask["status"]>("not_started");
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { tasksByStatus, addTask, loading: tasksLoading } = useTasks();
 
   useEffect(() => {
@@ -84,7 +85,7 @@ const Tasks = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <div className="hidden md:block">
-        <DashboardSidebar />
+        <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
       </div>
 
       <main className="flex-1 p-6 md:p-8 overflow-auto">

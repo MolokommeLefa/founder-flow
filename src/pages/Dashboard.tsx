@@ -27,6 +27,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { tasks: dbTasks, loading: tasksLoading } = useTasks();
 
   useEffect(() => {
@@ -75,7 +76,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - hidden on mobile */}
       <div className="hidden md:block">
-        <DashboardSidebar />
+        <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
       </div>
 
       {/* Main content */}
