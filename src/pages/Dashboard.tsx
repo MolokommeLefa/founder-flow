@@ -27,6 +27,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { tasks: dbTasks, loading: tasksLoading } = useTasks();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -63,8 +64,6 @@ const Dashboard = () => {
   if (!user) {
     return null;
   }
-
-  const { tasks: dbTasks, loading: tasksLoading } = useTasks();
 
   const emailPrefix = user.email?.split("@")[0] || "there";
   const firstName = emailPrefix.split(/[._-]/)[0];
