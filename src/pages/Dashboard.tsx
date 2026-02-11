@@ -8,13 +8,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MetricCard from "@/components/dashboard/MetricCard";
 import TaskItem from "@/components/dashboard/TaskItem";
 import AssetItem from "@/components/dashboard/AssetItem";
-
-const tasks = [
-  { title: "Finalize brand guidelines", status: "urgent" as const, priority: "High" },
-  { title: "Review client feedback", status: "pending" as const, priority: "High" },
-  { title: "Export final renders", status: "pending" as const, priority: "Medium" },
-  { title: "Team creative sync", status: "done" as const, priority: "Medium" },
-];
+import { useTasks, DbTask } from "@/hooks/useTasks";
 
 const assetFiles = [
   { name: "Brand Guidelines.pdf", type: "pdf" as const, size: "2.4 MB", date: "Today" },
@@ -22,6 +16,12 @@ const assetFiles = [
   { name: "Logo Pack.zip", type: "file" as const, size: "12 MB", date: "2 days ago" },
   { name: "Product Shots", type: "folder" as const, count: 24, date: "This week" },
 ];
+
+const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
+  if (status === "completed") return "done";
+  if (status === "in_progress") return "pending";
+  return "urgent";
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -64,9 +64,13 @@ const Dashboard = () => {
     return null;
   }
 
+  const { tasks: dbTasks, loading: tasksLoading } = useTasks();
+
   const emailPrefix = user.email?.split("@")[0] || "there";
   const firstName = emailPrefix.split(/[._-]/)[0];
   const userName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+
+  const todayTasks = dbTasks.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -116,9 +120,20 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="space-y-1">
-              {tasks.map((task) => (
-                <TaskItem key={task.title} {...task} />
-              ))}
+              {tasksLoading ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">Loading tasks...</p>
+              ) : todayTasks.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">No tasks yet. Head to Tasks to create one.</p>
+              ) : (
+                todayTasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    title={task.title}
+                    status={mapStatus(task.status)}
+                    priority={task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                  />
+                ))
+              )}
             </div>
           </div>
 
