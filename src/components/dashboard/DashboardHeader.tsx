@@ -65,14 +65,14 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
               <circle
                 cx="11" cy="11" r="8"
                 fill="none"
-                stroke="hsl(35 90% 50% / 0.2)"
+                stroke="hsl(145 60% 42% / 0.2)"
                 strokeWidth="2.5"
               />
               {/* Progress ring */}
               <circle
                 cx="11" cy="11" r="8"
                 fill="none"
-                stroke="hsl(35 90% 55%)"
+                stroke="hsl(145 60% 42%)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
@@ -81,16 +81,16 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
                 className="transition-[stroke-dashoffset] duration-1000 ease-linear"
               />
               {/* Clock hands */}
-              <line x1="11" y1="11" x2="11" y2="7.5" stroke="hsl(35 90% 55%)" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="11" y1="11" x2="11" y2="7.5" stroke="hsl(145 60% 42%)" strokeWidth="1.5" strokeLinecap="round" />
               <line
                 x1="11" y1="11" x2="14" y2="12"
-                stroke="hsl(35 90% 55% / 0.7)"
+                stroke="hsl(145 60% 42% / 0.7)"
                 strokeWidth="1"
                 strokeLinecap="round"
                 transform={`rotate(${seconds * 6} 11 11)`}
                 className="transition-transform duration-1000 ease-linear origin-center"
               />
-              <circle cx="11" cy="11" r="1" fill="hsl(35 90% 55%)" />
+              <circle cx="11" cy="11" r="1" fill="hsl(145 60% 42%)" />
             </svg>
           </div>
 
@@ -98,7 +98,7 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
           <span
             className={`
               font-mono font-semibold tracking-tight
-              text-[hsl(35,90%,55%)]
+              text-[hsl(145,60%,42%)]
               transition-all duration-500
               ${expanded ? "text-lg" : "text-sm"}
             `}
@@ -113,9 +113,9 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
           `}>
             <div className="flex items-center gap-1.5 whitespace-nowrap">
               {increased ? (
-                <TrendingUp className="w-3.5 h-3.5 text-[hsl(35,90%,55%)]" />
+                <TrendingUp className="w-3.5 h-3.5 text-[hsl(145,60%,42%)]" />
               ) : (
-                <TrendingDown className="w-3.5 h-3.5 text-[hsl(35,90%,55%)]" />
+                <TrendingDown className="w-3.5 h-3.5 text-[hsl(145,60%,42%)]" />
               )}
               <span className="text-[11px] text-[hsl(0,0%,55%)] font-medium">
                 {increased ? "+12%" : "-5%"}
