@@ -1,6 +1,5 @@
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import ThemeToggle from "./ThemeToggle";
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -126,8 +125,6 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
             </span>
           </div>
         </div>
-
-        <ThemeToggle />
       </div>
     </div>
   );

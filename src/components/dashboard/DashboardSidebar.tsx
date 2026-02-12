@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import ThemeToggle from "./ThemeToggle";
 
 const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
@@ -162,6 +163,10 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       
       {/* Settings & Logout */}
       <div className="pt-4 border-t border-border space-y-1">
+        <div className={cn("flex items-center", collapsed ? "justify-center" : "justify-between px-3 py-2")}>
+          {!collapsed && <span className="text-sm font-medium text-muted-foreground">Settings</span>}
+          <ThemeToggle />
+        </div>
         <SidebarItem icon={Settings} name="Settings" collapsed={collapsed} />
         <SidebarItem icon={LogOut} name="Sign Out" onClick={handleSignOut} collapsed={collapsed} />
       </div>
