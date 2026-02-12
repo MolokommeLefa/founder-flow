@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { 
   LayoutDashboard, 
   CheckSquare, 
@@ -96,6 +97,51 @@ const SidebarItem = ({ icon: Icon, name, active = false, badge, onClick, href, c
   return button;
 };
 
+const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  if (collapsed) {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <div className="relative">
+            <button
+              onClick={() => setSettingsOpen(!settingsOpen)}
+              className="flex items-center justify-center px-2 py-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors w-full"
+            >
+              <Settings className="w-4 h-4 flex-shrink-0" />
+            </button>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>
+          <div className="flex items-center gap-2">
+            <span>Theme</span>
+            <ThemeToggle />
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => setSettingsOpen(!settingsOpen)}
+        className="flex items-center gap-3 rounded-lg cursor-pointer transition-colors w-full text-left px-3 py-2 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+      >
+        <Settings className="w-4 h-4 flex-shrink-0" />
+        <span className="text-sm font-medium flex-1">Settings</span>
+      </button>
+      {settingsOpen && (
+        <div className="ml-7 mt-1 mb-1 flex items-center justify-between px-3 py-1.5 rounded-lg bg-secondary/30">
+          <span className="text-xs text-muted-foreground">Theme</span>
+          <ThemeToggle />
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface DashboardSidebarProps {
   activeItem?: string;
   collapsed?: boolean;
@@ -163,11 +209,8 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       
       {/* Settings & Logout */}
       <div className="pt-4 border-t border-border space-y-1">
-        <div className={cn("flex items-center", collapsed ? "justify-center" : "justify-between px-3 py-2")}>
-          {!collapsed && <span className="text-sm font-medium text-muted-foreground">Settings</span>}
-          <ThemeToggle />
-        </div>
-        <SidebarItem icon={Settings} name="Settings" collapsed={collapsed} />
+        {/* Settings with expandable theme toggle */}
+        <SettingsItem collapsed={collapsed} />
         <SidebarItem icon={LogOut} name="Sign Out" onClick={handleSignOut} collapsed={collapsed} />
       </div>
     </aside>
