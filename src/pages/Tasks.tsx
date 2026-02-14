@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Filter, Plus } from "lucide-react";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KanbanColumn from "@/components/dashboard/KanbanColumn";
@@ -21,7 +22,14 @@ const Tasks = () => {
   const [defaultStatus, setDefaultStatus] = useState<DbTask["status"]>("not_started");
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { tasksByStatus, addTask, loading: tasksLoading } = useTasks();
+  const { tasksByStatus, addTask, updateTaskStatus, loading: tasksLoading } = useTasks();
+
+  const handleDragEnd = (result: DropResult) => {
+    const { destination, draggableId } = result;
+    if (!destination) return;
+    const newStatus = destination.droppableId as DbTask["status"];
+    updateTaskStatus(draggableId, newStatus);
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -128,29 +136,31 @@ const Tasks = () => {
             <div className="animate-pulse text-muted-foreground">Loading tasks...</div>
           </div>
         ) : (
-          <div className="flex gap-6 overflow-x-auto pb-4">
-            <KanbanColumn
-              title="Not Started"
-              status="not_started"
-              tasks={formatTasksForColumn(notStartedTasks)}
-              count={notStartedTasks.length}
-              onAddTask={() => handleAddFromColumn("not_started")}
-            />
-            <KanbanColumn
-              title="In Progress"
-              status="in_progress"
-              tasks={formatTasksForColumn(inProgressTasks)}
-              count={inProgressTasks.length}
-              onAddTask={() => handleAddFromColumn("in_progress")}
-            />
-            <KanbanColumn
-              title="Completed"
-              status="completed"
-              tasks={formatTasksForColumn(completedTasks)}
-              count={completedTasks.length}
-              onAddTask={() => handleAddFromColumn("completed")}
-            />
-          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              <KanbanColumn
+                title="Not Started"
+                status="not_started"
+                tasks={formatTasksForColumn(notStartedTasks)}
+                count={notStartedTasks.length}
+                onAddTask={() => handleAddFromColumn("not_started")}
+              />
+              <KanbanColumn
+                title="In Progress"
+                status="in_progress"
+                tasks={formatTasksForColumn(inProgressTasks)}
+                count={inProgressTasks.length}
+                onAddTask={() => handleAddFromColumn("in_progress")}
+              />
+              <KanbanColumn
+                title="Completed"
+                status="completed"
+                tasks={formatTasksForColumn(completedTasks)}
+                count={completedTasks.length}
+                onAddTask={() => handleAddFromColumn("completed")}
+              />
+            </div>
+          </DragDropContext>
         )}
 
         <AddTaskDialog
