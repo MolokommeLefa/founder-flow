@@ -1,7 +1,8 @@
- import { cn } from "@/lib/utils";
- import { Plus } from "lucide-react";
- import KanbanCard, { Task } from "./KanbanCard";
- 
+import { cn } from "@/lib/utils";
+import { Plus } from "lucide-react";
+import { Droppable } from "@hello-pangea/dnd";
+import KanbanCard, { Task } from "./KanbanCard";
+
 interface KanbanColumnProps {
   title: string;
   status: "not_started" | "in_progress" | "completed";
@@ -9,7 +10,7 @@ interface KanbanColumnProps {
   count: number;
   onAddTask?: () => void;
 }
- 
+
 const statusDotStyles = {
   not_started: "bg-muted-foreground",
   in_progress: "bg-amber-500",
@@ -21,7 +22,7 @@ const statusBadgeStyles = {
   in_progress: "bg-amber-500/10",
   completed: "bg-green-500/10",
 };
- 
+
 const KanbanColumn = ({ title, status, tasks, count, onAddTask }: KanbanColumnProps) => {
   return (
     <div className="flex-1 min-w-[280px] max-w-[360px]">
@@ -46,19 +47,31 @@ const KanbanColumn = ({ title, status, tasks, count, onAddTask }: KanbanColumnPr
           </button>
         </div>
       </div>
-      
-      {/* Cards Container */}
-      <div className="space-y-3">
-        {tasks.map((task) => (
-          <KanbanCard key={task.id} task={task} />
-        ))}
-        
-        {tasks.length === 0 && (
-          <div className="p-8 rounded-xl border-2 border-dashed border-border text-center">
-            <p className="text-sm text-muted-foreground">No tasks</p>
+
+      {/* Droppable Cards Container */}
+      <Droppable droppableId={status}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={cn(
+              "space-y-3 min-h-[120px] rounded-xl p-2 -m-2 transition-colors duration-200",
+              snapshot.isDraggingOver && "bg-primary/5 border-2 border-dashed border-primary/20"
+            )}
+          >
+            {tasks.map((task, index) => (
+              <KanbanCard key={task.id} task={task} index={index} />
+            ))}
+            {provided.placeholder}
+
+            {tasks.length === 0 && !snapshot.isDraggingOver && (
+              <div className="p-8 rounded-xl border-2 border-dashed border-border text-center">
+                <p className="text-sm text-muted-foreground">No tasks</p>
+              </div>
+            )}
           </div>
         )}
-      </div>
+      </Droppable>
     </div>
   );
 };
