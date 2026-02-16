@@ -26,7 +26,7 @@ import ThemeToggle from "./ThemeToggle";
 const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
   { icon: CheckSquare, name: "Tasks", badge: 3, href: "/tasks" },
-  { icon: Calendar, name: "Calendar" },
+  { icon: Calendar, name: "Calendar", href: "/calendar" },
   { icon: FolderOpen, name: "Projects" },
   { icon: ImageIcon, name: "Media Library" },
   { icon: FileText, name: "Documents" },

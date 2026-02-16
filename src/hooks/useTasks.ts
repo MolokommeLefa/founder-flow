@@ -89,6 +89,28 @@ export function useTasks() {
     return true;
   };
 
+  const updateTask = async (taskId: string, updates: Partial<NewTask>) => {
+    const { error } = await supabase
+      .from("tasks")
+      .update({
+        title: updates.title,
+        description: updates.description || null,
+        status: updates.status,
+        priority: updates.priority,
+        due_date: updates.due_date || null,
+      })
+      .eq("id", taskId);
+
+    if (error) {
+      toast({ title: "Error updating task", description: error.message, variant: "destructive" });
+      return false;
+    }
+
+    toast({ title: "Task updated successfully" });
+    await fetchTasks();
+    return true;
+  };
+
   const deleteTask = async (taskId: string) => {
     const { error } = await supabase
       .from("tasks")
@@ -111,5 +133,5 @@ export function useTasks() {
     completed: tasks.filter((t) => t.status === "completed"),
   };
 
-  return { tasks, tasksByStatus, loading, addTask, updateTaskStatus, deleteTask, fetchTasks };
+  return { tasks, tasksByStatus, loading, addTask, updateTask, updateTaskStatus, deleteTask, fetchTasks };
 }
