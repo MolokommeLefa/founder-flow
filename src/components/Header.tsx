@@ -10,7 +10,7 @@ const Header = () => {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center shadow-soft">
-            <img src={logo} alt="FounderOS logo" className="w-7 h-7 object-contain" />
+            <img alt="FounderOS logo" className="w-7 h-7 object-contain" src="/lovable-uploads/9c058fc6-0acd-4b31-8e52-d8655e17f93f.png" />
           </div>
           <span className="font-semibold text-foreground tracking-tight">FounderOS</span>
         </div>
@@ -30,8 +30,8 @@ const Header = () => {
           </Button>
         </div>
       </div>
-    </header>
-  );
+    </header>);
+
 };
 
 export default Header;
