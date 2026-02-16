@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center shadow-soft">
-              <img src={logo} alt="FounderOS logo" className="w-7 h-7 object-contain" />
+              <img alt="FounderOS logo" className="w-7 h-7 object-contain" src="/lovable-uploads/c6aad4f4-cf3a-441e-9777-37d1b4861bb8.png" />
             </div>
             <span className="font-semibold text-foreground tracking-tight">FounderOS</span>
           </div>
@@ -24,8 +24,8 @@ const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>);
+
 };
 
 export default Footer;
