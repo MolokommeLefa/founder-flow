@@ -13,7 +13,6 @@ import {
   isToday,
   addMonths,
   subMonths,
-  isSameDay,
   parseISO,
 } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
@@ -22,7 +21,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useTasks, type DbTask } from "@/hooks/useTasks";
+import { useTasks, type DbTask, type NewTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
 import TaskDialog from "@/components/dashboard/TaskDialog";
 
@@ -142,7 +141,7 @@ const Calendar = () => {
     setSelectedDate(null);
   };
 
-  const handleTaskSubmit = async (taskData: any) => {
+  const handleTaskSubmit = async (taskData: NewTask) => {
     if (selectedTask) {
       return await updateTask(selectedTask.id, taskData);
     } else {
