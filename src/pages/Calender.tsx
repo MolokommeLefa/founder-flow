@@ -36,7 +36,7 @@ const Calendar = () => {
   const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
 
-  const { tasks, loading: tasksLoading, addTask, updateTask, updateTaskStatus } = useTasks();
+  const { tasks, loading: tasksLoading, addTask, updateTask } = useTasks();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
