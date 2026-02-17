@@ -24,6 +24,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useTasks, type DbTask, type NewTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
 import TaskDialog from "@/components/dashboard/TaskDialog";
+import { WeekView } from "@/components/calendar/WeekView";
+import { MiniCalendar } from "@/components/calendar/MiniCalendar";
+
+type ViewMode = "month" | "week";
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -35,6 +39,7 @@ const Calendar = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
+  const [viewMode, setViewMode] = useState<ViewMode>("month");
 
   const { tasks, loading: tasksLoading, addTask, updateTask } = useTasks();
 
@@ -128,6 +133,14 @@ const Calendar = () => {
     setDialogOpen(true);
   };
 
+  const handleTimeSlotClick = (date: Date, hour: number) => {
+    const selectedDateTime = new Date(date);
+    selectedDateTime.setHours(hour, 0, 0, 0);
+    setSelectedDate(selectedDateTime);
+    setSelectedTask(null);
+    setDialogOpen(true);
+  };
+
   const handleTaskClick = (task: DbTask, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedTask(task);
@@ -191,10 +204,14 @@ const Calendar = () => {
                 <div
                   onClick={(e) => handleTaskClick(task, e)}
                   className={cn(
-                    "text-xs px-2 py-1 rounded border-l-2 bg-secondary/50 truncate cursor-pointer hover:bg-secondary transition-colors",
+                    "text-xs px-2 py-1 rounded-md border-l-4 truncate cursor-pointer hover:shadow-sm transition-all",
                     task.status === "completed" && "line-through opacity-60"
                   )}
-                  style={{ borderLeftColor: getPriorityColor(task.priority) }}
+                  style={{ 
+                    backgroundColor: task.color ? `${task.color}20` : '#2563eb20',
+                    borderLeftColor: task.color || '#2563eb',
+                    color: task.color || '#2563eb',
+                  }}
                 >
                   {task.title}
                 </div>
@@ -246,82 +263,125 @@ const Calendar = () => {
           <p className="text-muted-foreground">Manage your schedule and tasks</p>
         </div>
 
-        {/* Calendar Header */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-bold text-foreground">
-                {format(currentDate, "MMMM yyyy")}
-              </h2>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handlePreviousMonth}
-                  className="h-8 w-8"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleNextMonth}
-                  className="h-8 w-8"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={handleToday}>
-                Today
-              </Button>
-              <Button
-                variant={showCompleted ? "secondary" : "outline"}
-                onClick={() => setShowCompleted(!showCompleted)}
-              >
-                {showCompleted ? "Hide" : "Show"} Completed
-              </Button>
-              <Button
-                onClick={() => {
-                  setSelectedDate(new Date());
-                  setSelectedTask(null);
-                  setDialogOpen(true);
-                }}
-                className="gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Add Task
-              </Button>
-            </div>
+        <div className="flex gap-6">
+          {/* Sidebar with Mini Calendar */}
+          <div className="hidden lg:block w-64 space-y-4">
+            <MiniCalendar
+              currentDate={currentDate}
+              selectedDate={selectedDate}
+              onDateSelect={(date) => {
+                setCurrentDate(date);
+                setSelectedDate(date);
+              }}
+              onMonthChange={setCurrentDate}
+            />
           </div>
 
-          {/* Calendar Grid */}
-          {tasksLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-pulse text-muted-foreground">Loading tasks...</div>
-            </div>
-          ) : (
-            <div>
-              {/* Week day labels */}
-              <div className="grid grid-cols-7 gap-2 mb-2">
-                {weekDays.map((day) => (
-                  <div
-                    key={day}
-                    className="text-center text-sm font-semibold text-muted-foreground py-2"
+          {/* Main Calendar */}
+          <div className="flex-1 bg-card rounded-xl border border-border p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {format(currentDate, "MMMM yyyy")}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handlePreviousMonth}
+                    className="h-8 w-8"
                   >
-                    {day}
-                  </div>
-                ))}
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleNextMonth}
+                    className="h-8 w-8"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
-              {/* Calendar days */}
-              <div className="grid grid-cols-7 gap-2">
-                {calendarDays.map((day) => renderDayCell(day))}
+              <div className="flex items-center gap-3">
+                {/* View Mode Toggle */}
+                <div className="flex items-center gap-1 border border-border rounded-lg p-1">
+                  <Button
+                    variant={viewMode === "month" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("month")}
+                    className="h-8"
+                  >
+                    Month
+                  </Button>
+                  <Button
+                    variant={viewMode === "week" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("week")}
+                    className="h-8"
+                  >
+                    Week
+                  </Button>
+                </div>
+                <Button variant="outline" onClick={handleToday}>
+                  Today
+                </Button>
+                <Button
+                  variant={showCompleted ? "secondary" : "outline"}
+                  onClick={() => setShowCompleted(!showCompleted)}
+                >
+                  {showCompleted ? "Hide" : "Show"} Completed
+                </Button>
+                <Button
+                  onClick={() => {
+                    setSelectedDate(new Date());
+                    setSelectedTask(null);
+                    setDialogOpen(true);
+                  }}
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Task
+                </Button>
               </div>
             </div>
-          )}
+
+            {/* Calendar Content */}
+            {tasksLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-pulse text-muted-foreground">Loading tasks...</div>
+              </div>
+            ) : viewMode === "week" ? (
+              <div className="h-[600px]">
+                <WeekView
+                  currentDate={currentDate}
+                  tasks={tasks.filter(t => showCompleted || t.status !== "completed")}
+                  onTaskClick={handleTaskClick}
+                  onTimeSlotClick={handleTimeSlotClick}
+                />
+              </div>
+            ) : (
+              <div>
+                {/* Week day labels */}
+                <div className="grid grid-cols-7 gap-2 mb-2">
+                  {weekDays.map((day) => (
+                    <div
+                      key={day}
+                      className="text-center text-sm font-semibold text-muted-foreground py-2"
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Calendar days */}
+                <div className="grid grid-cols-7 gap-2">
+                  {calendarDays.map((day) => renderDayCell(day))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <TaskDialog

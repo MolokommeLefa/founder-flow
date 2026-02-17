@@ -10,6 +10,9 @@ export interface DbTask {
   status: "not_started" | "in_progress" | "completed";
   priority: "low" | "medium" | "high";
   due_date: string | null;
+  color: string;
+  start_time: string | null;
+  end_time: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -20,6 +23,9 @@ export interface NewTask {
   status: "not_started" | "in_progress" | "completed";
   priority: "low" | "medium" | "high";
   due_date?: string;
+  color?: string;
+  start_time?: string;
+  end_time?: string;
 }
 
 export function useTasks() {
@@ -62,6 +68,9 @@ export function useTasks() {
       status: task.status,
       priority: task.priority,
       due_date: task.due_date || null,
+      color: task.color || '#2563eb',
+      start_time: task.start_time || null,
+      end_time: task.end_time || null,
     });
 
     if (error) {
@@ -98,6 +107,9 @@ export function useTasks() {
         status: updates.status,
         priority: updates.priority,
         due_date: updates.due_date || null,
+        color: updates.color,
+        start_time: updates.start_time || null,
+        end_time: updates.end_time || null,
       })
       .eq("id", taskId);
 

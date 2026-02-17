@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ColorPicker } from "@/components/ui/color-picker";
 import type { NewTask, DbTask } from "@/hooks/useTasks";
 
 interface TaskDialogProps {
@@ -41,6 +42,9 @@ const TaskDialog = ({
   const [status, setStatus] = useState<NewTask["status"]>("not_started");
   const [priority, setPriority] = useState<NewTask["priority"]>("medium");
   const [dueDate, setDueDate] = useState("");
+  const [color, setColor] = useState("#2563eb");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -51,6 +55,9 @@ const TaskDialog = ({
       setStatus(selectedTask.status);
       setPriority(selectedTask.priority);
       setDueDate(selectedTask.due_date || "");
+      setColor(selectedTask.color || "#2563eb");
+      setStartTime(selectedTask.start_time ? selectedTask.start_time.substring(0, 16) : "");
+      setEndTime(selectedTask.end_time ? selectedTask.end_time.substring(0, 16) : "");
     } else if (selectedDate) {
       // Create mode: pre-fill with selected date
       setTitle("");
@@ -58,6 +65,9 @@ const TaskDialog = ({
       setStatus("not_started");
       setPriority("medium");
       setDueDate(format(selectedDate, "yyyy-MM-dd"));
+      setColor("#2563eb");
+      setStartTime("");
+      setEndTime("");
     } else {
       // Default create mode
       resetForm();
@@ -70,6 +80,9 @@ const TaskDialog = ({
     setStatus("not_started");
     setPriority("medium");
     setDueDate("");
+    setColor("#2563eb");
+    setStartTime("");
+    setEndTime("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,6 +96,9 @@ const TaskDialog = ({
       status,
       priority,
       due_date: dueDate || undefined,
+      color: color,
+      start_time: startTime || undefined,
+      end_time: endTime || undefined,
     });
 
     setSubmitting(false);
@@ -172,6 +188,33 @@ const TaskDialog = ({
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="startTime">Start Time</Label>
+              <Input
+                id="startTime"
+                type="datetime-local"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="endTime">End Time</Label>
+              <Input
+                id="endTime"
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Task Color</Label>
+            <ColorPicker value={color} onChange={setColor} />
           </div>
 
           <DialogFooter>
