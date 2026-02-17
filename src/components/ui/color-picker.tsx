@@ -44,8 +44,9 @@ export function ColorPicker({ value, onChange, className }: ColorPickerProps) {
           className="w-12 h-8 rounded border border-border cursor-pointer"
           aria-label="Custom color picker"
         />
-        <span className="text-sm text-muted-foreground">
-          Custom: {value.toUpperCase()}
+        <span className="text-sm text-muted-foreground" aria-live="polite">
+          <span className="sr-only">Currently selected color: </span>
+          {PREDEFINED_COLORS.find(c => c.value === value)?.name || 'Custom'} ({value.toUpperCase()})
         </span>
       </div>
     </div>

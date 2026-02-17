@@ -31,6 +31,14 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
     });
   };
 
+  // Get all timed tasks for a day (to render with absolute positioning)
+  const getTimedTasksForDay = (date: Date) => {
+    return tasks.filter(task => {
+      if (!task.start_time) return false;
+      return isSameDay(parseISO(task.start_time), date);
+    });
+  };
+
   // Get all tasks for a day (for tasks without specific time)
   const getTasksForDay = (date: Date) => {
     return tasks.filter(task => {
@@ -44,12 +52,15 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
     const startTime = task.start_time ? parseISO(task.start_time) : null;
     const endTime = task.end_time ? parseISO(task.end_time) : null;
     
+    if (!startTime) return null;
+
     let duration = 60; // Default 1 hour
-    if (startTime && endTime) {
+    if (endTime) {
       duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60); // minutes
     }
 
     const height = Math.max((duration / 60) * 60, 40); // min 40px height
+    const topPosition = startTime.getHours() * 60 + startTime.getMinutes(); // position from start of day
 
     return (
       <Tooltip key={task.id} delayDuration={300}>
@@ -65,7 +76,7 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
               backgroundColor: task.color ? `${task.color}20` : '#2563eb20',
               borderColor: task.color || '#2563eb',
               height: `${height}px`,
-              top: startTime ? `${startTime.getMinutes()}px` : '2px',
+              top: `${topPosition}px`,
             }}
           >
             <div className="text-xs font-medium truncate" style={{ color: task.color || '#2563eb' }}>
@@ -165,6 +176,7 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
           {/* Day columns */}
           {weekDays.map((day) => (
             <div key={day.toISOString()} className="relative border-r border-border">
+              {/* Hour slots for clicking */}
               {HOURS.map((hour) => (
                 <div
                   key={hour}
@@ -173,13 +185,15 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
                     isToday(day) && "bg-primary/5"
                   )}
                   onClick={() => onTimeSlotClick(day, hour)}
-                >
-                  {/* Tasks in this hour */}
-                  <div className="relative h-full">
-                    {getTasksForSlot(day, hour).map(renderTaskBlock)}
-                  </div>
-                </div>
+                />
               ))}
+              
+              {/* Tasks overlay - absolute positioned from top of day */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="relative h-full pointer-events-auto">
+                  {getTimedTasksForDay(day).map(renderTaskBlock)}
+                </div>
+              </div>
               
               {/* Current time indicator */}
               {isToday(day) && (
