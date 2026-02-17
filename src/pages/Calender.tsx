@@ -25,7 +25,6 @@ import { useTasks, type DbTask, type NewTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
 import TaskDialog from "@/components/dashboard/TaskDialog";
 import { WeekView } from "@/components/calendar/WeekView";
-import { MiniCalendar } from "@/components/calendar/MiniCalendar";
 
 type ViewMode = "month" | "week";
 
@@ -263,22 +262,8 @@ const Calendar = () => {
           <p className="text-muted-foreground">Manage your schedule and tasks</p>
         </div>
 
-        <div className="flex gap-6">
-          {/* Sidebar with Mini Calendar */}
-          <div className="hidden lg:block w-64 space-y-4">
-            <MiniCalendar
-              currentDate={currentDate}
-              selectedDate={selectedDate}
-              onDateSelect={(date) => {
-                setCurrentDate(date);
-                setSelectedDate(date);
-              }}
-              onMonthChange={setCurrentDate}
-            />
-          </div>
-
-          {/* Main Calendar */}
-          <div className="flex-1 bg-card rounded-xl border border-border p-6">
+        {/* Main Calendar */}
+        <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <h2 className="text-2xl font-bold text-foreground">
@@ -381,7 +366,6 @@ const Calendar = () => {
                 </div>
               </div>
             )}
-          </div>
         </div>
 
         <TaskDialog
