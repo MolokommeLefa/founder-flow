@@ -6,8 +6,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,8 +17,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import { ColorPicker } from "@/components/ui/color-picker";
 import type { NewTask, DbTask } from "@/hooks/useTasks";
 
@@ -35,7 +35,7 @@ const TaskDialog = ({
   onOpenChange,
   onSubmit,
   selectedDate,
-  selectedTask,
+  selectedTask
 }: TaskDialogProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -98,7 +98,7 @@ const TaskDialog = ({
       due_date: dueDate || undefined,
       color: color,
       start_time: startTime || undefined,
-      end_time: endTime || undefined,
+      end_time: endTime || undefined
     });
 
     setSubmitting(false);
@@ -119,13 +119,13 @@ const TaskDialog = ({
         <DialogHeader>
           <DialogTitle>{selectedTask ? "Edit Task" : "Add New Task"}</DialogTitle>
           <DialogDescription>
-            {selectedTask
-              ? "Update task details and manage its status."
-              : "Create a new task and assign it to a date."}
+            {selectedTask ?
+            "Update task details and manage its status." :
+            "Create a new task and assign it to a date."}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-2 opacity-95">
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input
@@ -134,8 +134,8 @@ const TaskDialog = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={200}
-              required
-            />
+              required />
+
           </div>
 
           <div className="space-y-2">
@@ -146,8 +146,8 @@ const TaskDialog = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={1000}
-              rows={3}
-            />
+              rows={3} />
+
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -186,8 +186,8 @@ const TaskDialog = ({
               id="dueDate"
               type="date"
               value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-            />
+              onChange={(e) => setDueDate(e.target.value)} />
+
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -197,8 +197,8 @@ const TaskDialog = ({
                 id="startTime"
                 type="datetime-local"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
+                onChange={(e) => setStartTime(e.target.value)} />
+
             </div>
 
             <div className="space-y-2">
@@ -207,8 +207,8 @@ const TaskDialog = ({
                 id="endTime"
                 type="datetime-local"
                 value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-              />
+                onChange={(e) => setEndTime(e.target.value)} />
+
             </div>
           </div>
 
@@ -222,13 +222,13 @@ const TaskDialog = ({
               Cancel
             </Button>
             <Button type="submit" disabled={submitting || !title.trim()}>
-              {submitting ? (selectedTask ? "Updating..." : "Creating...") : (selectedTask ? "Update Task" : "Create Task")}
+              {submitting ? selectedTask ? "Updating..." : "Creating..." : selectedTask ? "Update Task" : "Create Task"}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
+
 };
 
 export default TaskDialog;
