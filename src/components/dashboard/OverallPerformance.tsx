@@ -1,6 +1,29 @@
 import { useMemo } from "react";
-import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { DbTask } from "@/hooks/useTasks";
+
+const OnTrackIcon = () => (
+  <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="none">
+      <path d="M1 6C3 3 5 1.5 7 4C9 6.5 11 9 13 6C15 3 17 1 17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  </div>
+);
+
+const AtRiskIcon = () => (
+  <div className="w-8 h-8 rounded-full bg-yellow-600 flex items-center justify-center">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="none">
+      <path d="M1 6L5 2L9 8L13 4L17 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  </div>
+);
+
+const OffTrackIcon = () => (
+  <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="none">
+      <path d="M1 2L5 8L9 4L13 10L17 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  </div>
+);
 
 interface OverallPerformanceProps {
   tasks: DbTask[];
