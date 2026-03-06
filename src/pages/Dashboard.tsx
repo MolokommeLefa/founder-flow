@@ -7,15 +7,8 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MetricCard from "@/components/dashboard/MetricCard";
 import TaskItem from "@/components/dashboard/TaskItem";
-import AssetItem from "@/components/dashboard/AssetItem";
+import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
-
-const assetFiles = [
-  { name: "Brand Guidelines.pdf", type: "pdf" as const, size: "2.4 MB", date: "Today" },
-  { name: "Hero Video.mp4", type: "video" as const, size: "48 MB", date: "Yesterday" },
-  { name: "Logo Pack.zip", type: "file" as const, size: "12 MB", date: "2 days ago" },
-  { name: "Product Shots", type: "folder" as const, count: 24, date: "This week" },
-];
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
   if (status === "completed") return "done";
@@ -137,20 +130,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Assets/Files section */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-foreground">Recent Files</h2>
-              <button className="text-xs text-primary font-medium hover:underline">
-                Browse all →
-              </button>
-            </div>
-            <div className="space-y-1">
-              {assetFiles.map((file) => (
-                <AssetItem key={file.name} {...file} />
-              ))}
-            </div>
-          </div>
+          {/* Overall Performance */}
+          <OverallPerformance tasks={dbTasks} />
         </div>
       </main>
     </div>

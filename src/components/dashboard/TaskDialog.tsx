@@ -115,7 +115,7 @@ const TaskDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[480px] backdrop-blur-2xl bg-card/60 border border-white/10 shadow-elevated">
         <DialogHeader>
           <DialogTitle>{selectedTask ? "Edit Task" : "Add New Task"}</DialogTitle>
           <DialogDescription>
