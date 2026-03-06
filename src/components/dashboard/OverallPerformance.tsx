@@ -57,7 +57,7 @@ const OverallPerformance = ({ tasks }: OverallPerformanceProps) => {
 
   // SVG donut chart
   const size = 180;
-  const strokeWidth = 14;
+  const strokeWidth = 9;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
