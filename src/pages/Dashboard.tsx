@@ -130,20 +130,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Assets/Files section */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-foreground">Recent Files</h2>
-              <button className="text-xs text-primary font-medium hover:underline">
-                Browse all →
-              </button>
-            </div>
-            <div className="space-y-1">
-              {assetFiles.map((file) => (
-                <AssetItem key={file.name} {...file} />
-              ))}
-            </div>
-          </div>
+          {/* Overall Performance */}
+          <OverallPerformance tasks={dbTasks} />
         </div>
       </main>
     </div>
