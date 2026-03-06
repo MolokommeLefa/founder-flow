@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { DbTask } from "@/hooks/useTasks";
 
 const OnTrackIcon = () => (
-  <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center transition-transform duration-200 hover:scale-125 cursor-pointer">
+  <div className="w-3 h-3 rounded-full bg-green-600 flex items-center justify-center transition-transform duration-200 hover:scale-125 cursor-pointer">
     <svg width="9" height="6" viewBox="0 0 18 12" fill="none">
       <path d="M1 6C3 3 5 1.5 7 4C9 6.5 11 9 13 6C15 3 17 1 17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
@@ -10,7 +10,7 @@ const OnTrackIcon = () => (
 );
 
 const AtRiskIcon = () => (
-  <div className="w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center transition-transform duration-200 hover:scale-125 cursor-pointer">
+  <div className="w-3 h-3 rounded-full bg-yellow-600 flex items-center justify-center transition-transform duration-200 hover:scale-125 cursor-pointer">
     <svg width="9" height="6" viewBox="0 0 18 12" fill="none">
       <path d="M1 6L5 2L9 8L13 4L17 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
@@ -18,7 +18,7 @@ const AtRiskIcon = () => (
 );
 
 const OffTrackIcon = () => (
-  <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center transition-transform duration-200 hover:scale-125 cursor-pointer">
+  <div className="w-3 h-3 rounded-full bg-red-600 flex items-center justify-center transition-transform duration-200 hover:scale-125 cursor-pointer">
     <svg width="9" height="6" viewBox="0 0 18 12" fill="none">
       <path d="M1 2L5 8L9 4L13 10L17 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
