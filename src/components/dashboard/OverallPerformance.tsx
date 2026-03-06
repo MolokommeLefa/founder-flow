@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { DbTask } from "@/hooks/useTasks";
 
 interface OverallPerformanceProps {
