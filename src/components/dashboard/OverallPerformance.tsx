@@ -56,17 +56,17 @@ const OverallPerformance = ({ tasks }: OverallPerformanceProps) => {
 
       <div className="flex items-center gap-6">
         {/* Legend */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500" />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="w-5 h-5 text-green-500" />
             <span className="text-sm text-muted-foreground">On Track</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-yellow-500" />
             <span className="text-sm text-muted-foreground">At Risk</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
+          <div className="flex items-center gap-2.5">
+            <XCircle className="w-5 h-5 text-red-500" />
             <span className="text-sm text-muted-foreground">Off Track</span>
           </div>
         </div>
