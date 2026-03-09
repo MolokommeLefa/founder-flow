@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Analytics from "./pages/Analytics.tsx";
 import Tasks from "./pages/Tasks.tsx";
 import Calendar from "./pages/Calender.tsx";
+import Projects from "./pages/Projects.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
