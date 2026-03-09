@@ -27,7 +27,7 @@ const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
   { icon: CheckSquare, name: "Tasks", badge: 3, href: "/tasks" },
   { icon: Calendar, name: "Calendar", href: "/calendar" },
-  { icon: FolderOpen, name: "Projects" },
+  { icon: FolderOpen, name: "Projects", href: "/projects" },
   { icon: ImageIcon, name: "Media Library" },
   { icon: FileText, name: "Documents" },
   { icon: Users, name: "Team" },
