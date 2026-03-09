@@ -13,6 +13,7 @@ export interface DbTask {
   color: string;
   start_time: string | null;
   end_time: string | null;
+  project_id: string | null;
   created_at: string;
   updated_at: string;
 }
