@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTasks, type DbTask, type NewTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
-import TaskDialog from "@/components/dashboard/TaskDialog";
+import CalendarTaskDialog from "@/components/calendar/CalendarTaskDialog";
 import { WeekView } from "@/components/calendar/WeekView";
 
 type ViewMode = "month" | "week";
@@ -296,7 +296,7 @@ const Calendar = () => {
           </div>
         )}
 
-        <TaskDialog
+        <CalendarTaskDialog
           open={dialogOpen}
           onOpenChange={handleDialogClose}
           onSubmit={handleTaskSubmit}
