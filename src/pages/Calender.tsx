@@ -296,7 +296,7 @@ const Calendar = () => {
           </div>
         )}
 
-        <TaskDialog
+        <CalendarTaskDialog
           open={dialogOpen}
           onOpenChange={handleDialogClose}
           onSubmit={handleTaskSubmit}
