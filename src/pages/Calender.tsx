@@ -130,18 +130,16 @@ const Calendar = () => {
     const sH = Math.floor(startHour);
     const sM = (startHour % 1) * 60;
     d.setHours(sH, sM, 0, 0);
+
+    const endD = new Date(date);
+    const eH = Math.floor(endHour);
+    const eM = (endHour % 1) * 60;
+    endD.setHours(eH, eM, 0, 0);
+
     setSelectedDate(d);
+    setSelectedEndDate(endD);
     setSelectedTask(null);
-    // Store end time info on the date object via a custom approach
-    // We'll pass a second date to the dialog by extending selectedDate
     setDialogOpen(true);
-    // Update end time after dialog opens
-    setTimeout(() => {
-      const endEvent = new CustomEvent('calendar-range-end', {
-        detail: { endHour }
-      });
-      window.dispatchEvent(endEvent);
-    }, 50);
   };
 
   const handleTaskClick = (task: DbTask, e: React.MouseEvent) => {
