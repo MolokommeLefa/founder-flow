@@ -37,6 +37,7 @@ const Calendar = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
