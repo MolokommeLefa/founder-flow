@@ -2,32 +2,41 @@ import { format, startOfWeek, addDays, isSameDay, isToday, parseISO } from "date
 import { cn } from "@/lib/utils";
 import { DbTask } from "@/hooks/useTasks";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 interface WeekViewProps {
   currentDate: Date;
   tasks: DbTask[];
   onTaskClick: (task: DbTask, e: React.MouseEvent) => void;
   onTimeSlotClick: (date: Date, hour: number) => void;
+  onTimeRangeSelect?: (date: Date, startHour: number, endHour: number) => void;
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
-const VISIBLE_START = 7; // Start scrolled to 7 AM
+const VISIBLE_START = 7;
+const SLOT_HEIGHT = 60; // px per hour
+const HALF_SLOT = 30; // px per 30 min
 
-export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: WeekViewProps) {
+interface DragState {
+  day: Date;
+  startSlot: number; // in half-hour increments
+  currentSlot: number;
+}
+
+export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick, onTimeRangeSelect }: WeekViewProps) {
   const weekStart = startOfWeek(currentDate);
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const draggingRef = useRef(false);
 
-  // Auto-scroll to working hours on mount
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = VISIBLE_START * 60;
+      scrollRef.current.scrollTop = VISIBLE_START * SLOT_HEIGHT;
     }
   }, []);
 
-  // Update current time every minute
   useEffect(() => {
     const interval = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(interval);
@@ -36,13 +45,81 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
   const currentHour = currentTime.getHours();
   const currentMinute = currentTime.getMinutes();
 
-  // All-day tasks (no start_time)
   const getAllDayTasks = (date: Date) =>
     tasks.filter(t => !t.start_time && t.due_date && isSameDay(parseISO(t.due_date), date));
 
-  // Timed tasks
   const getTimedTasks = (date: Date) =>
     tasks.filter(t => t.start_time && isSameDay(parseISO(t.start_time), date));
+
+  // Convert mouse Y position to half-hour slot
+  const getSlotFromY = useCallback((y: number, containerTop: number): number => {
+    const relativeY = y - containerTop;
+    return Math.max(0, Math.min(47, Math.floor(relativeY / HALF_SLOT)));
+  }, []);
+
+  const handleMouseDown = useCallback((day: Date, e: React.MouseEvent<HTMLDivElement>) => {
+    // Don't start drag on task clicks
+    if ((e.target as HTMLElement).closest('[data-task-block]')) return;
+
+    const container = e.currentTarget;
+    const rect = container.getBoundingClientRect();
+    const slot = getSlotFromY(e.clientY, rect.top);
+
+    draggingRef.current = true;
+    setDrag({ day, startSlot: slot, currentSlot: slot });
+
+    const handleMouseMove = (ev: MouseEvent) => {
+      if (!draggingRef.current) return;
+      const newRect = container.getBoundingClientRect();
+      const currentSlot = getSlotFromY(ev.clientY, newRect.top);
+      setDrag(prev => prev ? { ...prev, currentSlot } : null);
+    };
+
+    const handleMouseUp = (ev: MouseEvent) => {
+      draggingRef.current = false;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+
+      setDrag(prev => {
+        if (!prev) return null;
+        const minSlot = Math.min(prev.startSlot, prev.currentSlot);
+        const maxSlot = Math.max(prev.startSlot, prev.currentSlot);
+
+        // If it's just a click (no drag), use the old single-slot behavior
+        if (minSlot === maxSlot) {
+          const hour = Math.floor(minSlot / 2);
+          onTimeSlotClick(day, hour);
+        } else if (onTimeRangeSelect) {
+          const startHourDecimal = minSlot / 2;
+          const endHourDecimal = (maxSlot + 1) / 2;
+          onTimeRangeSelect(day, startHourDecimal, endHourDecimal);
+        }
+        return null;
+      });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [getSlotFromY, onTimeSlotClick, onTimeRangeSelect]);
+
+  // Get drag selection rectangle for a given day
+  const getDragSelection = (day: Date) => {
+    if (!drag || !isSameDay(drag.day, day)) return null;
+    const minSlot = Math.min(drag.startSlot, drag.currentSlot);
+    const maxSlot = Math.max(drag.startSlot, drag.currentSlot);
+    const top = minSlot * HALF_SLOT;
+    const height = (maxSlot - minSlot + 1) * HALF_SLOT;
+    const startH = minSlot / 2;
+    const endH = (maxSlot + 1) / 2;
+    return { top, height, startH, endH };
+  };
+
+  const formatHourLabel = (h: number) => {
+    const hour = Math.floor(h);
+    const min = (h % 1) * 60;
+    const d = new Date(2000, 0, 1, hour, min);
+    return format(d, 'h:mm a');
+  };
 
   const renderTaskBlock = (task: DbTask) => {
     const start = task.start_time ? parseISO(task.start_time) : null;
@@ -52,17 +129,18 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
     let durationMin = 60;
     if (end) durationMin = (end.getTime() - start.getTime()) / 60000;
 
-    const topPx = start.getHours() * 60 + start.getMinutes();
-    const heightPx = Math.max((durationMin / 60) * 60, 30);
+    const topPx = start.getHours() * SLOT_HEIGHT + start.getMinutes();
+    const heightPx = Math.max((durationMin / 60) * SLOT_HEIGHT, 30);
     const color = task.color || '#2563eb';
 
     return (
       <Tooltip key={task.id} delayDuration={200}>
         <TooltipTrigger asChild>
           <div
+            data-task-block
             onClick={(e) => onTaskClick(task, e)}
             className={cn(
-              "absolute left-1 right-1 rounded-md cursor-pointer transition-all hover:brightness-110 hover:shadow-lg overflow-hidden",
+              "absolute left-1 right-1 rounded-md cursor-pointer transition-all hover:brightness-110 hover:shadow-lg overflow-hidden z-10",
               task.status === "completed" && "opacity-50"
             )}
             style={{
@@ -96,9 +174,8 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
 
   return (
     <div className="flex flex-col h-full border border-border rounded-lg overflow-hidden bg-background">
-      {/* Sticky header: day names + all-day row */}
+      {/* Sticky header */}
       <div className="sticky top-0 z-10 bg-background border-b border-border">
-        {/* Day headers */}
         <div className="grid grid-cols-[56px_repeat(7,1fr)]">
           <div className="border-r border-border" />
           {weekDays.map((day) => (
@@ -124,7 +201,6 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
           ))}
         </div>
 
-        {/* All-day row */}
         {hasAllDayTasks && (
           <div className="grid grid-cols-[56px_repeat(7,1fr)] border-t border-border">
             <div className="border-r border-border flex items-center justify-end pr-2">
@@ -160,7 +236,7 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
       {/* Scrollable time grid */}
       <div ref={scrollRef} className="flex-1 overflow-auto">
         <div className="grid grid-cols-[56px_repeat(7,1fr)] relative">
-          {/* Time labels column */}
+          {/* Time labels */}
           <div className="relative">
             {HOURS.map((hour) => (
               <div
@@ -173,41 +249,60 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick }: W
           </div>
 
           {/* Day columns */}
-          {weekDays.map((day) => (
-            <div key={day.toISOString()} className="relative border-r border-border/50 last:border-r-0">
-              {/* Hour slots */}
-              {HOURS.map((hour) => (
-                <div
-                  key={hour}
-                  className={cn(
-                    "h-[60px] border-b border-border/50 hover:bg-accent/20 cursor-pointer transition-colors",
-                    isToday(day) && "bg-primary/[0.02]"
-                  )}
-                  onClick={() => onTimeSlotClick(day, hour)}
-                />
-              ))}
+          {weekDays.map((day) => {
+            const selection = getDragSelection(day);
 
-              {/* Task blocks */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="relative h-full pointer-events-auto">
-                  {getTimedTasks(day).map(renderTaskBlock)}
-                </div>
-              </div>
+            return (
+              <div
+                key={day.toISOString()}
+                className="relative border-r border-border/50 last:border-r-0 select-none"
+                onMouseDown={(e) => handleMouseDown(day, e)}
+              >
+                {/* Hour grid lines */}
+                {HOURS.map((hour) => (
+                  <div
+                    key={hour}
+                    className={cn(
+                      "h-[60px] border-b border-border/50",
+                      isToday(day) && "bg-primary/[0.02]"
+                    )}
+                  />
+                ))}
 
-              {/* Current time indicator */}
-              {isToday(day) && (
-                <div
-                  className="absolute left-0 right-0 z-20 pointer-events-none"
-                  style={{ top: `${currentHour * 60 + currentMinute}px` }}
-                >
-                  <div className="flex items-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-destructive -ml-1" />
-                    <div className="flex-1 h-[2px] bg-destructive" />
+                {/* Drag selection overlay */}
+                {selection && (
+                  <div
+                    className="absolute left-1 right-1 rounded-lg border-2 border-primary bg-primary/15 z-20 pointer-events-none transition-[top,height] duration-75"
+                    style={{ top: `${selection.top}px`, height: `${selection.height}px` }}
+                  >
+                    <div className="px-2 py-1 text-xs font-medium text-primary">
+                      {formatHourLabel(selection.startH)} – {formatHourLabel(selection.endH)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Task blocks */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="relative h-full pointer-events-auto">
+                    {getTimedTasks(day).map(renderTaskBlock)}
                   </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Current time indicator */}
+                {isToday(day) && (
+                  <div
+                    className="absolute left-0 right-0 z-20 pointer-events-none"
+                    style={{ top: `${currentHour * SLOT_HEIGHT + currentMinute}px` }}
+                  >
+                    <div className="flex items-center">
+                      <div className="w-2.5 h-2.5 rounded-full bg-destructive -ml-1" />
+                      <div className="flex-1 h-[2px] bg-destructive" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
