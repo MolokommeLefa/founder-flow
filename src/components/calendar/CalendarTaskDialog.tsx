@@ -12,6 +12,7 @@ interface CalendarTaskDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (task: NewTask) => Promise<boolean>;
   selectedDate?: Date | null;
+  selectedEndDate?: Date | null;
   selectedTask?: DbTask | null;
 }
 
