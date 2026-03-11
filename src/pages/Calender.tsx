@@ -37,6 +37,7 @@ const Calendar = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
@@ -112,6 +113,7 @@ const Calendar = () => {
 
   const handleDayClick = (date: Date) => {
     setSelectedDate(date);
+    setSelectedEndDate(null);
     setSelectedTask(null);
     setDialogOpen(true);
   };
@@ -120,6 +122,24 @@ const Calendar = () => {
     const d = new Date(date);
     d.setHours(hour, 0, 0, 0);
     setSelectedDate(d);
+    setSelectedEndDate(null);
+    setSelectedTask(null);
+    setDialogOpen(true);
+  };
+
+  const handleTimeRangeSelect = (date: Date, startHour: number, endHour: number) => {
+    const d = new Date(date);
+    const sH = Math.floor(startHour);
+    const sM = (startHour % 1) * 60;
+    d.setHours(sH, sM, 0, 0);
+
+    const endD = new Date(date);
+    const eH = Math.floor(endHour);
+    const eM = (endHour % 1) * 60;
+    endD.setHours(eH, eM, 0, 0);
+
+    setSelectedDate(d);
+    setSelectedEndDate(endD);
     setSelectedTask(null);
     setDialogOpen(true);
   };
@@ -128,6 +148,7 @@ const Calendar = () => {
     e.stopPropagation();
     setSelectedTask(task);
     setSelectedDate(task.due_date ? parseISO(task.due_date) : null);
+    setSelectedEndDate(null);
     setDialogOpen(true);
   };
 
@@ -135,6 +156,7 @@ const Calendar = () => {
     setDialogOpen(false);
     setSelectedTask(null);
     setSelectedDate(null);
+    setSelectedEndDate(null);
   };
 
   const handleTaskSubmit = async (taskData: NewTask) => {
@@ -279,6 +301,7 @@ const Calendar = () => {
               tasks={filteredTasks}
               onTaskClick={handleTaskClick}
               onTimeSlotClick={handleTimeSlotClick}
+              onTimeRangeSelect={handleTimeRangeSelect}
             />
           </div>
         ) : (
@@ -301,6 +324,7 @@ const Calendar = () => {
           onOpenChange={handleDialogClose}
           onSubmit={handleTaskSubmit}
           selectedDate={selectedDate}
+          selectedEndDate={selectedEndDate}
           selectedTask={selectedTask}
         />
       </main>

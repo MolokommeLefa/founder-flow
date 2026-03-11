@@ -12,6 +12,7 @@ interface CalendarTaskDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (task: NewTask) => Promise<boolean>;
   selectedDate?: Date | null;
+  selectedEndDate?: Date | null;
   selectedTask?: DbTask | null;
 }
 
@@ -24,6 +25,7 @@ const CalendarTaskDialog = ({
   onOpenChange,
   onSubmit,
   selectedDate,
+  selectedEndDate,
   selectedTask,
 }: CalendarTaskDialogProps) => {
   const [title, setTitle] = useState("");
@@ -52,13 +54,17 @@ const CalendarTaskDialog = ({
         const h = selectedDate.getHours();
         if (h > 0) {
           setStartTime(format(selectedDate, "h:mm a"));
-          const end = new Date(selectedDate);
-          end.setHours(h + 3);
-          setEndTime(format(end, "h:mm a"));
+          if (selectedEndDate) {
+            setEndTime(format(selectedEndDate, "h:mm a"));
+          } else {
+            const end = new Date(selectedDate);
+            end.setHours(h + 1);
+            setEndTime(format(end, "h:mm a"));
+          }
         }
       }
     }
-  }, [selectedTask, selectedDate, open]);
+  }, [selectedTask, selectedDate, selectedEndDate, open]);
 
   useEffect(() => {
     if (!open) return;
