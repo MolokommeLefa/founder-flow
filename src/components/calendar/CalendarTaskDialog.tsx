@@ -54,13 +54,17 @@ const CalendarTaskDialog = ({
         const h = selectedDate.getHours();
         if (h > 0) {
           setStartTime(format(selectedDate, "h:mm a"));
-          const end = new Date(selectedDate);
-          end.setHours(h + 3);
-          setEndTime(format(end, "h:mm a"));
+          if (selectedEndDate) {
+            setEndTime(format(selectedEndDate, "h:mm a"));
+          } else {
+            const end = new Date(selectedDate);
+            end.setHours(h + 1);
+            setEndTime(format(end, "h:mm a"));
+          }
         }
       }
     }
-  }, [selectedTask, selectedDate, open]);
+  }, [selectedTask, selectedDate, selectedEndDate, open]);
 
   useEffect(() => {
     if (!open) return;
