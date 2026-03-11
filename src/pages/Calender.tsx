@@ -113,6 +113,7 @@ const Calendar = () => {
 
   const handleDayClick = (date: Date) => {
     setSelectedDate(date);
+    setSelectedEndDate(null);
     setSelectedTask(null);
     setDialogOpen(true);
   };
@@ -121,6 +122,7 @@ const Calendar = () => {
     const d = new Date(date);
     d.setHours(hour, 0, 0, 0);
     setSelectedDate(d);
+    setSelectedEndDate(null);
     setSelectedTask(null);
     setDialogOpen(true);
   };
@@ -146,6 +148,7 @@ const Calendar = () => {
     e.stopPropagation();
     setSelectedTask(task);
     setSelectedDate(task.due_date ? parseISO(task.due_date) : null);
+    setSelectedEndDate(null);
     setDialogOpen(true);
   };
 
@@ -153,6 +156,7 @@ const Calendar = () => {
     setDialogOpen(false);
     setSelectedTask(null);
     setSelectedDate(null);
+    setSelectedEndDate(null);
   };
 
   const handleTaskSubmit = async (taskData: NewTask) => {
