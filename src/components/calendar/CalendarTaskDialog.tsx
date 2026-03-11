@@ -25,6 +25,7 @@ const CalendarTaskDialog = ({
   onOpenChange,
   onSubmit,
   selectedDate,
+  selectedEndDate,
   selectedTask,
 }: CalendarTaskDialogProps) => {
   const [title, setTitle] = useState("");
