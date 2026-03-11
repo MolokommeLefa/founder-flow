@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { X, MoreHorizontal, Copy, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 import type { NewTask, DbTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +16,7 @@ interface CalendarTaskDialogProps {
 }
 
 const PRESET_COLORS = [
-  "#2563eb", // blue
-  "#dc2626", // red
-  "#ca8a04", // yellow
-  "#ec4899", // pink
-  "#16a34a", // green
+  "#2563eb", "#dc2626", "#ca8a04", "#ec4899", "#16a34a",
 ];
 
 const CalendarTaskDialog = ({
@@ -43,12 +41,10 @@ const CalendarTaskDialog = ({
       setDescription(selectedTask.description || "");
       setColor(selectedTask.color || "#2563eb");
       if (selectedTask.start_time) {
-        const s = new Date(selectedTask.start_time);
-        setStartTime(format(s, "h:mm a"));
+        setStartTime(format(new Date(selectedTask.start_time), "h:mm a"));
       }
       if (selectedTask.end_time) {
-        const e = new Date(selectedTask.end_time);
-        setEndTime(format(e, "h:mm a"));
+        setEndTime(format(new Date(selectedTask.end_time), "h:mm a"));
       }
     } else {
       resetForm();
@@ -64,7 +60,6 @@ const CalendarTaskDialog = ({
     }
   }, [selectedTask, selectedDate, open]);
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -98,9 +93,7 @@ const CalendarTaskDialog = ({
     return d;
   };
 
-  const handleClose = () => {
-    onOpenChange(false);
-  };
+  const handleClose = () => onOpenChange(false);
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
@@ -123,6 +116,10 @@ const CalendarTaskDialog = ({
 
     setSubmitting(false);
     if (success) {
+      toast({
+        title: selectedTask ? "Task updated" : "Task created",
+        description: `"${title.trim()}" has been ${selectedTask ? "updated" : "added"} successfully.`,
+      });
       resetForm();
       onOpenChange(false);
     }
@@ -140,30 +137,28 @@ const CalendarTaskDialog = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={handleClose} />
 
-      {/* Dialog */}
       <div
         ref={dialogRef}
-        className="relative z-10 w-[320px] rounded-xl border border-white/10 bg-card/70 backdrop-blur-2xl shadow-2xl p-4"
+        className="relative z-10 w-[360px] rounded-2xl border border-border/30 bg-card/60 backdrop-blur-2xl shadow-2xl p-5"
         onKeyDown={handleKeyDown}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium text-foreground">
+        <div className="flex items-center justify-between mb-5">
+          <span className="text-base font-medium text-foreground">
             {selectedTask ? "Edit task" : "Add new task"}
           </span>
           <div className="flex items-center gap-1.5">
-            <button className="p-1 rounded hover:bg-accent/40 text-muted-foreground transition-colors">
+            <button className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors">
               <MoreHorizontal className="w-4 h-4" />
             </button>
-            <button className="p-1 rounded hover:bg-accent/40 text-muted-foreground transition-colors">
+            <button className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors">
               <Copy className="w-4 h-4" />
             </button>
             <button
               onClick={handleClose}
-              className="p-1 rounded hover:bg-accent/40 text-muted-foreground transition-colors"
+              className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -175,26 +170,28 @@ const CalendarTaskDialog = ({
           placeholder="Task name"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="bg-muted/40 border-border/50 text-sm mb-3 h-9 placeholder:text-muted-foreground/60"
+          className="bg-muted/30 border-border/40 rounded-xl text-sm mb-3 h-10 placeholder:text-muted-foreground/50"
           autoFocus
         />
 
         {/* Time row */}
-        <div className="flex items-center gap-2 mb-3">
-          <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <input
-            type="text"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className="flex-1 bg-muted/40 border border-border/50 rounded-md px-2.5 py-1.5 text-xs text-foreground text-center focus:outline-none focus:ring-1 focus:ring-ring"
-          />
-          <span className="text-muted-foreground text-xs">→</span>
-          <input
-            type="text"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className="flex-1 bg-muted/40 border border-border/50 rounded-md px-2.5 py-1.5 text-xs text-foreground text-center focus:outline-none focus:ring-1 focus:ring-ring"
-          />
+        <div className="flex items-center gap-3 mb-3">
+          <Clock className="w-4 h-4 text-muted-foreground shrink-0" />
+          <div className="flex-1 flex items-center gap-2">
+            <input
+              type="text"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              className="w-full bg-muted/30 border border-border/40 rounded-xl px-3 py-2 text-sm text-foreground text-center focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+            <span className="text-muted-foreground text-sm shrink-0">→</span>
+            <input
+              type="text"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              className="w-full bg-muted/30 border border-border/40 rounded-xl px-3 py-2 text-sm text-foreground text-center focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
         </div>
 
         {/* Description */}
@@ -202,7 +199,7 @@ const CalendarTaskDialog = ({
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="bg-muted/40 border-border/50 text-sm mb-3 h-9 placeholder:text-muted-foreground/60"
+          className="bg-muted/30 border-border/40 rounded-xl text-sm mb-3 h-10 placeholder:text-muted-foreground/50"
         />
 
         {/* Reminders */}
@@ -210,21 +207,21 @@ const CalendarTaskDialog = ({
           placeholder="Reminders"
           value={reminders}
           onChange={(e) => setReminders(e.target.value)}
-          className="bg-muted/40 border-border/50 text-sm mb-4 h-9 placeholder:text-muted-foreground/60"
+          className="bg-muted/30 border-border/40 rounded-xl text-sm mb-4 h-10 placeholder:text-muted-foreground/50"
         />
 
         {/* Color picker */}
-        <div className="space-y-1.5">
-          <span className="text-xs text-muted-foreground">Task color</span>
-          <div className="flex items-center gap-2">
+        <div className="mb-5">
+          <span className="text-xs text-muted-foreground mb-2 block">Task color</span>
+          <div className="flex items-center gap-3">
             {PRESET_COLORS.map((c) => (
               <button
                 key={c}
                 onClick={() => setColor(c)}
                 className={cn(
-                  "w-5 h-5 rounded-sm transition-all",
+                  "w-7 h-7 rounded-full transition-all",
                   color === c
-                    ? "ring-2 ring-foreground ring-offset-1 ring-offset-background scale-110"
+                    ? "ring-2 ring-foreground ring-offset-2 ring-offset-background scale-110"
                     : "hover:scale-110"
                 )}
                 style={{ backgroundColor: c }}
@@ -232,6 +229,15 @@ const CalendarTaskDialog = ({
             ))}
           </div>
         </div>
+
+        {/* Submit button */}
+        <Button
+          onClick={handleSubmit}
+          disabled={!title.trim() || submitting}
+          className="w-full h-10 rounded-xl"
+        >
+          {submitting ? "Saving..." : selectedTask ? "Update Task" : "Create Task"}
+        </Button>
       </div>
     </div>
   );
