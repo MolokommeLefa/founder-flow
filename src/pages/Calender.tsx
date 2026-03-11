@@ -301,6 +301,7 @@ const Calendar = () => {
               tasks={filteredTasks}
               onTaskClick={handleTaskClick}
               onTimeSlotClick={handleTimeSlotClick}
+              onTimeRangeSelect={handleTimeRangeSelect}
             />
           </div>
         ) : (
@@ -323,6 +324,7 @@ const Calendar = () => {
           onOpenChange={handleDialogClose}
           onSubmit={handleTaskSubmit}
           selectedDate={selectedDate}
+          selectedEndDate={selectedEndDate}
           selectedTask={selectedTask}
         />
       </main>
