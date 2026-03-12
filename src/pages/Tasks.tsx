@@ -8,27 +8,74 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import KanbanColumn from "@/components/dashboard/KanbanColumn";
 import AddTaskDialog from "@/components/dashboard/AddTaskDialog";
+import TaskDialog from "@/components/dashboard/TaskDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useTasks } from "@/hooks/useTasks";
-import type { DbTask } from "@/hooks/useTasks";
+import type { DbTask, NewTask } from "@/hooks/useTasks";
 
 const Tasks = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [defaultStatus, setDefaultStatus] = useState<DbTask["status"]>("not_started");
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { tasksByStatus, addTask, updateTaskStatus, loading: tasksLoading } = useTasks();
+  const { tasks, tasksByStatus, addTask, updateTask, updateTaskStatus, deleteTask, loading: tasksLoading } = useTasks();
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, draggableId } = result;
     if (!destination) return;
     const newStatus = destination.droppableId as DbTask["status"];
     updateTaskStatus(draggableId, newStatus);
+  };
+
+  const handleEditTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      setSelectedTask(task);
+      setEditDialogOpen(true);
+    }
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      setSelectedTask(task);
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedTask) {
+      await deleteTask(selectedTask.id);
+      setDeleteDialogOpen(false);
+      setSelectedTask(null);
+    }
+  };
+
+  const handleEditSubmit = async (taskData: NewTask) => {
+    if (!selectedTask) return false;
+    const success = await updateTask(selectedTask.id, taskData);
+    if (success) {
+      setSelectedTask(null);
+    }
+    return success;
   };
 
   useEffect(() => {
@@ -76,7 +123,7 @@ const Tasks = () => {
 
   const handleAddFromColumn = (status: DbTask["status"]) => {
     setDefaultStatus(status);
-    setDialogOpen(true);
+    setAddDialogOpen(true);
   };
 
   const formatTasksForColumn = (tasks: DbTask[]) =>
@@ -84,7 +131,7 @@ const Tasks = () => {
       id: t.id,
       title: t.title,
       description: t.description ?? undefined,
-      priority: t.priority,
+      priority: t.priority as "low" | "medium" | "high",
       dueDate: t.due_date
         ? new Date(t.due_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
         : undefined,
@@ -123,7 +170,7 @@ const Tasks = () => {
             className="gap-2"
             onClick={() => {
               setDefaultStatus("not_started");
-              setDialogOpen(true);
+              setAddDialogOpen(true);
             }}
           >
             <Plus className="w-4 h-4" />
@@ -144,6 +191,8 @@ const Tasks = () => {
                 tasks={formatTasksForColumn(notStartedTasks)}
                 count={notStartedTasks.length}
                 onAddTask={() => handleAddFromColumn("not_started")}
+                onEditTask={handleEditTask}
+                onDeleteTask={handleDeleteTask}
               />
               <KanbanColumn
                 title="In Progress"
@@ -151,6 +200,8 @@ const Tasks = () => {
                 tasks={formatTasksForColumn(inProgressTasks)}
                 count={inProgressTasks.length}
                 onAddTask={() => handleAddFromColumn("in_progress")}
+                onEditTask={handleEditTask}
+                onDeleteTask={handleDeleteTask}
               />
               <KanbanColumn
                 title="Completed"
@@ -158,17 +209,49 @@ const Tasks = () => {
                 tasks={formatTasksForColumn(completedTasks)}
                 count={completedTasks.length}
                 onAddTask={() => handleAddFromColumn("completed")}
+                onEditTask={handleEditTask}
+                onDeleteTask={handleDeleteTask}
               />
             </div>
           </DragDropContext>
         )}
 
+        {/* Add Task Dialog */}
         <AddTaskDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
+          open={addDialogOpen}
+          onOpenChange={setAddDialogOpen}
           onSubmit={addTask}
           defaultStatus={defaultStatus}
         />
+
+        {/* Edit Task Dialog */}
+        <TaskDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          onSubmit={handleEditSubmit}
+          selectedTask={selectedTask}
+        />
+
+        {/* Delete Confirmation */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete task</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{selectedTask?.title}"? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
     </div>
   );

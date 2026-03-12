@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
-import { MoreHorizontal, Calendar, GripVertical } from "lucide-react";
+import { Pencil, Trash2, Calendar, GripVertical } from "lucide-react";
 import { Draggable } from "@hello-pangea/dnd";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 export interface Task {
   id: string;
@@ -13,6 +20,8 @@ export interface Task {
 interface KanbanCardProps {
   task: Task;
   index: number;
+  onEdit?: (taskId: string) => void;
+  onDelete?: (taskId: string) => void;
 }
 
 const priorityStyles = {
@@ -21,7 +30,7 @@ const priorityStyles = {
   high: "bg-destructive/10 text-destructive",
 };
 
-const KanbanCard = ({ task, index }: KanbanCardProps) => {
+const KanbanCard = ({ task, index, onEdit, onDelete }: KanbanCardProps) => {
   return (
     <Draggable draggableId={task.id} index={index}>
       {(provided, snapshot) => (
@@ -32,6 +41,7 @@ const KanbanCard = ({ task, index }: KanbanCardProps) => {
             "group p-4 bg-card rounded-xl border border-border hover:border-primary/20 hover:shadow-sm transition-all duration-200 cursor-pointer",
             snapshot.isDragging && "shadow-lg border-primary/30 rotate-[2deg] scale-105"
           )}
+          onDoubleClick={() => onEdit?.(task.id)}
         >
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex items-start gap-2">
@@ -45,9 +55,26 @@ const KanbanCard = ({ task, index }: KanbanCardProps) => {
                 {task.title}
               </h4>
             </div>
-            <button className="opacity-0 group-hover:opacity-100 p-1 -m-1 rounded-lg hover:bg-secondary transition-all">
-              <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="opacity-0 group-hover:opacity-100 p-1 -m-1 rounded-lg hover:bg-secondary transition-all">
+                  <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-36">
+                <DropdownMenuItem onClick={() => onEdit?.(task.id)}>
+                  <Pencil className="w-3.5 h-3.5 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onDelete?.(task.id)}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {task.description && (
