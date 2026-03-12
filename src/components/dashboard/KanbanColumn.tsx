@@ -9,6 +9,8 @@ interface KanbanColumnProps {
   tasks: Task[];
   count: number;
   onAddTask?: () => void;
+  onEditTask?: (taskId: string) => void;
+  onDeleteTask?: (taskId: string) => void;
 }
 
 const statusDotStyles = {
@@ -23,10 +25,9 @@ const statusBadgeStyles = {
   completed: "bg-green-500/10",
 };
 
-const KanbanColumn = ({ title, status, tasks, count, onAddTask }: KanbanColumnProps) => {
+const KanbanColumn = ({ title, status, tasks, count, onAddTask, onEditTask, onDeleteTask }: KanbanColumnProps) => {
   return (
     <div className="flex-1 min-w-[280px] max-w-[360px]">
-      {/* Column Header */}
       <div className="flex items-center justify-between mb-4">
         <div className={cn(
           "flex items-center gap-1.5 px-2 py-1 rounded-full",
@@ -48,7 +49,6 @@ const KanbanColumn = ({ title, status, tasks, count, onAddTask }: KanbanColumnPr
         </div>
       </div>
 
-      {/* Droppable Cards Container */}
       <Droppable droppableId={status}>
         {(provided, snapshot) => (
           <div
@@ -60,7 +60,13 @@ const KanbanColumn = ({ title, status, tasks, count, onAddTask }: KanbanColumnPr
             )}
           >
             {tasks.map((task, index) => (
-              <KanbanCard key={task.id} task={task} index={index} />
+              <KanbanCard
+                key={task.id}
+                task={task}
+                index={index}
+                onEdit={onEditTask}
+                onDelete={onDeleteTask}
+              />
             ))}
             {provided.placeholder}
 
