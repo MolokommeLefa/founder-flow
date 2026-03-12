@@ -9,7 +9,7 @@ interface DashboardHeaderProps {
   priorityCount?: number;
 }
 
-const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
+const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCount = 0 }: DashboardHeaderProps) => {
   const [expanded, setExpanded] = useState(false);
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const increased = true;
