@@ -5,6 +5,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 interface DashboardHeaderProps {
   userName?: string;
+  showGreeting?: boolean;
+  priorityCount?: number;
 }
 
 const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
