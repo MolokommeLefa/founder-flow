@@ -97,7 +97,7 @@ const Tasks = () => {
       </div>
 
       <main className="flex-1 p-6 md:p-8 overflow-auto">
-        <DashboardHeader userName={userName} />
+        <DashboardHeader userName={userName} showGreeting={false} />
 
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-foreground mb-1">Tasks</h1>

@@ -5,9 +5,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 interface DashboardHeaderProps {
   userName?: string;
+  showGreeting?: boolean;
+  priorityCount?: number;
 }
 
-const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
+const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCount = 0 }: DashboardHeaderProps) => {
   const [expanded, setExpanded] = useState(false);
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const increased = true;
@@ -26,12 +28,19 @@ const DashboardHeader = ({ userName = "there" }: DashboardHeaderProps) => {
 
   return (
     <div className="flex items-center justify-between mb-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          {getGreeting()}, {userName}
-        </h1>
-        <p className="text-muted-foreground">You have 3 priorities for today</p>
-      </div>
+      {showGreeting && (
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            {getGreeting()}, {userName}
+          </h1>
+          <p className="text-muted-foreground">
+            {priorityCount > 0
+              ? `You have ${priorityCount} ${priorityCount === 1 ? 'priority' : 'priorities'} for today`
+              : "No priorities for today"}
+          </p>
+        </div>
+      )}
+      {!showGreeting && <div />}
       <div className="flex items-center gap-4">
         {/* Dynamic Island Focus Timer */}
         <div

@@ -233,7 +233,7 @@ const Calendar = () => {
       </div>
 
       <main className="flex-1 p-6 md:p-8 overflow-auto">
-        <DashboardHeader userName={userName} />
+        <DashboardHeader userName={userName} showGreeting={false} />
 
         {/* Title */}
         <div className="mb-6 flex items-center gap-3">

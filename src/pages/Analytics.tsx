@@ -61,7 +61,7 @@ const Analytics = () => {
 
       {/* Main content */}
       <main className="flex-1 p-6 md:p-8 overflow-auto">
-        <DashboardHeader userName={userName} />
+        <DashboardHeader userName={userName} showGreeting={false} />
         
         <p className="text-muted-foreground mb-6">Track your productivity</p>
 

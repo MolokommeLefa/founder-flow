@@ -64,6 +64,9 @@ const Dashboard = () => {
   const userName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 
   const todayTasks = dbTasks.slice(0, 6);
+  const completedCount = dbTasks.filter(t => t.status === "completed").length;
+  const totalCount = dbTasks.length;
+  const highPriorityCount = dbTasks.filter(t => t.priority === "high" && t.status !== "completed").length;
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -74,7 +77,7 @@ const Dashboard = () => {
 
       {/* Main content */}
       <main className="flex-1 p-6 md:p-8 overflow-auto">
-        <DashboardHeader userName={userName} />
+        <DashboardHeader userName={userName} showGreeting={true} priorityCount={highPriorityCount} />
 
         {/* Metrics grid */}
         <div className="grid grid-cols-3 gap-4 mb-8">
@@ -89,9 +92,9 @@ const Dashboard = () => {
             icon={CheckCircle2} 
             iconClassName="text-green-500"
             label="Tasks Done" 
-            value="24/32" 
-            change="+8 today" 
-            positive 
+            value={`${completedCount}/${totalCount}`} 
+            change={completedCount > 0 ? `${Math.round((completedCount / totalCount) * 100)}% complete` : "0% complete"} 
+            positive={completedCount > 0} 
           />
           <MetricCard 
             icon={Clock} 
