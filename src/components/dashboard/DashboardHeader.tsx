@@ -27,7 +27,7 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
   const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
 
   return (
-    <div className="flex items-center justify-between mb-8">
+    <div className={`flex items-center ${showGreeting ? 'justify-between mb-8' : 'justify-end mb-4'}`}>
       {showGreeting && (
         <div>
           <h1 className="text-2xl font-bold text-foreground">
@@ -40,7 +40,6 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
           </p>
         </div>
       )}
-      {!showGreeting && <div />}
       <div className="flex items-center gap-4">
         {/* Dynamic Island Focus Timer */}
         <div
