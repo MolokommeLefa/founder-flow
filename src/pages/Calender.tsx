@@ -235,24 +235,39 @@ const Calendar = () => {
       <main className="flex-1 p-6 md:p-8 overflow-auto">
         <DashboardHeader userName={userName} showGreeting={false} />
 
-        {/* Title */}
-        <div className="mb-4 flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
-          <Pencil className="w-5 h-5 text-muted-foreground" />
+        {/* Title + subtitle */}
+        <div className="mb-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
+            <Pencil className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <p className="text-muted-foreground text-sm mt-1">Manage your schedule and tasks</p>
         </div>
 
-        {/* Compact header bar */}
-        <div className="flex items-center justify-between mb-4">
-          {/* Segmented control - left aligned */}
-          <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
+        {/* Month heading + segmented control inline */}
+        <div className="flex items-center gap-4 mb-4 mt-4">
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={handlePrev} className="h-8 w-8">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h2 className="text-2xl font-bold text-foreground min-w-[180px]">
+              {format(currentDate, "MMMM yyyy")}
+            </h2>
+            <Button variant="ghost" size="icon" onClick={handleNext} className="h-8 w-8">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Segmented control */}
+          <div className="flex items-center border border-border rounded-lg p-0.5 gap-0">
             {(["week", "month"] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setViewMode(mode)}
                 className={cn(
-                  "px-4 py-1.5 rounded-md text-sm font-medium transition-all capitalize",
+                  "px-4 py-1 rounded-md text-sm font-medium transition-all capitalize",
                   viewMode === mode
-                    ? "bg-background text-foreground shadow-sm"
+                    ? "bg-foreground text-background"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -261,23 +276,10 @@ const Calendar = () => {
             ))}
             <button
               onClick={handleToday}
-              className="px-4 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
+              className="px-4 py-1 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
             >
               Today
             </button>
-          </div>
-
-          {/* Month navigation - right aligned */}
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={handlePrev} className="h-8 w-8">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <h2 className="text-lg font-semibold text-foreground min-w-[150px] text-center">
-              {format(currentDate, "MMMM yyyy")}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={handleNext} className="h-8 w-8">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 
