@@ -242,47 +242,39 @@ const Calendar = () => {
           <p className="text-muted-foreground ml-auto text-sm">Manage your schedule and tasks</p>
         </div>
 
-        {/* Month/Week title + controls */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handlePrev} className="h-7 w-7">
+        {/* Compact header bar */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={handlePrev} className="h-8 w-8">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h2 className="text-xl font-semibold text-foreground min-w-[180px]">
+            <h2 className="text-lg font-semibold text-foreground min-w-[150px] text-center">
               {format(currentDate, "MMMM yyyy")}
             </h2>
-            <Button variant="ghost" size="icon" onClick={handleNext} className="h-7 w-7">
+            <Button variant="ghost" size="icon" onClick={handleNext} className="h-8 w-8">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
 
-          {/* Pill toggles */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setViewMode("week")}
-              className={cn(
-                "px-4 py-1.5 rounded-full text-sm font-medium border transition-colors",
-                viewMode === "week"
-                  ? "border-foreground text-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Week
-            </button>
-            <button
-              onClick={() => setViewMode("month")}
-              className={cn(
-                "px-4 py-1.5 rounded-full text-sm font-medium border transition-colors",
-                viewMode === "month"
-                  ? "border-foreground text-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Month
-            </button>
+          {/* Segmented control */}
+          <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
+            {(["week", "month"] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={cn(
+                  "px-4 py-1.5 rounded-md text-sm font-medium transition-all capitalize",
+                  viewMode === mode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {mode}
+              </button>
+            ))}
             <button
               onClick={handleToday}
-              className="px-4 py-1.5 rounded-full text-sm font-medium border border-border text-muted-foreground hover:text-foreground transition-colors"
+              className="px-4 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
             >
               Today
             </button>
