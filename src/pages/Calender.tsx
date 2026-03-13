@@ -236,27 +236,14 @@ const Calendar = () => {
         <DashboardHeader userName={userName} showGreeting={false} />
 
         {/* Title */}
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-4 flex items-center gap-3">
           <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
           <Pencil className="w-5 h-5 text-muted-foreground" />
-          <p className="text-muted-foreground ml-auto text-sm">Manage your schedule and tasks</p>
         </div>
 
         {/* Compact header bar */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={handlePrev} className="h-8 w-8">
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <h2 className="text-lg font-semibold text-foreground min-w-[150px] text-center">
-              {format(currentDate, "MMMM yyyy")}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={handleNext} className="h-8 w-8">
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Segmented control */}
+          {/* Segmented control - left aligned */}
           <div className="flex items-center bg-muted rounded-lg p-0.5 gap-0.5">
             {(["week", "month"] as const).map((mode) => (
               <button
@@ -278,6 +265,19 @@ const Calendar = () => {
             >
               Today
             </button>
+          </div>
+
+          {/* Month navigation - right aligned */}
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={handlePrev} className="h-8 w-8">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h2 className="text-lg font-semibold text-foreground min-w-[150px] text-center">
+              {format(currentDate, "MMMM yyyy")}
+            </h2>
+            <Button variant="ghost" size="icon" onClick={handleNext} className="h-8 w-8">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
