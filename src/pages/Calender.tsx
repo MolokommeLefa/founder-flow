@@ -162,6 +162,13 @@ const Calendar = () => {
     setSelectedEndDate(null);
   };
 
+  const handleOpenSidePanel = () => {
+    if (selectedTask) {
+      setSidePanelTask(selectedTask);
+      setSidePanelOpen(true);
+    }
+  };
+
   const handleTaskSubmit = async (taskData: NewTask) => {
     if (selectedTask) return await updateTask(selectedTask.id, taskData);
     return await addTask(taskData);
