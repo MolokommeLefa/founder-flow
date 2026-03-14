@@ -330,6 +330,15 @@ const Calendar = () => {
           selectedDate={selectedDate}
           selectedEndDate={selectedEndDate}
           selectedTask={selectedTask}
+          onOpenSidePanel={handleOpenSidePanel}
+        />
+
+        <TaskSidePanel
+          open={sidePanelOpen}
+          onOpenChange={setSidePanelOpen}
+          task={sidePanelTask}
+          onUpdate={updateTask}
+          onDelete={deleteTask}
         />
       </main>
     </div>
