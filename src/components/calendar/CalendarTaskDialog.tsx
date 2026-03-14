@@ -14,6 +14,7 @@ interface CalendarTaskDialogProps {
   selectedDate?: Date | null;
   selectedEndDate?: Date | null;
   selectedTask?: DbTask | null;
+  onOpenSidePanel?: () => void;
 }
 
 const PRESET_COLORS = [
