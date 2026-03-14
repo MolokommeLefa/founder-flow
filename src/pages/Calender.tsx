@@ -43,6 +43,8 @@ const Calendar = () => {
   const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("week");
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [sidePanelTask, setSidePanelTask] = useState<DbTask | null>(null);
 
   const { tasks, loading: tasksLoading, addTask, updateTask } = useTasks();
 
