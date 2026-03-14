@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useTasks, type DbTask, type NewTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
 import CalendarTaskDialog from "@/components/calendar/CalendarTaskDialog";
+import TaskSidePanel from "@/components/calendar/TaskSidePanel";
 import { WeekView } from "@/components/calendar/WeekView";
 
 type ViewMode = "month" | "week";
