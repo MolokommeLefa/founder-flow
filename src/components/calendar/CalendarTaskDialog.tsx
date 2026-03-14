@@ -164,6 +164,18 @@ const CalendarTaskDialog = ({
             <button className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors">
               <Copy className="w-4 h-4" />
             </button>
+            {selectedTask && onOpenSidePanel && (
+              <button
+                onClick={() => {
+                  onOpenSidePanel();
+                  handleClose();
+                }}
+                className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors"
+                title="Open in side panel"
+              >
+                <PanelRight className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={handleClose}
               className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors"
