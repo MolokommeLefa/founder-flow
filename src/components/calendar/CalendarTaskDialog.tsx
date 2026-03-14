@@ -28,6 +28,7 @@ const CalendarTaskDialog = ({
   selectedDate,
   selectedEndDate,
   selectedTask,
+  onOpenSidePanel,
 }: CalendarTaskDialogProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
