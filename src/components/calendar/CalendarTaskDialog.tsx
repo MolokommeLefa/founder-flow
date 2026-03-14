@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { X, MoreHorizontal, Copy, Clock } from "lucide-react";
+import { X, MoreHorizontal, Copy, Clock, PanelRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
