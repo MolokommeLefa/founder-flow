@@ -26,6 +26,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useTasks, type DbTask, type NewTask } from "@/hooks/useTasks";
 import { cn } from "@/lib/utils";
 import CalendarTaskDialog from "@/components/calendar/CalendarTaskDialog";
+import TaskSidePanel from "@/components/calendar/TaskSidePanel";
 import { WeekView } from "@/components/calendar/WeekView";
 
 type ViewMode = "month" | "week";
@@ -42,8 +43,10 @@ const Calendar = () => {
   const [selectedTask, setSelectedTask] = useState<DbTask | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("week");
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [sidePanelTask, setSidePanelTask] = useState<DbTask | null>(null);
 
-  const { tasks, loading: tasksLoading, addTask, updateTask } = useTasks();
+  const { tasks, loading: tasksLoading, addTask, updateTask, deleteTask } = useTasks();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -157,6 +160,13 @@ const Calendar = () => {
     setSelectedTask(null);
     setSelectedDate(null);
     setSelectedEndDate(null);
+  };
+
+  const handleOpenSidePanel = () => {
+    if (selectedTask) {
+      setSidePanelTask(selectedTask);
+      setSidePanelOpen(true);
+    }
   };
 
   const handleTaskSubmit = async (taskData: NewTask) => {
@@ -320,6 +330,15 @@ const Calendar = () => {
           selectedDate={selectedDate}
           selectedEndDate={selectedEndDate}
           selectedTask={selectedTask}
+          onOpenSidePanel={handleOpenSidePanel}
+        />
+
+        <TaskSidePanel
+          open={sidePanelOpen}
+          onOpenChange={setSidePanelOpen}
+          task={sidePanelTask}
+          onUpdate={updateTask}
+          onDelete={deleteTask}
         />
       </main>
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { X, MoreHorizontal, Copy, Clock } from "lucide-react";
+import { X, MoreHorizontal, Copy, Clock, PanelRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -14,6 +14,7 @@ interface CalendarTaskDialogProps {
   selectedDate?: Date | null;
   selectedEndDate?: Date | null;
   selectedTask?: DbTask | null;
+  onOpenSidePanel?: () => void;
 }
 
 const PRESET_COLORS = [
@@ -27,6 +28,7 @@ const CalendarTaskDialog = ({
   selectedDate,
   selectedEndDate,
   selectedTask,
+  onOpenSidePanel,
 }: CalendarTaskDialogProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -162,6 +164,18 @@ const CalendarTaskDialog = ({
             <button className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors">
               <Copy className="w-4 h-4" />
             </button>
+            {selectedTask && onOpenSidePanel && (
+              <button
+                onClick={() => {
+                  onOpenSidePanel();
+                  handleClose();
+                }}
+                className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors"
+                title="Open in side panel"
+              >
+                <PanelRight className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={handleClose}
               className="p-1.5 rounded-lg hover:bg-accent/40 text-muted-foreground transition-colors"
