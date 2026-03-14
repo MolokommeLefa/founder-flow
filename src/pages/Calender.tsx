@@ -46,7 +46,7 @@ const Calendar = () => {
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [sidePanelTask, setSidePanelTask] = useState<DbTask | null>(null);
 
-  const { tasks, loading: tasksLoading, addTask, updateTask } = useTasks();
+  const { tasks, loading: tasksLoading, addTask, updateTask, deleteTask } = useTasks();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
