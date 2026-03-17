@@ -219,7 +219,7 @@ const TaskDialog = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 mt-1">
-          <div className="overflow-y-auto flex-1 space-y-4 pr-1">
+          <div className="overflow-y-auto flex-1 min-h-0 space-y-4 pr-1 pb-1">
             <div className="space-y-1.5">
               <Label htmlFor="title" className="text-sm font-medium">
                 Title <span className="text-destructive" aria-hidden="true">*</span>
