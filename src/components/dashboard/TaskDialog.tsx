@@ -173,7 +173,7 @@ const TaskDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] backdrop-blur-2xl bg-white/85 dark:bg-card/80 border border-white/50 dark:border-white/10 shadow-elevated relative">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col overflow-hidden backdrop-blur-2xl bg-white/85 dark:bg-card/80 border border-white/50 dark:border-white/10 shadow-elevated relative">
         {/* Status notification indicators */}
         {notifications.length > 0 && (
           <div
@@ -207,7 +207,7 @@ const TaskDialog = ({
           </div>
         )}
 
-        <DialogHeader>
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">
             {selectedTask ? "Edit Task" : "Add New Task"}
           </DialogTitle>
@@ -218,119 +218,121 @@ const TaskDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-1">
-          <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-sm font-medium">
-              Title <span className="text-destructive" aria-hidden="true">*</span>
-            </Label>
-            <Input
-              id="title"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={200}
-              required
-              aria-required="true"
-              className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors" />
-
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="description" className="text-sm font-medium">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Add more details (optional)..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors resize-none" />
-
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 mt-1">
+          <div className="overflow-y-auto flex-1 space-y-4 pr-1">
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as NewTask["status"])}>
-                <SelectTrigger className="rounded-lg border-border/60 bg-background/60">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="not_started">Not Started</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Priority</Label>
-              <Select value={priority} onValueChange={(v) => setPriority(v as NewTask["priority"])}>
-                <SelectTrigger className="rounded-lg border-border/60 bg-background/60">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="dueDate" className="text-sm font-medium">Due Date</Label>
-            <Input
-              id="dueDate"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors" />
-
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="assignee" className="text-sm font-medium">Assignee</Label>
-            <Input
-              id="assignee"
-              placeholder="To be linked to team members..."
-              disabled
-              aria-disabled="true"
-              aria-label="Assignee — coming soon"
-              className="rounded-lg border-border/60 bg-muted/40 text-muted-foreground cursor-not-allowed" />
-
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="startTime" className="text-sm font-medium">Start Time</Label>
+              <Label htmlFor="title" className="text-sm font-medium">
+                Title <span className="text-destructive" aria-hidden="true">*</span>
+              </Label>
               <Input
-                id="startTime"
-                type="datetime-local"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                id="title"
+                placeholder="What needs to be done?"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={200}
+                required
+                aria-required="true"
                 className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors" />
 
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="endTime" className="text-sm font-medium">End Time</Label>
+              <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Add more details (optional)..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors resize-none" />
+
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Status</Label>
+                <Select value={status} onValueChange={(v) => setStatus(v as NewTask["status"])}>
+                  <SelectTrigger className="rounded-lg border-border/60 bg-background/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="not_started">Not Started</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">Priority</Label>
+                <Select value={priority} onValueChange={(v) => setPriority(v as NewTask["priority"])}>
+                  <SelectTrigger className="rounded-lg border-border/60 bg-background/60">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="dueDate" className="text-sm font-medium">Due Date</Label>
               <Input
-                id="endTime"
-                type="datetime-local"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
+                id="dueDate"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
                 className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors" />
 
             </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="assignee" className="text-sm font-medium">Assignee</Label>
+              <Input
+                id="assignee"
+                placeholder="To be linked to team members..."
+                disabled
+                aria-disabled="true"
+                aria-label="Assignee — coming soon"
+                className="rounded-lg border-border/60 bg-muted/40 text-muted-foreground cursor-not-allowed" />
+
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="startTime" className="text-sm font-medium">Start Time</Label>
+                <Input
+                  id="startTime"
+                  type="datetime-local"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors" />
+
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="endTime" className="text-sm font-medium">End Time</Label>
+                <Input
+                  id="endTime"
+                  type="datetime-local"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="rounded-lg border-border/60 bg-background/60 focus:bg-background transition-colors" />
+
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Task Color</Label>
+              <ColorPicker value={color} onChange={setColor} />
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium">Task Color</Label>
-            <ColorPicker value={color} onChange={setColor} />
-          </div>
-
-          <DialogFooter className="gap-2 pt-2">
+          <DialogFooter className="gap-2 pt-4 border-t border-border/40 flex-shrink-0">
             <Button
               type="button"
               variant="outline"
