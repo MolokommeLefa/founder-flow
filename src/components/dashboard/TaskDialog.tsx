@@ -173,7 +173,7 @@ const TaskDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col overflow-hidden backdrop-blur-2xl bg-white/85 dark:bg-card/80 border border-white/50 dark:border-white/10 shadow-elevated relative">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col overflow-hidden backdrop-blur-2xl bg-white/85 dark:bg-card/80 border border-white/50 dark:border-white/10 shadow-elevated">
         {/* Status notification indicators */}
         {notifications.length > 0 && (
           <div
