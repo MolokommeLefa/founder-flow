@@ -16,7 +16,7 @@ const Footer = () => {
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</a>
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Support</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Twitter</a>
+            <a className="text-sm text-muted-foreground hover:text-foreground transition-colors" href="https://x.com/Luma_coo">Twitter</a>
           </nav>
 
           <p className="text-sm text-muted-foreground">
