@@ -9,7 +9,6 @@ import MetricCard from "@/components/dashboard/MetricCard";
 import { useTasks } from "@/hooks/useTasks";
 import { DollarSign, CheckCircle2, Clock, BarChart3 } from "lucide-react";
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -17,7 +16,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Area,
-  AreaChart,
+  ComposedChart,
 } from "recharts";
 import { cn } from "@/lib/utils";
 
@@ -175,7 +174,7 @@ const Analytics = () => {
           </div>
           <div className="h-[360px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <ComposedChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="hsl(var(--foreground))" stopOpacity={0.3} />
@@ -222,7 +221,7 @@ const Analytics = () => {
                   strokeDasharray="4 4"
                   dot={false}
                 />
-              </AreaChart>
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
         </div>
