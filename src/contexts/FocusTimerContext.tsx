@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from "react";
+import { logFocusSession } from "@/hooks/useFocusSessions";
 
 interface FocusTimerState {
   elapsedSeconds: number;
@@ -37,6 +38,9 @@ export const FocusTimerProvider = ({ children }: { children: ReactNode }) => {
     return saved ? JSON.parse(saved).running : false;
   });
 
+  const sessionStartRef = useRef<Date | null>(null);
+  const sessionStartElapsedRef = useRef<number>(0);
+
   // Persist state
   useEffect(() => {
     localStorage.setItem("focusTimer", JSON.stringify({
@@ -53,10 +57,45 @@ export const FocusTimerProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(interval);
   }, [isRunning]);
 
-  const start = useCallback(() => setIsRunning(true), []);
-  const stop = useCallback(() => setIsRunning(false), []);
-  const reset = useCallback(() => { setIsRunning(false); setElapsedSeconds(0); }, []);
-  const toggle = useCallback(() => setIsRunning((r) => !r), []);
+  const finalizeSession = useCallback((finalElapsed: number) => {
+    if (sessionStartRef.current) {
+      const duration = finalElapsed - sessionStartElapsedRef.current;
+      if (duration > 0) {
+        logFocusSession(duration, sessionStartRef.current, new Date());
+      }
+      sessionStartRef.current = null;
+    }
+  }, []);
+
+  const start = useCallback(() => {
+    if (!isRunning) {
+      sessionStartRef.current = new Date();
+      sessionStartElapsedRef.current = elapsedSeconds;
+    }
+    setIsRunning(true);
+  }, [isRunning, elapsedSeconds]);
+
+  const stop = useCallback(() => {
+    if (isRunning) finalizeSession(elapsedSeconds);
+    setIsRunning(false);
+  }, [isRunning, elapsedSeconds, finalizeSession]);
+
+  const reset = useCallback(() => {
+    if (isRunning) finalizeSession(elapsedSeconds);
+    setIsRunning(false);
+    setElapsedSeconds(0);
+  }, [isRunning, elapsedSeconds, finalizeSession]);
+
+  const toggle = useCallback(() => {
+    if (isRunning) {
+      finalizeSession(elapsedSeconds);
+      setIsRunning(false);
+    } else {
+      sessionStartRef.current = new Date();
+      sessionStartElapsedRef.current = elapsedSeconds;
+      setIsRunning(true);
+    }
+  }, [isRunning, elapsedSeconds, finalizeSession]);
 
   const hours = Math.floor(elapsedSeconds / 3600);
   const minutes = Math.floor((elapsedSeconds % 3600) / 60);
