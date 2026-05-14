@@ -41,6 +41,7 @@ const Documents = () => {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<"all" | "pdf" | "doc.tx">("all");
   const [pendingDelete, setPendingDelete] = useState<DbDocument | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<DbDocument | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { documents, loading: docsLoading, uploadDocument, deleteDocument, downloadDocument } = useDocuments();
