@@ -106,7 +106,7 @@ export const useDocuments = () => {
     }
     const { data, error } = await supabase.storage
       .from("documents")
-      .createSignedUrl(doc.file_path, 60);
+      .createSignedUrl(doc.file_path, 60, { download: doc.name });
     if (error || !data) {
       toast.error("Could not open file");
       return;
@@ -114,5 +114,17 @@ export const useDocuments = () => {
     window.open(data.signedUrl, "_blank");
   };
 
-  return { documents, loading, uploadDocument, addDocumentEntry, deleteDocument, downloadDocument, refresh: fetchDocuments };
+  const getPreviewUrl = async (doc: DbDocument): Promise<string | null> => {
+    if (!doc.file_path) return null;
+    const { data, error } = await supabase.storage
+      .from("documents")
+      .createSignedUrl(doc.file_path, 300);
+    if (error || !data) {
+      toast.error("Could not load preview");
+      return null;
+    }
+    return data.signedUrl;
+  };
+
+  return { documents, loading, uploadDocument, addDocumentEntry, deleteDocument, downloadDocument, getPreviewUrl, refresh: fetchDocuments };
 };
