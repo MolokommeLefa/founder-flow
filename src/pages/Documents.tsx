@@ -232,6 +232,12 @@ const Documents = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <DocumentPreviewDialog
+          doc={previewDoc}
+          open={!!previewDoc}
+          onOpenChange={(o) => !o && setPreviewDoc(null)}
+        />
       </main>
     </div>
   );
