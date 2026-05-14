@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDocuments, type DbDocument } from "@/hooks/useDocuments";
+import DocumentPreviewDialog from "@/components/documents/DocumentPreviewDialog";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
