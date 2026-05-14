@@ -29,7 +29,7 @@ const sidebarApps = [
   { icon: Calendar, name: "Calendar", href: "/calendar" },
   { icon: FolderOpen, name: "Projects", href: "/projects" },
   { icon: ImageIcon, name: "Media Library" },
-  { icon: FileText, name: "Documents" },
+  { icon: FileText, name: "Documents", href: "/documents" },
   { icon: Users, name: "Team" },
   { icon: BarChart3, name: "Analytics", href: "/analytics" },
   { icon: MessageSquare, name: "Inbox", badge: 12 },
