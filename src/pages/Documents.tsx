@@ -166,7 +166,7 @@ const Documents = () => {
                 className="grid grid-cols-[1.6fr_1fr_1fr_0.8fr_0.6fr_40px] gap-4 px-5 py-3 items-center text-sm border-b border-border/50 last:border-0 hover:bg-secondary/30 transition-colors group"
               >
                 <button
-                  onClick={() => downloadDocument(doc)}
+                  onClick={() => setPreviewDoc(doc)}
                   className="text-left text-foreground hover:text-primary truncate"
                 >
                   {doc.name}
