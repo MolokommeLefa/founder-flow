@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDocuments, type DbDocument } from "@/hooks/useDocuments";
+import DocumentPreviewDialog from "@/components/documents/DocumentPreviewDialog";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
@@ -40,6 +41,7 @@ const Documents = () => {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<"all" | "pdf" | "doc.tx">("all");
   const [pendingDelete, setPendingDelete] = useState<DbDocument | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<DbDocument | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { documents, loading: docsLoading, uploadDocument, deleteDocument, downloadDocument } = useDocuments();
@@ -164,7 +166,7 @@ const Documents = () => {
                 className="grid grid-cols-[1.6fr_1fr_1fr_0.8fr_0.6fr_40px] gap-4 px-5 py-3 items-center text-sm border-b border-border/50 last:border-0 hover:bg-secondary/30 transition-colors group"
               >
                 <button
-                  onClick={() => downloadDocument(doc)}
+                  onClick={() => setPreviewDoc(doc)}
                   className="text-left text-foreground hover:text-primary truncate"
                 >
                   {doc.name}
@@ -230,6 +232,12 @@ const Documents = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <DocumentPreviewDialog
+          doc={previewDoc}
+          open={!!previewDoc}
+          onOpenChange={(o) => !o && setPreviewDoc(null)}
+        />
       </main>
     </div>
   );
