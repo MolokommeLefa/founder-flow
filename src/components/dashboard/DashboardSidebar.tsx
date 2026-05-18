@@ -32,7 +32,7 @@ const sidebarApps = [
   { icon: FileText, name: "Documents", href: "/documents" },
   { icon: Users, name: "Team" },
   { icon: BarChart3, name: "Analytics", href: "/analytics" },
-  { icon: MessageSquare, name: "Inbox", badge: 12 },
+  { icon: MessageSquare, name: "Inbox", badge: 12, href: "/inbox" },
   { icon: Zap, name: "Automations" },
 ];
 
