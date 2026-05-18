@@ -14,6 +14,7 @@ import Tasks from "./pages/Tasks.tsx";
 import Calendar from "./pages/Calender.tsx";
 import Projects from "./pages/Projects.tsx";
 import Documents from "./pages/Documents.tsx";
+import Inbox from "./pages/Inbox.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
