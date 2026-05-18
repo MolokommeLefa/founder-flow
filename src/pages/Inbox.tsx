@@ -9,16 +9,24 @@ import {
   Filter,
   SlidersHorizontal,
   RefreshCw,
-  Paperclip,
   ArrowUp,
   Plus,
   FileText,
   FolderOpen,
+  Trash2,
 } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,78 +37,34 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDocuments } from "@/hooks/useDocuments";
 import { useProjects } from "@/hooks/useProjects";
+import { useMessages, type Attachment, type DbMessage } from "@/hooks/useMessages";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
 
-type Attachment = {
-  kind: "document" | "project";
-  id: string;
-  label: string;
+const colorForId = (id: string) => {
+  const palette = [
+    "bg-emerald-500",
+    "bg-orange-500",
+    "bg-violet-500",
+    "bg-zinc-500",
+    "bg-sky-500",
+    "bg-pink-500",
+  ];
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % palette.length;
+  return palette[h];
 };
 
-type Message = {
-  id: string;
-  author: string;
-  authorColor: string;
-  subject: string;
-  preview: string;
-  body: string;
-  createdAt: Date;
-  unread?: boolean;
-  attachments?: Attachment[];
-};
-
-const seedMessages = (): Message[] => [
-  {
-    id: "m1",
-    author: "Alex",
-    authorColor: "bg-emerald-500",
-    subject: "App crashes during onboarding",
-    preview: "hey, john kindly have a look at...",
-    body: "Hey John,\n\nNoticed the app crashes for new users during the onboarding flow when uploading their avatar. Could you take a look when you get a chance?",
-    createdAt: new Date(Date.now() - 8 * 60 * 1000),
-    unread: true,
-  },
-  {
-    id: "m2",
-    author: "Maya",
-    authorColor: "bg-emerald-500",
-    subject: "UI improvements update",
-    preview: "hey, john kindly have a look at...",
-    body: "Hey John,\n\nShipped the latest UI polish for the dashboard. Padding on cards, refined typography on metrics, and a few motion tweaks.",
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    unread: true,
-  },
-  {
-    id: "m3",
-    author: "Mike",
-    authorColor: "bg-zinc-500",
-    subject: "Security discussion report",
-    preview: "good day, mike just finished compili...",
-    body: "Good day team,\n\nJust finished compiling the security audit report. Highlights: RLS coverage, storage bucket review, and a quick threat model.",
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    unread: true,
-  },
-  {
-    id: "m4",
-    author: "Emily",
-    authorColor: "bg-orange-500",
-    subject: "Q4 report update",
-    preview: "hi, Emily just sent you the q4 report doc...",
-    body: "Hi team,\n\nSharing the Q4 report draft. Numbers look strong across activation and retention. Open to comments before Friday.",
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-  },
-  {
-    id: "m5",
-    author: "Team",
-    authorColor: "bg-violet-500",
-    subject: "Weekly standup discussion",
-    preview: "Good day team, just a quick reminder...",
-    body: `Hey John\nHere's a refined version with improved clarity and visual flow:\nAnother week of designing a life I can't wait to wake up to.\nThis week has mostly been about creativity—dialing in the creative side of things. I've realized that the more creative I am, the more I'm able to really dial in on things that bring the greatest ROI for my life and business.\n\nI've also been locking in on the core vision of my life and where I'm looking to go. Sometimes I think it's important to take some time off from the constant busyness and decision-making, and really reflect on your vision in life:\n\n- Where you currently are\n- Where you're looking to go\n- What you need to do to get there\nI found that by doing this, I get more clarity on my life as a whole.\nA quote I live by daily that keeps me grounded: "Slow is smooth, and smooth is fast."\nClarity is found in stillness.`,
-    createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-  },
-];
+const shortAgo = (date: Date) =>
+  formatDistanceToNow(date, { addSuffix: false })
+    .replace("about ", "")
+    .replace("less than a minute", "now")
+    .replace(" minutes", "m")
+    .replace(" minute", "m")
+    .replace(" hours", "h")
+    .replace(" hour", "h")
+    .replace(" days", "d ago")
+    .replace(" day", "d ago");
 
 const Inbox = () => {
   const navigate = useNavigate();
@@ -108,10 +72,15 @@ const Inbox = () => {
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const [messages, setMessages] = useState<Message[]>(seedMessages);
-  const [activeId, setActiveId] = useState<string>("m5");
+  const { messages, sendMessage, markRead, deleteMessage } = useMessages(user?.id ?? null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [reply, setReply] = useState("");
   const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([]);
+
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [composeSubject, setComposeSubject] = useState("");
+  const [composeBody, setComposeBody] = useState("");
+  const [composeRecipient, setComposeRecipient] = useState("");
 
   const { documents } = useDocuments();
   const { projects } = useProjects();
@@ -131,6 +100,11 @@ const Inbox = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Auto-select first message
+  useEffect(() => {
+    if (!activeId && messages.length > 0) setActiveId(messages[0].id);
+  }, [messages, activeId]);
+
   const active = useMemo(() => messages.find((m) => m.id === activeId), [messages, activeId]);
 
   if (loading) {
@@ -146,37 +120,38 @@ const Inbox = () => {
   const firstName = emailPrefix.split(/[._-]/)[0];
   const userName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
 
-  const openMessage = (id: string) => {
-    setActiveId(id);
-    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, unread: false } : m)));
-  };
+  const unreadCount = messages.filter((m) => !m.read && m.recipient_id === user.id).length;
 
-  const handleCompose = () => {
-    const m: Message = {
-      id: `m-${Date.now()}`,
-      author: userName,
-      authorColor: "bg-primary",
-      subject: "New message",
-      preview: "Draft message...",
-      body: "Write your message...",
-      createdAt: new Date(),
-    };
-    setMessages((prev) => [m, ...prev]);
+  const openMessage = (m: DbMessage) => {
     setActiveId(m.id);
+    if (!m.read && m.recipient_id === user.id) markRead(m.id);
   };
 
-  const sendReply = () => {
-    if (!active || (!reply.trim() && pendingAttachments.length === 0)) return;
-    const attachmentLine = pendingAttachments.length
-      ? `\n\nAttached: ${pendingAttachments.map((a) => `${a.kind === "document" ? "📄" : "📁"} ${a.label}`).join(", ")}`
-      : "";
-    const updatedBody = `${active.body}\n\n— ${userName}\n${reply}${attachmentLine}`;
-    setMessages((prev) =>
-      prev.map((m) => (m.id === active.id ? { ...m, body: updatedBody, createdAt: new Date() } : m)),
+  const handleSendCompose = async () => {
+    const recipient = composeRecipient.trim() || user.id;
+    const ok = await sendMessage(
+      recipient,
+      composeSubject.trim() || "(no subject)",
+      composeBody.trim(),
     );
-    setReply("");
-    setPendingAttachments([]);
-    toast.success("Reply sent");
+    if (ok) {
+      setComposeOpen(false);
+      setComposeSubject("");
+      setComposeBody("");
+      setComposeRecipient("");
+    }
+  };
+
+  const sendReply = async () => {
+    if (!active || (!reply.trim() && pendingAttachments.length === 0)) return;
+    // Reply goes back to the original sender (or to self if user authored it)
+    const recipient = active.sender_id === user.id ? active.recipient_id : active.sender_id;
+    const subject = active.subject.startsWith("Re:") ? active.subject : `Re: ${active.subject}`;
+    const ok = await sendMessage(recipient, subject, reply.trim(), pendingAttachments);
+    if (ok) {
+      setReply("");
+      setPendingAttachments([]);
+    }
   };
 
   const attachDocument = (docId: string, name: string) => {
@@ -201,7 +176,6 @@ const Inbox = () => {
       <main className="flex-1 p-6 md:p-10 overflow-auto">
         <DashboardHeader userName={userName} showGreeting={false} />
 
-        {/* Title */}
         <div className="mb-6">
           <h1 className="text-4xl font-bold tracking-tight text-foreground flex items-center gap-3">
             Inbox
@@ -210,19 +184,18 @@ const Inbox = () => {
           <p className="text-muted-foreground mt-2">Manage your messages effortlessly</p>
         </div>
 
-        {/* Two-column inbox */}
         <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4 h-[calc(100vh-220px)] min-h-[560px]">
           {/* List */}
           <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
-                  Inbox<span className="text-muted-foreground">({messages.filter((m) => m.unread).length})</span>
+                  Inbox<span className="text-muted-foreground">({unreadCount})</span>
                 </span>
                 <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCompose}>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setComposeOpen(true)}>
                   <PenSquare className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -234,46 +207,50 @@ const Inbox = () => {
               </div>
             </div>
             <div className="flex-1 overflow-y-auto">
-              {messages.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => openMessage(m.id)}
-                  className={cn(
-                    "w-full text-left px-4 py-3 flex items-start gap-3 border-b border-border/50 transition-colors",
-                    activeId === m.id ? "bg-secondary/60" : "hover:bg-secondary/30",
-                  )}
-                >
-                  <div className="relative">
-                    <div
-                      className={cn(
-                        "w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium text-white",
-                        m.authorColor,
-                      )}
-                    >
-                      {m.author.charAt(0)}
-                    </div>
-                    {m.unread && (
-                      <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
+              {messages.length === 0 && (
+                <div className="p-8 text-center text-sm text-muted-foreground">
+                  No messages yet. Tap the pencil icon to compose.
+                </div>
+              )}
+              {messages.map((m) => {
+                const isUnread = !m.read && m.recipient_id === user.id;
+                const created = new Date(m.created_at);
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => openMessage(m)}
+                    className={cn(
+                      "w-full text-left px-4 py-3 flex items-start gap-3 border-b border-border/50 transition-colors",
+                      activeId === m.id ? "bg-secondary/60" : "hover:bg-secondary/30",
                     )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-foreground truncate">{m.subject}</p>
-                      <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                        {formatDistanceToNow(m.createdAt, { addSuffix: false })
-                          .replace("about ", "")
-                          .replace(" minutes", "m")
-                          .replace(" minute", "m")
-                          .replace(" hours", "h")
-                          .replace(" hour", "h")
-                          .replace(" days", "d ago")
-                          .replace(" day", "d ago")}
-                      </span>
+                  >
+                    <div className="relative">
+                      <div
+                        className={cn(
+                          "w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium text-white",
+                          colorForId(m.sender_id),
+                        )}
+                      >
+                        {(m.sender_id === user.id ? userName : "?").charAt(0).toUpperCase()}
+                      </div>
+                      {isUnread && (
+                        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground truncate">{m.preview}</p>
-                  </div>
-                </button>
-              ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className={cn("text-sm truncate", isUnread ? "font-semibold text-foreground" : "font-medium text-foreground")}>
+                          {m.subject || "(no subject)"}
+                        </p>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                          {shortAgo(created)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">{m.body || "—"}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -282,33 +259,62 @@ const Inbox = () => {
             {active ? (
               <>
                 <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                  <h2 className="text-xl font-semibold text-foreground">{active.subject}</h2>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <RefreshCw className="w-4 h-4" />
-                  </Button>
+                  <h2 className="text-xl font-semibold text-foreground">{active.subject || "(no subject)"}</h2>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => deleteMessage(active.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="px-5 py-4 border-b border-border flex items-center gap-3">
                   <div
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium text-white",
-                      active.authorColor,
+                      colorForId(active.sender_id),
                     )}
                   >
-                    {active.author.charAt(0)}
+                    {(active.sender_id === user.id ? userName : "?").charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{active.author}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {active.sender_id === user.id ? `${userName} (you)` : "Sender"}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(active.createdAt, { addSuffix: true })}
+                      {formatDistanceToNow(new Date(active.created_at), { addSuffix: true })}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-6 py-5">
                   <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">
-                    {active.body}
+                    {active.body || "—"}
                   </pre>
+                  {active.attachments?.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {active.attachments.map((a) => (
+                        <span
+                          key={a.id}
+                          className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-secondary border border-border"
+                        >
+                          {a.kind === "document" ? (
+                            <FileText className="w-3 h-3" />
+                          ) : (
+                            <FolderOpen className="w-3 h-3" />
+                          )}
+                          {a.label}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Composer */}
@@ -402,6 +408,39 @@ const Inbox = () => {
             )}
           </div>
         </div>
+
+        {/* Compose dialog */}
+        <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>New message</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <Input
+                placeholder="Recipient user ID (leave blank to send to yourself)"
+                value={composeRecipient}
+                onChange={(e) => setComposeRecipient(e.target.value)}
+              />
+              <Input
+                placeholder="Subject"
+                value={composeSubject}
+                onChange={(e) => setComposeSubject(e.target.value)}
+              />
+              <Textarea
+                placeholder="Write your message..."
+                value={composeBody}
+                onChange={(e) => setComposeBody(e.target.value)}
+                className="min-h-[140px]"
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setComposeOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSendCompose}>Send</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
