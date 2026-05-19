@@ -14,12 +14,14 @@ import {
   FileText,
   FolderOpen,
   Trash2,
+  Mail,
 } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +40,7 @@ import {
 import { useDocuments } from "@/hooks/useDocuments";
 import { useProjects } from "@/hooks/useProjects";
 import { useMessages, type Attachment, type DbMessage } from "@/hooks/useMessages";
+import GmailPanel from "@/components/inbox/GmailPanel";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
@@ -184,7 +187,22 @@ const Inbox = () => {
           <p className="text-muted-foreground mt-2">Manage your messages effortlessly</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4 h-[calc(100vh-220px)] min-h-[560px]">
+        <Tabs defaultValue="inbox" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="inbox" className="gap-2">
+              <InboxIcon className="w-3.5 h-3.5" /> Inbox
+            </TabsTrigger>
+            <TabsTrigger value="gmail" className="gap-2">
+              <Mail className="w-3.5 h-3.5" /> Gmail
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="gmail" className="mt-0">
+            <GmailPanel enabled />
+          </TabsContent>
+
+          <TabsContent value="inbox" className="mt-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4 h-[calc(100vh-260px)] min-h-[560px]">
           {/* List */}
           <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
@@ -408,6 +426,8 @@ const Inbox = () => {
             )}
           </div>
         </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Compose dialog */}
         <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
