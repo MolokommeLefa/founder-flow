@@ -426,6 +426,8 @@ const Inbox = () => {
             )}
           </div>
         </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Compose dialog */}
         <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
