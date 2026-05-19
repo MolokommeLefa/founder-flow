@@ -41,6 +41,7 @@ import { useDocuments } from "@/hooks/useDocuments";
 import { useProjects } from "@/hooks/useProjects";
 import { useMessages, type Attachment, type DbMessage } from "@/hooks/useMessages";
 import { useGmail, type GmailFullMessage } from "@/hooks/useGmail";
+import GmailPanel from "@/components/inbox/GmailPanel";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
