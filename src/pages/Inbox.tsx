@@ -14,12 +14,14 @@ import {
   FileText,
   FolderOpen,
   Trash2,
+  Mail,
 } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +40,7 @@ import {
 import { useDocuments } from "@/hooks/useDocuments";
 import { useProjects } from "@/hooks/useProjects";
 import { useMessages, type Attachment, type DbMessage } from "@/hooks/useMessages";
+import { useGmail, type GmailFullMessage } from "@/hooks/useGmail";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
