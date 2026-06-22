@@ -176,7 +176,10 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
       {/* Search */}
       {!collapsed ? (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border mb-4">
+        <div
+          onClick={() => window.dispatchEvent(new CustomEvent("open-workspace-search"))}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border mb-4 cursor-pointer hover:bg-secondary/50 transition-colors"
+        >
           <Search className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Search...</span>
           <span className="ml-auto text-xs text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">⌘K</span>
@@ -184,7 +187,10 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       ) : (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <div className="flex items-center justify-center p-2 rounded-lg bg-background border border-border mb-4 cursor-pointer">
+            <div
+              onClick={() => window.dispatchEvent(new CustomEvent("open-workspace-search"))}
+              className="flex items-center justify-center p-2 rounded-lg bg-background border border-border mb-4 cursor-pointer hover:bg-secondary/50 transition-colors"
+            >
               <Search className="w-4 h-4 text-muted-foreground" />
             </div>
           </TooltipTrigger>

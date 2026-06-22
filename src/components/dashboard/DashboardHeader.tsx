@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Play, Pause, RotateCcw, Search } from "lucide-react";
+import { TrendingUp, TrendingDown, Play, Pause, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -25,6 +25,12 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const handleOpen = () => setSearchOpen(true);
+    window.addEventListener("open-workspace-search", handleOpen);
+    return () => window.removeEventListener("open-workspace-search", handleOpen);
   }, []);
 
   const getGreeting = () => {
@@ -54,15 +60,6 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
         </div>
       )}
       <div className="flex items-center gap-3">
-        <button
-          onClick={() => setSearchOpen(true)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/40 hover:bg-secondary/70 border border-border/40 text-xs text-muted-foreground transition-colors"
-          aria-label="Search workspace"
-        >
-          <Search className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Search</span>
-          <kbd className="hidden sm:inline px-1.5 py-0.5 rounded bg-background/50 border border-border/40 text-[10px]">⌘K</kbd>
-        </button>
         <WorkspaceSearch open={searchOpen} onOpenChange={setSearchOpen} />
         {/* Dynamic Island Focus Timer */}
         <div
