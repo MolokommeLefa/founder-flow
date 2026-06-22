@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Play, Pause, RotateCcw, Search } from "lucide-react";
+import { TrendingUp, TrendingDown, Play, Pause, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -25,6 +25,12 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const handleOpen = () => setSearchOpen(true);
+    window.addEventListener("open-workspace-search", handleOpen);
+    return () => window.removeEventListener("open-workspace-search", handleOpen);
   }, []);
 
   const getGreeting = () => {
