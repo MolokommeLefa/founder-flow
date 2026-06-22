@@ -1,7 +1,8 @@
-import { TrendingUp, TrendingDown, Play, Pause, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { TrendingUp, TrendingDown, Play, Pause, RotateCcw, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import WorkspaceSearch from "@/components/search/WorkspaceSearch";
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -11,8 +12,20 @@ interface DashboardHeaderProps {
 
 const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCount = 0 }: DashboardHeaderProps) => {
   const [expanded, setExpanded] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const increased = true;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
