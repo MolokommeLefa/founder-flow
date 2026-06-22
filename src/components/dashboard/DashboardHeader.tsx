@@ -1,7 +1,8 @@
-import { TrendingUp, TrendingDown, Play, Pause, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { TrendingUp, TrendingDown, Play, Pause, RotateCcw, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import WorkspaceSearch from "@/components/search/WorkspaceSearch";
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -11,8 +12,20 @@ interface DashboardHeaderProps {
 
 const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCount = 0 }: DashboardHeaderProps) => {
   const [expanded, setExpanded] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const increased = true;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -40,7 +53,17 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
           </p>
         </div>
       )}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/40 hover:bg-secondary/70 border border-border/40 text-xs text-muted-foreground transition-colors"
+          aria-label="Search workspace"
+        >
+          <Search className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Search</span>
+          <kbd className="hidden sm:inline px-1.5 py-0.5 rounded bg-background/50 border border-border/40 text-[10px]">⌘K</kbd>
+        </button>
+        <WorkspaceSearch open={searchOpen} onOpenChange={setSearchOpen} />
         {/* Dynamic Island Focus Timer */}
         <div
           onClick={() => setExpanded(!expanded)}
