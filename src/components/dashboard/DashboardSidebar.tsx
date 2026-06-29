@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { 
-  LayoutDashboard, 
-  CheckSquare, 
-  Calendar, 
-  FolderOpen, 
-  ImageIcon, 
-  FileText, 
-  Users, 
-  BarChart3, 
-  MessageSquare, 
+import {
+  LayoutDashboard,
+  SquarePen,
+  Calendar,
+  Archive,
+  Library,
+  StickyNote,
+  UserRound,
+  BarChart3,
+  Inbox,
   Zap,
   Settings,
   Search,
@@ -25,14 +25,14 @@ import ThemeToggle from "./ThemeToggle";
 
 const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
-  { icon: CheckSquare, name: "Tasks", badge: 3, href: "/tasks" },
+  { icon: SquarePen, name: "Tasks", dot: true, href: "/tasks" },
   { icon: Calendar, name: "Calendar", href: "/calendar" },
-  { icon: FolderOpen, name: "Projects", href: "/projects" },
-  { icon: ImageIcon, name: "Media Library" },
-  { icon: FileText, name: "Documents", href: "/documents" },
-  { icon: Users, name: "Team" },
+  { icon: Archive, name: "Projects", href: "/projects" },
+  { icon: Library, name: "Media Library" },
+  { icon: StickyNote, name: "Documents", href: "/documents" },
+  { icon: UserRound, name: "Team" },
   { icon: BarChart3, name: "Analytics", href: "/analytics" },
-  { icon: MessageSquare, name: "Inbox", badge: 12, href: "/inbox" },
+  { icon: Inbox, name: "Inbox", dot: true, href: "/inbox" },
   { icon: Zap, name: "Automations" },
 ];
 
