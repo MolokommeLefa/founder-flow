@@ -204,7 +204,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
             icon={app.icon} 
             name={app.name} 
             active={app.name === activeItem}
-            badge={app.badge}
+            dot={app.dot}
             href={app.href}
             collapsed={collapsed}
           />
