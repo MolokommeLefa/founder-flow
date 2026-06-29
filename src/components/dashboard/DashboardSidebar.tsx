@@ -40,13 +40,13 @@ interface SidebarItemProps {
   icon: React.ElementType;
   name: string;
   active?: boolean;
-  badge?: number;
+  dot?: boolean;
   onClick?: () => void;
   href?: string;
   collapsed?: boolean;
 }
 
-const SidebarItem = ({ icon: Icon, name, active = false, badge, onClick, href, collapsed = false }: SidebarItemProps) => {
+const SidebarItem = ({ icon: Icon, name, active = false, dot, onClick, href, collapsed = false }: SidebarItemProps) => {
   const navigate = useNavigate();
   
   const handleClick = () => {
@@ -61,22 +61,20 @@ const SidebarItem = ({ icon: Icon, name, active = false, badge, onClick, href, c
     <button
       onClick={handleClick}
       className={cn(
-        "flex items-center gap-3 rounded-lg cursor-pointer transition-colors w-full text-left",
-        collapsed ? "px-2 py-2 justify-center" : "px-3 py-2",
-        active 
-          ? "bg-primary/10 text-primary" 
-          : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+        "flex items-center gap-3 rounded-xl cursor-pointer transition-colors w-full text-left",
+        collapsed ? "px-2 py-2 justify-center" : "px-3 py-2.5",
+        active
+          ? "bg-secondary/60 text-foreground border border-border/60"
+          : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
       )}
     >
-      <Icon className="w-4 h-4 flex-shrink-0" />
+      <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.5} />
       {!collapsed && <span className="text-sm font-medium flex-1">{name}</span>}
-      {!collapsed && badge && (
-        <span className="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full">
-          {badge}
-        </span>
+      {!collapsed && dot && (
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
       )}
-      {collapsed && badge && (
-        <span className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full" />
+      {collapsed && dot && (
+        <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
       )}
     </button>
   );
