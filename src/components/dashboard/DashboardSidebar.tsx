@@ -27,7 +27,7 @@ const sidebarApps = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
   { icon: SquarePen, name: "Tasks", dot: true, href: "/tasks" },
   { icon: Calendar, name: "Calendar", href: "/calendar" },
-  { icon: Archive, name: "Projects", href: "/projects" },
+  { icon: Folder, name: "Projects", href: "/projects" },
   { icon: Library, name: "Media Library" },
   { icon: StickyNote, name: "Documents", href: "/documents" },
   { icon: UserRound, name: "Team" },
