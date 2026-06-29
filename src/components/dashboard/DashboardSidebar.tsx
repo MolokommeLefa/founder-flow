@@ -31,7 +31,7 @@ const sidebarApps = [
   { icon: Library, name: "Media Library" },
   { icon: StickyNote, name: "Documents", href: "/documents" },
   { icon: UserRound, name: "Team" },
-  { icon: BarChart3, name: "Analytics", href: "/analytics" },
+  { icon: BarChart4, name: "Analytics", href: "/analytics" },
   { icon: Inbox, name: "Inbox", dot: true, href: "/inbox" },
   { icon: Zap, name: "Automations" },
 ];
