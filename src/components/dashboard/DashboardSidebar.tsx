@@ -105,9 +105,9 @@ const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
           <div className="relative">
             <button
               onClick={() => setSettingsOpen(!settingsOpen)}
-              className="flex items-center justify-center px-2 py-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors w-full"
+              className="group flex items-center justify-center px-2 py-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors w-full"
             >
-              <Settings className="w-4 h-4 flex-shrink-0" />
+              <Settings className="w-4 h-4 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-110 group-hover:rotate-90" />
             </button>
           </div>
         </TooltipTrigger>
