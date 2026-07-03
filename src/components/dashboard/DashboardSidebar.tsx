@@ -162,7 +162,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
   return (
     <aside className={cn(
-      "border-r border-border bg-secondary/30 p-3 flex flex-col h-full transition-all duration-300",
+      "border-r border-border bg-secondary/30 p-3 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
       collapsed ? "w-14" : "w-56"
     )}>
       {/* Toggle button */}
