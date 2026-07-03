@@ -177,7 +177,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       {!collapsed ? (
         <div
           onClick={() => window.dispatchEvent(new CustomEvent("open-workspace-search"))}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border mb-4 cursor-pointer hover:bg-secondary/50 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border mb-4 cursor-pointer hover:bg-secondary/50 transition-colors animate-fade-in"
         >
           <Search className="w-4 h-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">Search...</span>
