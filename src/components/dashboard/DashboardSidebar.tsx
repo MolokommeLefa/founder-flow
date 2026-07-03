@@ -61,14 +61,14 @@ const SidebarItem = ({ icon: Icon, name, active = false, dot, onClick, href, col
     <button
       onClick={handleClick}
       className={cn(
-        "flex items-center gap-3 rounded-xl cursor-pointer transition-colors w-full text-left",
+        "group flex items-center gap-3 rounded-xl cursor-pointer transition-colors w-full text-left",
         collapsed ? "px-2 py-2 justify-center" : "px-3 py-2.5",
         active
           ? "bg-secondary/60 text-foreground border border-border/60"
           : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
       )}
     >
-      <Icon className="w-[18px] h-[18px] flex-shrink-0" strokeWidth={1.5} />
+      <Icon className="w-[18px] h-[18px] flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-110 group-hover:rotate-3" strokeWidth={1.5} />
       {!collapsed && <span className="text-sm font-medium flex-1">{name}</span>}
       {!collapsed && dot && (
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" />
@@ -105,9 +105,9 @@ const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
           <div className="relative">
             <button
               onClick={() => setSettingsOpen(!settingsOpen)}
-              className="flex items-center justify-center px-2 py-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors w-full"
+              className="group flex items-center justify-center px-2 py-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors w-full"
             >
-              <Settings className="w-4 h-4 flex-shrink-0" />
+              <Settings className="w-4 h-4 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-110 group-hover:rotate-90" />
             </button>
           </div>
         </TooltipTrigger>
@@ -125,9 +125,9 @@ const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
     <div>
       <button
         onClick={() => setSettingsOpen(!settingsOpen)}
-        className="flex items-center gap-3 rounded-lg cursor-pointer transition-colors w-full text-left px-3 py-2 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+        className="group flex items-center gap-3 rounded-lg cursor-pointer transition-colors w-full text-left px-3 py-2 text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
       >
-        <Settings className="w-4 h-4 flex-shrink-0" />
+        <Settings className="w-4 h-4 flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-110 group-hover:rotate-90" />
         <span className="text-sm font-medium flex-1">Settings</span>
       </button>
       {settingsOpen && (
