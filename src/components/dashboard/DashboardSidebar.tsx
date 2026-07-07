@@ -207,12 +207,13 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
             icon={app.icon} 
             name={app.name} 
             active={app.name === activeItem}
-            dot={app.dot}
+            dot={app.alertKey === "tasks" ? hasPendingTasks : app.alertKey === "inbox" ? hasUnreadInbox : false}
             href={app.href}
             collapsed={collapsed}
           />
         ))}
       </div>
+
       
       {/* Settings & Logout */}
       <div className="pt-4 border-t border-border space-y-1">
