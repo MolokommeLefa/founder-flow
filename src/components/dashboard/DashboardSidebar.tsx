@@ -151,6 +151,7 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggle }: DashboardSidebarProps) => {
   const navigate = useNavigate();
+  const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
