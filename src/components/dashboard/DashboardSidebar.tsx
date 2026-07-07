@@ -22,17 +22,19 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import ThemeToggle from "./ThemeToggle";
+import { useNotificationAlerts } from "@/hooks/useNotificationAlerts";
 
-const sidebarApps = [
+type AlertKey = "tasks" | "inbox";
+const sidebarApps: Array<{ icon: React.ElementType; name: string; href?: string; alertKey?: AlertKey }> = [
   { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
-  { icon: SquarePen, name: "Tasks", dot: true, href: "/tasks" },
+  { icon: SquarePen, name: "Tasks", alertKey: "tasks", href: "/tasks" },
   { icon: Calendar, name: "Calendar", href: "/calendar" },
   { icon: Folder, name: "Projects", href: "/projects" },
   { icon: Library, name: "Media Library" },
   { icon: StickyNote, name: "Documents", href: "/documents" },
   { icon: UserRound, name: "Team" },
   { icon: BarChart4, name: "Analytics", href: "/analytics" },
-  { icon: Inbox, name: "Inbox", dot: true, href: "/inbox" },
+  { icon: Inbox, name: "Inbox", alertKey: "inbox", href: "/inbox" },
   { icon: Zap, name: "Automations" },
 ];
 
@@ -149,6 +151,7 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggle }: DashboardSidebarProps) => {
   const navigate = useNavigate();
+  const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -205,12 +208,13 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
             icon={app.icon} 
             name={app.name} 
             active={app.name === activeItem}
-            dot={app.dot}
+            dot={app.alertKey === "tasks" ? hasPendingTasks : app.alertKey === "inbox" ? hasUnreadInbox : false}
             href={app.href}
             collapsed={collapsed}
           />
         ))}
       </div>
+
       
       {/* Settings & Logout */}
       <div className="pt-4 border-t border-border space-y-1">
