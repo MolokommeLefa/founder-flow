@@ -35,7 +35,7 @@ const sidebarApps: Array<{ icon: React.ElementType; name: string; href?: string;
   { icon: UserRound, name: "Team" },
   { icon: BarChart4, name: "Analytics", href: "/analytics" },
   { icon: Inbox, name: "Inbox", alertKey: "inbox", href: "/inbox" },
-  { icon: Zap, name: "Automations" },
+  { icon: Zap, name: "Automations", href: "/automations" },
 ];
 
 interface SidebarItemProps {
