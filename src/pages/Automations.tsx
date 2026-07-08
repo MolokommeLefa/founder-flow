@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Zap, Play, Plus, CheckCircle2, Circle } from "lucide-react";
+import { Zap, Play, Plus, CheckCircle2, Circle, Layers, Settings2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
