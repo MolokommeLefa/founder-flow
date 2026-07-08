@@ -101,6 +101,8 @@ const Automations = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>(initialWorkflows);
   const [activeId, setActiveId] = useState<string>(initialWorkflows[0].id);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [leftPanelOpen, setLeftPanelOpen] = useState(false);
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
