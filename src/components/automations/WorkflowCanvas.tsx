@@ -150,7 +150,7 @@ const WorkflowCanvas = ({ nodes, edges, selectedId, onSelect, onMove, onDelete, 
         onClick={(e) => {
           if (e.target === canvasRef.current) onSelect(null);
         }}
-        className="relative w-full h-[560px] overflow-auto"
+        className="relative w-full h-[calc(100vh-260px)] min-h-[640px] overflow-auto"
         style={{
           backgroundImage:
             "radial-gradient(circle, hsl(var(--muted-foreground) / 0.18) 1px, transparent 1px)",

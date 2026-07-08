@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Zap, Play, Plus, CheckCircle2, Circle } from "lucide-react";
+import { Zap, Play, Plus, CheckCircle2, Circle, Layers, Settings2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -101,6 +101,8 @@ const Automations = () => {
   const [workflows, setWorkflows] = useState<Workflow[]>(initialWorkflows);
   const [activeId, setActiveId] = useState<string>(initialWorkflows[0].id);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [leftPanelOpen, setLeftPanelOpen] = useState(false);
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -238,103 +240,142 @@ const Automations = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-4">
-          {/* Left: workflow list + tools */}
-          <aside className="col-span-12 lg:col-span-3 space-y-4">
-            <div className="rounded-2xl border border-border/60 bg-secondary/20 backdrop-blur-2xl p-3">
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 pb-2">
-                Workflows
-              </div>
-              <div className="space-y-1">
-                {workflows.map((w) => (
-                  <button
-                    key={w.id}
-                    onClick={() => {
-                      setActiveId(w.id);
-                      setSelectedNodeId(null);
-                    }}
-                    className={cn(
-                      "w-full text-left px-3 py-2 rounded-lg transition-colors border",
-                      w.id === activeId
-                        ? "bg-secondary/60 border-border/60 text-foreground"
-                        : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium truncate">{w.name}</span>
-                      <span
-                        className={cn(
-                          "w-1.5 h-1.5 rounded-full flex-shrink-0",
-                          w.active ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]" : "bg-muted-foreground/40"
-                        )}
-                      />
-                    </div>
-                    <div className="text-xs text-muted-foreground truncate mt-0.5">{w.description}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-border/60 bg-secondary/20 backdrop-blur-2xl p-3">
-              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 pb-2">
-                Connected tools
-              </div>
-              <div className="space-y-1">
-                {connectableTools.map((t) => {
-                  const Icon = toolIcons[t.name];
-                  return (
-                    <div
-                      key={t.name}
-                      className="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-secondary/40 transition-colors"
-                    >
-                      <div className="flex items-center gap-2">
-                        {Icon && <Icon className="w-4 h-4 text-foreground/80" strokeWidth={1.5} />}
-                        <span className="text-sm text-foreground">{t.name}</span>
-                      </div>
-                      {t.status === "connected" ? (
-                        <div className="flex items-center gap-1 text-[10px] text-emerald-300">
-                          <CheckCircle2 className="w-3 h-3" /> Linked
-                        </div>
-                      ) : (
-                        <button className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
-                          <Circle className="w-3 h-3" /> Connect
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </aside>
-
-          {/* Center: canvas */}
-          <div className="col-span-12 lg:col-span-6">
-            <WorkflowCanvas
-              nodes={activeWorkflow.nodes}
-              edges={activeWorkflow.edges}
-              selectedId={selectedNodeId}
-              onSelect={setSelectedNodeId}
-              onMove={handleMove}
-              onDelete={handleDelete}
-              onAdd={handleAdd}
-            />
+        <div className="flex items-center gap-2 mb-3">
+          <Button
+            variant={leftPanelOpen ? "default" : "outline"}
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setLeftPanelOpen((v) => !v)}
+          >
+            <Layers className="w-3.5 h-3.5" /> Workflows & Tools
+          </Button>
+          <Button
+            variant={rightPanelOpen ? "default" : "outline"}
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setRightPanelOpen((v) => !v)}
+          >
+            <Settings2 className="w-3.5 h-3.5" /> Step details
+          </Button>
+          <div className="ml-auto text-xs text-muted-foreground">
+            {activeWorkflow.name} · {activeWorkflow.nodes.length} steps
           </div>
+        </div>
 
-          {/* Right: detail panel */}
-          <aside className="col-span-12 lg:col-span-3">
-            <div className="rounded-2xl border border-border/60 bg-secondary/20 backdrop-blur-2xl p-4">
+        <div className="relative">
+          <WorkflowCanvas
+            nodes={activeWorkflow.nodes}
+            edges={activeWorkflow.edges}
+            selectedId={selectedNodeId}
+            onSelect={(id) => {
+              setSelectedNodeId(id);
+              if (id) setRightPanelOpen(true);
+            }}
+            onMove={handleMove}
+            onDelete={handleDelete}
+            onAdd={handleAdd}
+          />
+
+          {/* Left overlay panel: workflows + tools */}
+          {leftPanelOpen && (
+            <aside className="absolute top-14 left-3 w-72 max-h-[calc(100%-4rem)] overflow-auto rounded-xl border border-border/60 bg-background/90 backdrop-blur-2xl shadow-2xl p-3 space-y-4 animate-fade-in z-10">
+              <div>
+                <div className="flex items-center justify-between px-1 pb-2">
+                  <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Workflows
+                  </div>
+                  <button onClick={() => setLeftPanelOpen(false)} className="text-muted-foreground hover:text-foreground">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <div className="space-y-1">
+                  {workflows.map((w) => (
+                    <button
+                      key={w.id}
+                      onClick={() => {
+                        setActiveId(w.id);
+                        setSelectedNodeId(null);
+                      }}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg transition-colors border",
+                        w.id === activeId
+                          ? "bg-secondary/60 border-border/60 text-foreground"
+                          : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium truncate">{w.name}</span>
+                        <span
+                          className={cn(
+                            "w-1.5 h-1.5 rounded-full flex-shrink-0",
+                            w.active
+                              ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"
+                              : "bg-muted-foreground/40"
+                          )}
+                        />
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate mt-0.5">{w.description}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 pb-2">
+                  Connected tools
+                </div>
+                <div className="space-y-1">
+                  {connectableTools.map((t) => {
+                    const Icon = toolIcons[t.name];
+                    return (
+                      <div
+                        key={t.name}
+                        className="flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-secondary/40 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          {Icon && <Icon className="w-4 h-4 text-foreground/80" strokeWidth={1.5} />}
+                          <span className="text-sm text-foreground">{t.name}</span>
+                        </div>
+                        {t.status === "connected" ? (
+                          <div className="flex items-center gap-1 text-[10px] text-emerald-300">
+                            <CheckCircle2 className="w-3 h-3" /> Linked
+                          </div>
+                        ) : (
+                          <button className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+                            <Circle className="w-3 h-3" /> Connect
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </aside>
+          )}
+
+          {/* Right overlay panel: step details */}
+          {rightPanelOpen && (
+            <aside className="absolute top-14 right-3 w-80 max-h-[calc(100%-4rem)] overflow-auto rounded-xl border border-border/60 bg-background/90 backdrop-blur-2xl shadow-2xl p-4 animate-fade-in z-10">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-sm font-medium text-foreground">Detail Information</div>
-                <span
-                  className={cn(
-                    "text-[10px] px-2 py-0.5 rounded-full border",
-                    activeWorkflow.active
-                      ? "text-emerald-300 bg-emerald-400/10 border-emerald-400/20"
-                      : "text-muted-foreground bg-secondary/60 border-border/60"
-                  )}
-                >
-                  {activeWorkflow.active ? "● Active" : "○ Draft"}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "text-[10px] px-2 py-0.5 rounded-full border",
+                      activeWorkflow.active
+                        ? "text-emerald-300 bg-emerald-400/10 border-emerald-400/20"
+                        : "text-muted-foreground bg-secondary/60 border-border/60"
+                    )}
+                  >
+                    {activeWorkflow.active ? "● Active" : "○ Draft"}
+                  </span>
+                  <button
+                    onClick={() => setRightPanelOpen(false)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               {selectedNode ? (
@@ -397,12 +438,12 @@ const Automations = () => {
                 </div>
               ) : (
                 <div className="text-xs text-muted-foreground leading-relaxed">
-                  Select a step on the canvas to configure it, or add a new Trigger, Condition, or Action from the
-                  toolbar above the canvas.
+                  Select a step on the canvas to configure it, or add a new Trigger, Condition, or Action from
+                  the toolbar above the canvas.
                 </div>
               )}
-            </div>
-          </aside>
+            </aside>
+          )}
         </div>
       </main>
     </div>
