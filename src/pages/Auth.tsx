@@ -12,7 +12,10 @@ import logo from "@/assets/logo.png";
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const defaultMode = searchParams.get("mode") === "signup" ? "signup" : "signin";
-  
+  const nextParam = searchParams.get("next");
+  // Only accept same-origin relative paths as post-auth redirect.
+  const safeNext = nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : null;
+
   const [mode, setMode] = useState<"signin" | "signup">(defaultMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,19 +28,21 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.user) {
-          navigate("/dashboard");
+          if (safeNext) window.location.href = safeNext;
+          else navigate("/dashboard");
         }
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        navigate("/dashboard");
+        if (safeNext) window.location.href = safeNext;
+        else navigate("/dashboard");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, safeNext]);
 
   const validateForm = () => {
     if (!email.trim()) {
@@ -63,7 +68,7 @@ const Auth = () => {
 
     try {
       if (mode === "signup") {
-        const redirectUrl = `${window.location.origin}/dashboard`;
+        const redirectUrl = `${window.location.origin}${safeNext ?? "/dashboard"}`;
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
