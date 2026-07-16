@@ -68,7 +68,7 @@ const Auth = () => {
 
     try {
       if (mode === "signup") {
-        const redirectUrl = `${window.location.origin}/dashboard`;
+        const redirectUrl = `${window.location.origin}${safeNext ?? "/dashboard"}`;
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
