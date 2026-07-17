@@ -11,7 +11,7 @@ import { useTasks } from "@/hooks/useTasks";
 import { useRevenue } from "@/hooks/useRevenue";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
 import AddRevenueDialog from "@/components/analytics/AddRevenueDialog";
-import { DollarSign, CheckCircle2, Clock, BarChart3 } from "lucide-react";
+import { DollarSign, Clock, BarChart3 } from "lucide-react";
 import {
   Line,
   XAxis,
