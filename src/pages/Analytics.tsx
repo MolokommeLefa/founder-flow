@@ -6,11 +6,12 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ContributionHeatmap from "@/components/dashboard/ContributionHeatmap";
 import MetricCard from "@/components/dashboard/MetricCard";
+import TaskProgressCard from "@/components/dashboard/TaskProgressCard";
 import { useTasks } from "@/hooks/useTasks";
 import { useRevenue } from "@/hooks/useRevenue";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
 import AddRevenueDialog from "@/components/analytics/AddRevenueDialog";
-import { DollarSign, CheckCircle2, Clock, BarChart3 } from "lucide-react";
+import { DollarSign, Clock, BarChart3 } from "lucide-react";
 import {
   Line,
   XAxis,
@@ -196,13 +197,9 @@ const Analytics = () => {
               positive
               sparklineData={revenueSparkline.length ? revenueSparkline : [0, 0, 0, 0]}
             />
-            <MetricCard
-              icon={CheckCircle2}
-              label="Tasks Done"
-              value={`${completedTasks}/${totalTasks}`}
-              change={totalTasks ? `${Math.round((completedTasks / totalTasks) * 100)}%` : "—"}
-              positive
-              sparklineData={tasksSparkline}
+            <TaskProgressCard
+              completed={completedTasks}
+              total={totalTasks}
             />
             <MetricCard
               icon={Clock}
