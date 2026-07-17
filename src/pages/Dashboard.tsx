@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle2, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import MetricCard from "@/components/dashboard/MetricCard";
+import TaskProgressCard from "@/components/dashboard/TaskProgressCard";
 import TaskItem from "@/components/dashboard/TaskItem";
 import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
@@ -88,13 +89,9 @@ const Dashboard = () => {
             positive 
             sparklineData={[30, 25, 35, 28, 40, 38, 48]}
           />
-          <MetricCard 
-            icon={CheckCircle2} 
-            iconClassName="text-green-500"
-            label="Tasks Done" 
-            value={`${completedCount}/${totalCount}`} 
-            change={completedCount > 0 ? `${Math.round((completedCount / totalCount) * 100)}% complete` : "0% complete"} 
-            positive={completedCount > 0} 
+          <TaskProgressCard
+            completed={completedCount}
+            total={totalCount}
           />
           <MetricCard 
             icon={Clock} 
