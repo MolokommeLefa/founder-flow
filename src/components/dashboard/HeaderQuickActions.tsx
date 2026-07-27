@@ -1,4 +1,4 @@
-import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays } from "lucide-react";
+import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays, Target, Pencil } from "lucide-react";
 import { useMemo } from "react";
 import { format, startOfWeek, startOfDay, isSameDay, isWithinInterval } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
