@@ -1,15 +1,27 @@
-import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays } from "lucide-react";
-import { useMemo } from "react";
+import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays, Target, Pencil } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
 import { format, startOfWeek, startOfDay, isSameDay, isWithinInterval } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { useTasks } from "@/hooks/useTasks";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
 
+const DEFAULT_WEEKLY_GOAL_HOURS = 20;
+
 const HeaderQuickActions = () => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const { tasks } = useTasks();
   const { sessions: focusSessions } = useFocusSessions();
+  const [weeklyGoalHours, setWeeklyGoalHours] = useState(() => {
+    const saved = localStorage.getItem("weeklyFocusGoal");
+    return saved ? Math.max(1, Math.min(168, Number(saved))) : DEFAULT_WEEKLY_GOAL_HOURS;
+  });
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [goalInput, setGoalInput] = useState(weeklyGoalHours.toString());
+
+  useEffect(() => {
+    localStorage.setItem("weeklyFocusGoal", weeklyGoalHours.toString());
+  }, [weeklyGoalHours]);
 
   const formatDuration = (totalSeconds: number) => {
     const h = Math.floor(totalSeconds / 3600);
@@ -184,6 +196,68 @@ const HeaderQuickActions = () => {
               <div className="text-lg font-semibold text-foreground">{formatDuration(weekSeconds)}</div>
             </div>
           </div>
+
+          {/* Weekly goal */}
+          {(() => {
+            const goalSeconds = weeklyGoalHours * 3600;
+            const progress = Math.min(100, (weekSeconds / goalSeconds) * 100);
+            return (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <Target className="w-3.5 h-3.5" />
+                    Weekly goal
+                  </div>
+                  {editingGoal ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min={1}
+                        max={168}
+                        value={goalInput}
+                        onChange={(e) => setGoalInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            const parsed = Math.max(1, Math.min(168, Number(goalInput) || 1));
+                            setWeeklyGoalHours(parsed);
+                            setGoalInput(parsed.toString());
+                            setEditingGoal(false);
+                          }
+                          if (e.key === "Escape") {
+                            setGoalInput(weeklyGoalHours.toString());
+                            setEditingGoal(false);
+                          }
+                        }}
+                        className="w-12 h-5 text-xs bg-secondary/60 rounded px-1 text-foreground outline-none focus:ring-1 focus:ring-primary"
+                        autoFocus
+                      />
+                      <span className="text-xs text-muted-foreground">h</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setEditingGoal(true)}
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      {weeklyGoalHours}h
+                    </button>
+                  )}
+                </div>
+                <div className="h-2 rounded-full bg-secondary/60 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-[hsl(145,60%,42%)] transition-all duration-500 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className="text-xs text-foreground">
+                    {(weekSeconds / 3600).toFixed(1)} / {weeklyGoalHours}h
+                  </span>
+                  <span className="text-xs font-medium text-[hsl(145,60%,42%)]">{Math.round(progress)}%</span>
+                </div>
+              </div>
+            );
+          })()}
         </PopoverContent>
       </Popover>
     </div>
