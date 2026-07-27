@@ -1,13 +1,44 @@
-import { Bell, Clock, Play, Pause, RotateCcw } from "lucide-react";
+import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays } from "lucide-react";
 import { useMemo } from "react";
-import { format } from "date-fns";
+import { format, startOfWeek, startOfDay, isSameDay, isWithinInterval } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { useTasks } from "@/hooks/useTasks";
+import { useFocusSessions } from "@/hooks/useFocusSessions";
 
 const HeaderQuickActions = () => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const { tasks } = useTasks();
+  const { sessions: focusSessions } = useFocusSessions();
+
+  const formatDuration = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    if (h === 0) return `${m}m`;
+    return `${h}h ${m}m`;
+  };
+
+  const { todaySeconds, weekSeconds } = useMemo(() => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const dayStart = startOfDay(now);
+
+    let today = 0;
+    let week = 0;
+
+    focusSessions.forEach((session) => {
+      const start = new Date(session.started_at);
+      if (isSameDay(start, now)) today += session.duration_seconds;
+      if (isWithinInterval(start, { start: weekStart, end: now })) week += session.duration_seconds;
+    });
+
+    if (isRunning) {
+      today += elapsedSeconds;
+      week += elapsedSeconds;
+    }
+
+    return { todaySeconds: today, weekSeconds: week };
+  }, [focusSessions, elapsedSeconds, isRunning]);
 
   const { priorities, summary, hasAlert } = useMemo(() => {
     const today = new Date();
@@ -134,6 +165,24 @@ const HeaderQuickActions = () => {
             >
               <RotateCcw className="w-3.5 h-3.5" /> Reset
             </button>
+          </div>
+
+          {/* Focus summary */}
+          <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-3">
+            <div className="rounded-lg bg-secondary/40 p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                <Calendar className="w-3.5 h-3.5" />
+                Today
+              </div>
+              <div className="text-lg font-semibold text-foreground">{formatDuration(todaySeconds)}</div>
+            </div>
+            <div className="rounded-lg bg-secondary/40 p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                <CalendarDays className="w-3.5 h-3.5" />
+                This week
+              </div>
+              <div className="text-lg font-semibold text-foreground">{formatDuration(weekSeconds)}</div>
+            </div>
           </div>
         </PopoverContent>
       </Popover>
