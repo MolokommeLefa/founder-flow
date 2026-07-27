@@ -1,9 +1,10 @@
-import { Bell, Clock, Play, Pause, RotateCcw } from "lucide-react";
+import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays } from "lucide-react";
 import { useMemo } from "react";
-import { format } from "date-fns";
+import { format, startOfWeek, startOfDay, isSameDay, isWithinInterval } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { useTasks } from "@/hooks/useTasks";
+import { useFocusSessions } from "@/hooks/useFocusSessions";
 
 const HeaderQuickActions = () => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
