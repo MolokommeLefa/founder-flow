@@ -9,6 +9,36 @@ import { useFocusSessions } from "@/hooks/useFocusSessions";
 const HeaderQuickActions = () => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const { tasks } = useTasks();
+  const { sessions: focusSessions } = useFocusSessions();
+
+  const formatDuration = (totalSeconds: number) => {
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    if (h === 0) return `${m}m`;
+    return `${h}h ${m}m`;
+  };
+
+  const { todaySeconds, weekSeconds } = useMemo(() => {
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const dayStart = startOfDay(now);
+
+    let today = 0;
+    let week = 0;
+
+    focusSessions.forEach((session) => {
+      const start = new Date(session.started_at);
+      if (isSameDay(start, now)) today += session.duration_seconds;
+      if (isWithinInterval(start, { start: weekStart, end: now })) week += session.duration_seconds;
+    });
+
+    if (isRunning) {
+      today += elapsedSeconds;
+      week += elapsedSeconds;
+    }
+
+    return { todaySeconds: today, weekSeconds: week };
+  }, [focusSessions, elapsedSeconds, isRunning]);
 
   const { priorities, summary, hasAlert } = useMemo(() => {
     const today = new Date();
