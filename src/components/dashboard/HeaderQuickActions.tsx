@@ -6,10 +6,22 @@ import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { useTasks } from "@/hooks/useTasks";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
 
+const DEFAULT_WEEKLY_GOAL_HOURS = 20;
+
 const HeaderQuickActions = () => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const { tasks } = useTasks();
   const { sessions: focusSessions } = useFocusSessions();
+  const [weeklyGoalHours, setWeeklyGoalHours] = useState(() => {
+    const saved = localStorage.getItem("weeklyFocusGoal");
+    return saved ? Math.max(1, Math.min(168, Number(saved))) : DEFAULT_WEEKLY_GOAL_HOURS;
+  });
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [goalInput, setGoalInput] = useState(weeklyGoalHours.toString());
+
+  useEffect(() => {
+    localStorage.setItem("weeklyFocusGoal", weeklyGoalHours.toString());
+  }, [weeklyGoalHours]);
 
   const formatDuration = (totalSeconds: number) => {
     const h = Math.floor(totalSeconds / 3600);
