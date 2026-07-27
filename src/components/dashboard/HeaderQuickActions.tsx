@@ -166,6 +166,24 @@ const HeaderQuickActions = () => {
               <RotateCcw className="w-3.5 h-3.5" /> Reset
             </button>
           </div>
+
+          {/* Focus summary */}
+          <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-3">
+            <div className="rounded-lg bg-secondary/40 p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                <Calendar className="w-3.5 h-3.5" />
+                Today
+              </div>
+              <div className="text-lg font-semibold text-foreground">{formatDuration(todaySeconds)}</div>
+            </div>
+            <div className="rounded-lg bg-secondary/40 p-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                <CalendarDays className="w-3.5 h-3.5" />
+                This week
+              </div>
+              <div className="text-lg font-semibold text-foreground">{formatDuration(weekSeconds)}</div>
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
