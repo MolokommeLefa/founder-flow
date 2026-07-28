@@ -21,8 +21,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
 import ThemeToggle from "./ThemeToggle";
 import { useNotificationAlerts } from "@/hooks/useNotificationAlerts";
+import { useProfile } from "@/hooks/useProfile";
 
 type AlertKey = "tasks" | "inbox";
 const sidebarApps: Array<{ icon: React.ElementType; name: string; href?: string; alertKey?: AlertKey }> = [
