@@ -10,6 +10,7 @@ import TaskProgressCard from "@/components/dashboard/TaskProgressCard";
 import TaskItem from "@/components/dashboard/TaskItem";
 import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
+import { useProfile } from "@/hooks/useProfile";
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
   if (status === "completed") return "done";
@@ -23,6 +24,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { tasks: dbTasks, loading: tasksLoading } = useTasks();
+  const { profile } = useProfile();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -63,7 +65,8 @@ const Dashboard = () => {
   const emailPrefix = user.email?.split("@")[0] || "there";
   const firstName = emailPrefix.split(/[._-]/)[0];
   const nickname = firstName.length > 10 ? firstName.slice(0, 10) : firstName;
-  const userName = nickname.charAt(0).toUpperCase() + nickname.slice(1).toLowerCase();
+  const fallbackName = nickname.charAt(0).toUpperCase() + nickname.slice(1).toLowerCase();
+  const userName = profile?.display_name?.trim() || fallbackName;
 
   const todayTasks = dbTasks.slice(0, 6);
   const completedCount = dbTasks.filter(t => t.status === "completed").length;
