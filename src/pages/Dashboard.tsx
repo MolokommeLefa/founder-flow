@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { tasks: dbTasks, loading: tasksLoading } = useTasks();
+  const { profile } = useProfile();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
