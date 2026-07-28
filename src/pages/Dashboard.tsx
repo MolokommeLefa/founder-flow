@@ -10,6 +10,7 @@ import TaskProgressCard from "@/components/dashboard/TaskProgressCard";
 import TaskItem from "@/components/dashboard/TaskItem";
 import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
+import { useProfile } from "@/hooks/useProfile";
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
   if (status === "completed") return "done";
