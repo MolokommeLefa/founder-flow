@@ -102,6 +102,8 @@ const SidebarItem = ({ icon: Icon, name, active = false, dot, onClick, href, col
 
 const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { profile, updateDisplayName } = useProfile();
+  const [displayName, setDisplayName] = useState("");
 
   if (collapsed) {
     return (
@@ -117,9 +119,8 @@ const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
           </div>
         </TooltipTrigger>
         <TooltipContent side="right" sideOffset={8}>
-          <div className="flex items-center gap-2">
-            <span>Theme</span>
-            <ThemeToggle />
+          <div className="flex flex-col gap-2">
+            <span>Settings</span>
           </div>
         </TooltipContent>
       </Tooltip>
@@ -136,9 +137,31 @@ const SettingsItem = ({ collapsed }: { collapsed: boolean }) => {
         <span className="text-sm font-medium flex-1">Settings</span>
       </button>
       {settingsOpen && (
-        <div className="ml-7 mt-1 mb-1 flex items-center justify-between px-3 py-1.5 rounded-lg bg-secondary/30">
-          <span className="text-xs text-muted-foreground">Theme</span>
-          <ThemeToggle />
+        <div className="ml-7 mt-1 mb-1 space-y-2 px-3 py-2 rounded-lg bg-secondary/30">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs text-muted-foreground">Theme</span>
+            <ThemeToggle />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="display-name" className="text-xs text-muted-foreground">Display name</label>
+            <Input
+              id="display-name"
+              placeholder="Set a custom greeting name"
+              defaultValue={profile?.display_name || ""}
+              onChange={(e) => setDisplayName(e.target.value)}
+              onBlur={() => {
+                if (displayName.trim() && displayName.trim() !== profile?.display_name) {
+                  updateDisplayName(displayName);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && displayName.trim() && displayName.trim() !== profile?.display_name) {
+                  updateDisplayName(displayName);
+                }
+              }}
+              className="h-8 text-xs bg-background"
+            />
+          </div>
         </div>
       )}
     </div>
