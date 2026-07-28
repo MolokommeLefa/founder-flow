@@ -62,7 +62,8 @@ const Dashboard = () => {
 
   const emailPrefix = user.email?.split("@")[0] || "there";
   const firstName = emailPrefix.split(/[._-]/)[0];
-  const userName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  const nickname = firstName.length > 10 ? firstName.slice(0, 10) : firstName;
+  const userName = nickname.charAt(0).toUpperCase() + nickname.slice(1).toLowerCase();
 
   const todayTasks = dbTasks.slice(0, 6);
   const completedCount = dbTasks.filter(t => t.status === "completed").length;
