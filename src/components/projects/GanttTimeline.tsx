@@ -107,6 +107,15 @@ const GanttTimeline = ({ projects, rootProjects, getSubProjects, onUpdateProject
 
   const totalWidth = totalDays * DAY_WIDTH;
 
+  // Today marker position (null when outside the visible range)
+  const todayX = useMemo(() => {
+    const today = new Date();
+    if (today < timelineStart || today > timelineEnd) return null;
+    const days = differenceInDays(today, timelineStart) + (today.getHours() / 24);
+    return days * DAY_WIDTH;
+  }, [timelineStart, timelineEnd]);
+
+
   // Calculate connection lines between parent and child
   const connectionLines = useMemo(() => {
     const lines: { x1: number; y1: number; x2: number; y2: number; cx: number; cy: number }[] = [];
