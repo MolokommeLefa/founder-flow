@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,9 @@ import TaskItem from "@/components/dashboard/TaskItem";
 import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
 import { useProfile } from "@/hooks/useProfile";
+import { useRevenue } from "@/hooks/useRevenue";
+import { useFocusSessions } from "@/hooks/useFocusSessions";
+
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
   if (status === "completed") return "done";
