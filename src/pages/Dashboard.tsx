@@ -148,10 +148,10 @@ const Dashboard = () => {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <MetricCard 
             label="Monthly Revenue" 
-            value="$48.2K" 
-            change="+12.5%" 
-            positive 
-            sparklineData={[30, 25, 35, 28, 40, 38, 48]}
+            value={monthlyRevenue} 
+            change={revenueChange} 
+            positive={revenuePositive}
+            sparklineData={revenueSparkline}
           />
           <TaskProgressCard
             completed={completedCount}
@@ -159,10 +159,11 @@ const Dashboard = () => {
           />
           <MetricCard 
             icon={Clock} 
-            label="Hours Saved" 
-            value="18h" 
+            label="Hours Focused" 
+            value={weekFocusHours} 
             change="this week" 
             positive 
+
           />
         </div>
 
