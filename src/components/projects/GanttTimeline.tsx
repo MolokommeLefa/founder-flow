@@ -189,6 +189,23 @@ const GanttTimeline = ({ projects, rootProjects, getSubProjects, onUpdateProject
           })}
         </div>
 
+        {/* Today marker */}
+        {todayX !== null && (
+          <div
+            className="absolute top-0 bottom-0 z-30 pointer-events-none"
+            style={{ left: todayX }}
+          >
+            <div className="absolute top-0 bottom-0 w-px bg-primary/70" />
+            <div className="absolute -top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
+              <span className="whitespace-nowrap rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground shadow-sm">
+                {format(new Date(), "MMM d")}
+              </span>
+              <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
+            </div>
+          </div>
+        )}
+
+
         {/* Connection lines (SVG) */}
         <svg className="absolute inset-0 pointer-events-none" style={{ top: 0, left: 0, width: totalWidth, height: HEADER_HEIGHT + rows.length * ROW_HEIGHT }}>
           {connectionLines.map((line, i) => (
