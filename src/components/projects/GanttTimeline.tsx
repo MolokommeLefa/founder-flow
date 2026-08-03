@@ -107,6 +107,15 @@ const GanttTimeline = ({ projects, rootProjects, getSubProjects, onUpdateProject
 
   const totalWidth = totalDays * DAY_WIDTH;
 
+  // Today marker position (null when outside the visible range)
+  const todayX = useMemo(() => {
+    const today = new Date();
+    if (today < timelineStart || today > timelineEnd) return null;
+    const days = differenceInDays(today, timelineStart) + (today.getHours() / 24);
+    return days * DAY_WIDTH;
+  }, [timelineStart, timelineEnd]);
+
+
   // Calculate connection lines between parent and child
   const connectionLines = useMemo(() => {
     const lines: { x1: number; y1: number; x2: number; y2: number; cx: number; cy: number }[] = [];
@@ -179,6 +188,23 @@ const GanttTimeline = ({ projects, rootProjects, getSubProjects, onUpdateProject
             return <div key={month.toISOString()} className="absolute top-0 bottom-0 border-l border-dashed border-border/40" style={{ left: x }} />;
           })}
         </div>
+
+        {/* Today marker */}
+        {todayX !== null && (
+          <div
+            className="absolute top-0 bottom-0 z-30 pointer-events-none"
+            style={{ left: todayX }}
+          >
+            <div className="absolute top-0 bottom-0 w-px bg-primary/70" />
+            <div className="absolute -top-0 left-1/2 -translate-x-1/2 flex flex-col items-center">
+              <span className="whitespace-nowrap rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground shadow-sm">
+                {format(new Date(), "MMM d")}
+              </span>
+              <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
+            </div>
+          </div>
+        )}
+
 
         {/* Connection lines (SVG) */}
         <svg className="absolute inset-0 pointer-events-none" style={{ top: 0, left: 0, width: totalWidth, height: HEADER_HEIGHT + rows.length * ROW_HEIGHT }}>
