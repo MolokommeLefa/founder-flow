@@ -28,6 +28,63 @@ const Dashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { tasks: dbTasks, loading: tasksLoading } = useTasks();
   const { profile } = useProfile();
+  const { entries: revenueEntries } = useRevenue();
+  const { sessions: focusSessions } = useFocusSessions();
+
+  // Monthly revenue (current calendar month) + last 7 days sparkline
+  const { monthlyRevenue, revenueChange, revenueSparkline } = useMemo(() => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    let current = 0;
+    let previous = 0;
+    revenueEntries.forEach((e) => {
+      const d = new Date(e.entry_date);
+      const amt = Number(e.amount);
+      if (d >= monthStart) current += amt;
+      else if (d >= prevStart) previous += amt;
+    });
+
+    const spark: number[] = [];
+    let running = 0;
+    for (let i = 6; i >= 0; i--) {
+      const day = new Date();
+      day.setHours(0, 0, 0, 0);
+      day.setDate(day.getDate() - i);
+      const key = day.toISOString().slice(0, 10);
+      running += revenueEntries
+        .filter((e) => e.entry_date === key)
+        .reduce((s, e) => s + Number(e.amount), 0);
+      spark.push(running);
+    }
+
+    const pct = previous > 0 ? ((current - previous) / previous) * 100 : current > 0 ? 100 : 0;
+    const formatted =
+      current >= 1000 ? `$${(current / 1000).toFixed(1)}K` : `$${current.toFixed(0)}`;
+
+    return {
+      monthlyRevenue: formatted,
+      revenueChange: `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`,
+      revenueSparkline: spark,
+      revenuePositive: pct >= 0,
+    };
+  }, [revenueEntries]);
+
+  const revenuePositive = !revenueChange.startsWith("-");
+
+  // Focus hours this week
+  const weekFocusHours = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - 6);
+    const sec = focusSessions
+      .filter((s) => new Date(s.started_at) >= start)
+      .reduce((sum, s) => sum + s.duration_seconds, 0);
+    const hours = sec / 3600;
+    return hours >= 1 ? `${hours.toFixed(1)}h` : `${Math.round(sec / 60)}m`;
+  }, [focusSessions]);
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
