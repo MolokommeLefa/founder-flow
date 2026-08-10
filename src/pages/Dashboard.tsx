@@ -13,6 +13,8 @@ import { useTasks, DbTask } from "@/hooks/useTasks";
 import { useProfile } from "@/hooks/useProfile";
 import { useRevenue } from "@/hooks/useRevenue";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
+import { getTodayFocusTasks } from "@/lib/todayFocus";
+
 
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
