@@ -53,19 +53,8 @@ const HeaderQuickActions = () => {
   }, [focusSessions, elapsedSeconds, isRunning]);
 
   const { priorities, summary, hasAlert } = useMemo(() => {
-    const today = new Date();
-    const isSameDay = (d: Date) =>
-      d.getFullYear() === today.getFullYear() &&
-      d.getMonth() === today.getMonth() &&
-      d.getDate() === today.getDate();
-
-    const pending = tasks.filter((t) => t.status !== "completed");
-    const highPriority = pending.filter((t) => t.priority === "high");
-    const dueToday = pending.filter((t) => t.due_date && isSameDay(new Date(t.due_date)));
-
-    const priorities = [...new Map(
-      [...highPriority, ...dueToday].map((t) => [t.id, t])
-    ).values()].slice(0, 5);
+    const priorities = getTodayFocusTasks(tasks, 5);
+    const highPriority = priorities.filter((t) => t.priority === "high");
 
     const summary =
       priorities.length === 0
@@ -76,6 +65,7 @@ const HeaderQuickActions = () => {
 
     return { priorities, summary, hasAlert: priorities.length > 0 };
   }, [tasks]);
+
 
   const seconds = elapsedSeconds % 60;
   const circumference = 2 * Math.PI * 8;
