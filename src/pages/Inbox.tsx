@@ -270,18 +270,31 @@ const Inbox = () => {
             </div>
           </div>
 
-          {/* Reading pane */}
-          <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex flex-col overflow-hidden">
+          {/* Reading pane (full view) */}
+          <div className={cn("rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex-col overflow-hidden", active ? "flex" : "hidden")}>
             {active ? (
               <>
                 <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                  <h2 className="text-xl font-semibold text-foreground">{active.subject || "(no subject)"}</h2>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1.5 -ml-2"
+                      onClick={() => setActiveId(null)}
+                    >
+                      <ArrowLeft className="w-4 h-4" /> Inbox
+                    </Button>
+                    <h2 className="text-xl font-semibold text-foreground truncate">{active.subject || "(no subject)"}</h2>
+                  </div>
                   <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => deleteMessage(active.id)}
+                      onClick={() => {
+                        deleteMessage(active.id);
+                        setActiveId(null);
+                      }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -290,6 +303,7 @@ const Inbox = () => {
                     </Button>
                   </div>
                 </div>
+
 
                 <div className="px-5 py-4 border-b border-border flex items-center gap-3">
                   <div
