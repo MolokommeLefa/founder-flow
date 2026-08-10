@@ -131,6 +131,34 @@ Deno.serve(async (req) => {
       const d = await r.json();
       if (!r.ok) throw new Error(`Gmail get failed [${r.status}]: ${JSON.stringify(d)}`);
       const headers = d.payload?.headers ?? [];
+      const bodies = collectBodies(d.payload, { text: "", html: "" });
+
+      // Inline cid: images -> data URLs so they render in the client
+      let html = bodies.html;
+      if (html) {
+        const inline = collectInlineImages(d.payload);
+        for (const img of inline) {
+          if (!html.includes(`cid:${img.cid}`)) continue;
+          try {
+            const ar = await fetch(
+              `${GATEWAY_URL}/users/me/messages/${id}/attachments/${img.attachmentId}`,
+              { headers: gwHeaders() },
+            );
+            if (!ar.ok) continue;
+            const ad = await ar.json();
+            if (!ad.data) continue;
+            const b64 = String(ad.data).replace(/-/g, "+").replace(/_/g, "/");
+            html = html.split(`cid:${img.cid}`).join(`data:${img.mimeType};base64,${b64}`);
+          } catch (_) {
+            // ignore individual attachment failures
+          }
+        }
+      }
+
+      const plain =
+        bodies.text ||
+        (html ? html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "");
+
       return new Response(
         JSON.stringify({
           id: d.id,
@@ -139,7 +167,8 @@ Deno.serve(async (req) => {
           to: getHeader(headers, "To"),
           subject: getHeader(headers, "Subject"),
           date: getHeader(headers, "Date"),
-          body: extractBody(d.payload),
+          body: plain,
+          html,
           snippet: d.snippet ?? "",
           labelIds: d.labelIds ?? [],
         }),
