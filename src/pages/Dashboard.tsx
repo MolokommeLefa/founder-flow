@@ -128,10 +128,11 @@ const Dashboard = () => {
   const fallbackName = nickname.charAt(0).toUpperCase() + nickname.slice(1).toLowerCase();
   const userName = profile?.display_name?.trim() || fallbackName;
 
-  const todayTasks = dbTasks.slice(0, 6);
+  const todayTasks = getTodayFocusTasks(dbTasks, 6);
   const completedCount = dbTasks.filter(t => t.status === "completed").length;
   const totalCount = dbTasks.length;
   const highPriorityCount = dbTasks.filter(t => t.priority === "high" && t.status !== "completed").length;
+
 
   return (
     <div className="min-h-screen bg-background flex">
