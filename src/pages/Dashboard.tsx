@@ -200,6 +200,9 @@ const Dashboard = () => {
                     title={task.title}
                     status={mapStatus(task.status)}
                     priority={task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                    busy={busyTaskId === task.id}
+                    onComplete={() => handleComplete(task)}
+                    onPostpone={() => handlePostpone(task)}
                   />
                 ))
               )}
