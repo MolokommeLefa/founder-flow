@@ -16,6 +16,7 @@ export type GmailMessage = {
 export type GmailFullMessage = GmailMessage & {
   to: string;
   body: string;
+  html?: string;
 };
 
 const invoke = async <T,>(body: Record<string, unknown>): Promise<T | null> => {

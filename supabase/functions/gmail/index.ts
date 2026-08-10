@@ -30,23 +30,39 @@ function b64urlDecode(str: string) {
   }
 }
 
-function extractBody(payload: any): string {
-  if (!payload) return "";
-  if (payload.body?.data) return b64urlDecode(payload.body.data);
-  if (payload.parts) {
-    // Prefer text/plain
-    const plain = payload.parts.find((p: any) => p.mimeType === "text/plain");
-    if (plain?.body?.data) return b64urlDecode(plain.body.data);
-    const html = payload.parts.find((p: any) => p.mimeType === "text/html");
-    if (html?.body?.data) {
-      return b64urlDecode(html.body.data).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    }
-    for (const part of payload.parts) {
-      const inner = extractBody(part);
-      if (inner) return inner;
-    }
+/** Walk the MIME tree and collect the best text/plain and text/html bodies. */
+function collectBodies(payload: any, out: { text: string; html: string }) {
+  if (!payload) return out;
+  const mime = payload.mimeType ?? "";
+  if (payload.body?.data) {
+    const decoded = b64urlDecode(payload.body.data);
+    if (mime === "text/html" && !out.html) out.html = decoded;
+    else if (mime === "text/plain" && !out.text) out.text = decoded;
+    else if (!mime.startsWith("multipart/") && !out.text && !out.html) out.text = decoded;
   }
-  return "";
+  for (const part of payload.parts ?? []) collectBodies(part, out);
+  return out;
+}
+
+/** Collect inline images (cid references) so they can be embedded as data URLs. */
+function collectInlineImages(payload: any, acc: { cid: string; attachmentId: string; mimeType: string }[] = []) {
+  if (!payload) return acc;
+  const cidHeader = (payload.headers ?? []).find(
+    (h: any) => h.name?.toLowerCase() === "content-id",
+  )?.value;
+  if (
+    cidHeader &&
+    payload.body?.attachmentId &&
+    (payload.mimeType ?? "").startsWith("image/")
+  ) {
+    acc.push({
+      cid: cidHeader.replace(/[<>]/g, ""),
+      attachmentId: payload.body.attachmentId,
+      mimeType: payload.mimeType,
+    });
+  }
+  for (const part of payload.parts ?? []) collectInlineImages(part, acc);
+  return acc;
 }
 
 function getHeader(headers: any[], name: string) {
@@ -115,6 +131,34 @@ Deno.serve(async (req) => {
       const d = await r.json();
       if (!r.ok) throw new Error(`Gmail get failed [${r.status}]: ${JSON.stringify(d)}`);
       const headers = d.payload?.headers ?? [];
+      const bodies = collectBodies(d.payload, { text: "", html: "" });
+
+      // Inline cid: images -> data URLs so they render in the client
+      let html = bodies.html;
+      if (html) {
+        const inline = collectInlineImages(d.payload);
+        for (const img of inline) {
+          if (!html.includes(`cid:${img.cid}`)) continue;
+          try {
+            const ar = await fetch(
+              `${GATEWAY_URL}/users/me/messages/${id}/attachments/${img.attachmentId}`,
+              { headers: gwHeaders() },
+            );
+            if (!ar.ok) continue;
+            const ad = await ar.json();
+            if (!ad.data) continue;
+            const b64 = String(ad.data).replace(/-/g, "+").replace(/_/g, "/");
+            html = html.split(`cid:${img.cid}`).join(`data:${img.mimeType};base64,${b64}`);
+          } catch (_) {
+            // ignore individual attachment failures
+          }
+        }
+      }
+
+      const plain =
+        bodies.text ||
+        (html ? html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "");
+
       return new Response(
         JSON.stringify({
           id: d.id,
@@ -123,7 +167,8 @@ Deno.serve(async (req) => {
           to: getHeader(headers, "To"),
           subject: getHeader(headers, "Subject"),
           date: getHeader(headers, "Date"),
-          body: extractBody(d.payload),
+          body: plain,
+          html,
           snippet: d.snippet ?? "",
           labelIds: d.labelIds ?? [],
         }),

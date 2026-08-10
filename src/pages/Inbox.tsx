@@ -10,6 +10,7 @@ import {
   SlidersHorizontal,
   RefreshCw,
   ArrowUp,
+  ArrowLeft,
   Plus,
   FileText,
   FolderOpen,
@@ -103,10 +104,8 @@ const Inbox = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Auto-select first message
-  useEffect(() => {
-    if (!activeId && messages.length > 0) setActiveId(messages[0].id);
-  }, [messages, activeId]);
+  // No auto-selection: the list is the default view, reading opens full-view.
+
 
   const active = useMemo(() => messages.find((m) => m.id === activeId), [messages, activeId]);
 
@@ -202,9 +201,9 @@ const Inbox = () => {
           </TabsContent>
 
           <TabsContent value="inbox" className="mt-0">
-        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4 h-[calc(100vh-260px)] min-h-[560px]">
+        <div className="grid grid-cols-1 gap-4 h-[calc(100vh-260px)] min-h-[560px]">
           {/* List */}
-          <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex flex-col overflow-hidden">
+          <div className={cn("rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex-col overflow-hidden", active ? "hidden" : "flex")}>
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
@@ -272,18 +271,31 @@ const Inbox = () => {
             </div>
           </div>
 
-          {/* Reading pane */}
-          <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex flex-col overflow-hidden">
+          {/* Reading pane (full view) */}
+          <div className={cn("rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex-col overflow-hidden", active ? "flex" : "hidden")}>
             {active ? (
               <>
                 <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                  <h2 className="text-xl font-semibold text-foreground">{active.subject || "(no subject)"}</h2>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1.5 -ml-2"
+                      onClick={() => setActiveId(null)}
+                    >
+                      <ArrowLeft className="w-4 h-4" /> Inbox
+                    </Button>
+                    <h2 className="text-xl font-semibold text-foreground truncate">{active.subject || "(no subject)"}</h2>
+                  </div>
                   <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => deleteMessage(active.id)}
+                      onClick={() => {
+                        deleteMessage(active.id);
+                        setActiveId(null);
+                      }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -292,6 +304,7 @@ const Inbox = () => {
                     </Button>
                   </div>
                 </div>
+
 
                 <div className="px-5 py-4 border-b border-border flex items-center gap-3">
                   <div
