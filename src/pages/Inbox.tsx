@@ -103,10 +103,8 @@ const Inbox = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Auto-select first message
-  useEffect(() => {
-    if (!activeId && messages.length > 0) setActiveId(messages[0].id);
-  }, [messages, activeId]);
+  // No auto-selection: the list is the default view, reading opens full-view.
+
 
   const active = useMemo(() => messages.find((m) => m.id === activeId), [messages, activeId]);
 
