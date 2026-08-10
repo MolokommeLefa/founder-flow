@@ -13,6 +13,8 @@ import { useTasks, DbTask } from "@/hooks/useTasks";
 import { useProfile } from "@/hooks/useProfile";
 import { useRevenue } from "@/hooks/useRevenue";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
+import { getTodayFocusTasks } from "@/lib/todayFocus";
+
 
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
@@ -128,10 +130,11 @@ const Dashboard = () => {
   const fallbackName = nickname.charAt(0).toUpperCase() + nickname.slice(1).toLowerCase();
   const userName = profile?.display_name?.trim() || fallbackName;
 
-  const todayTasks = dbTasks.slice(0, 6);
+  const todayTasks = getTodayFocusTasks(dbTasks, 6);
   const completedCount = dbTasks.filter(t => t.status === "completed").length;
   const totalCount = dbTasks.length;
   const highPriorityCount = dbTasks.filter(t => t.priority === "high" && t.status !== "completed").length;
+
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -172,7 +175,14 @@ const Dashboard = () => {
           {/* Tasks section */}
           <div className="rounded-xl border border-border bg-card p-4">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-foreground">Today's Focus</h2>
+              <div>
+                <h2 className="font-semibold text-foreground">Today's Focus</h2>
+                <p className="text-xs text-muted-foreground">
+                  {todayTasks.length > 0
+                    ? `${todayTasks.length} ${todayTasks.length === 1 ? "task needs" : "tasks need"} your attention today`
+                    : "Nothing due today"}
+                </p>
+              </div>
               <button className="text-xs text-primary font-medium hover:underline">
                 View all →
               </button>
@@ -181,7 +191,8 @@ const Dashboard = () => {
               {tasksLoading ? (
                 <p className="text-sm text-muted-foreground py-4 text-center">Loading tasks...</p>
               ) : todayTasks.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 text-center">No tasks yet. Head to Tasks to create one.</p>
+                <p className="text-sm text-muted-foreground py-4 text-center">You're all caught up for today.</p>
+
               ) : (
                 todayTasks.map((task) => (
                   <TaskItem
