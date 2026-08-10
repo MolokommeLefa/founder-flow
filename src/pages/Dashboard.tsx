@@ -28,7 +28,35 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { tasks: dbTasks, loading: tasksLoading } = useTasks();
+  const { tasks: dbTasks, loading: tasksLoading, updateTaskStatus, updateTask } = useTasks();
+  const [busyTaskId, setBusyTaskId] = useState<string | null>(null);
+
+  const handleComplete = async (task: DbTask) => {
+    setBusyTaskId(task.id);
+    await updateTaskStatus(task.id, "completed");
+    setBusyTaskId(null);
+    toast({ title: "Task completed", description: task.title });
+  };
+
+  const handlePostpone = async (task: DbTask) => {
+    const base = task.due_date ? new Date(task.due_date) : new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const next = base < today ? new Date(today) : base;
+    next.setDate(next.getDate() + 1);
+    setBusyTaskId(task.id);
+    await updateTask(task.id, {
+      title: task.title,
+      description: task.description ?? undefined,
+      status: task.status,
+      priority: task.priority,
+      due_date: next.toISOString().slice(0, 10),
+      color: task.color,
+      start_time: task.start_time ?? undefined,
+      end_time: task.end_time ?? undefined,
+    });
+    setBusyTaskId(null);
+  };
   const { profile } = useProfile();
   const { entries: revenueEntries } = useRevenue();
   const { sessions: focusSessions } = useFocusSessions();
