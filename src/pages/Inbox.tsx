@@ -10,6 +10,7 @@ import {
   SlidersHorizontal,
   RefreshCw,
   ArrowUp,
+  ArrowLeft,
   Plus,
   FileText,
   FolderOpen,
