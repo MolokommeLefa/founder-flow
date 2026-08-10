@@ -14,6 +14,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useRevenue } from "@/hooks/useRevenue";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
 import { getTodayFocusTasks } from "@/lib/todayFocus";
+import { toast } from "@/hooks/use-toast";
 
 
 
