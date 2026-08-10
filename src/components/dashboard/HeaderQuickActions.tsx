@@ -5,6 +5,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useFocusTimer } from "@/contexts/FocusTimerContext";
 import { useTasks } from "@/hooks/useTasks";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
+import { getTodayFocusTasks } from "@/lib/todayFocus";
+
 
 const DEFAULT_WEEKLY_GOAL_HOURS = 20;
 
