@@ -200,9 +200,9 @@ const Inbox = () => {
           </TabsContent>
 
           <TabsContent value="inbox" className="mt-0">
-        <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-4 h-[calc(100vh-260px)] min-h-[560px]">
+        <div className="grid grid-cols-1 gap-4 h-[calc(100vh-260px)] min-h-[560px]">
           {/* List */}
-          <div className="rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex flex-col overflow-hidden">
+          <div className={cn("rounded-2xl border border-border bg-card/40 backdrop-blur-2xl flex-col overflow-hidden", active ? "hidden" : "flex")}>
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
