@@ -17,6 +17,7 @@ import Documents from "./pages/Documents.tsx";
 import Inbox from "./pages/Inbox.tsx";
 import Automations from "./pages/Automations.tsx";
 import OAuthConsent from "./pages/OAuthConsent.tsx";
+import Pricing from "./pages/Pricing.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
