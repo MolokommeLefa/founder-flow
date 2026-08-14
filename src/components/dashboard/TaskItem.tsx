@@ -13,35 +13,40 @@ interface TaskItemProps {
 }
 
 const TaskItem = ({ title, status, priority, onComplete, onPostpone, busy }: TaskItemProps) => (
-  <div className="group flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer">
+  <div
+    className={cn(
+      "group flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-all duration-200 cursor-pointer",
+      status === "done" && "opacity-60"
+    )}
+  >
     {status === "done" ? (
-      <CheckCircle2 className="w-5 h-5 text-green-500" />
+      <CheckCircle2 className="w-[18px] h-[18px] text-green-500 animate-scale-in" strokeWidth={1.5} />
     ) : status === "urgent" ? (
-      <AlertCircle className="w-5 h-5 text-primary" />
+      <AlertCircle className="w-[18px] h-[18px] text-primary" strokeWidth={1.5} />
     ) : (
-      <div className="w-5 h-5 rounded-full border-2 border-muted-foreground" />
+      <div className="w-[18px] h-[18px] rounded-full border-2 border-muted-foreground/60" />
     )}
     <span className={cn(
-      "flex-1 text-sm truncate",
-      status === "done" ? "text-muted-foreground line-through" : "text-foreground"
+      "flex-1 text-sm truncate transition-all duration-300",
+      status === "done" ? "text-muted-foreground line-through decoration-foreground/30" : "text-foreground"
     )}>
       {title}
     </span>
 
     {(onComplete || onPostpone) && status !== "done" && (
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
         {onComplete && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 rounded-lg"
+                className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 hover:scale-110 active:scale-95 transition-all duration-150"
                 disabled={busy}
                 onClick={(e) => { e.stopPropagation(); onComplete(); }}
                 aria-label="Mark as done"
               >
-                <Check className="w-4 h-4" strokeWidth={1.5} />
+                <Check className="w-3.5 h-3.5" strokeWidth={1.5} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Mark as done</TooltipContent>
@@ -53,12 +58,12 @@ const TaskItem = ({ title, status, priority, onComplete, onPostpone, busy }: Tas
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 rounded-lg"
+                className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 hover:scale-110 active:scale-95 transition-all duration-150"
                 disabled={busy}
                 onClick={(e) => { e.stopPropagation(); onPostpone(); }}
                 aria-label="Postpone to tomorrow"
               >
-                <CalendarClock className="w-4 h-4" strokeWidth={1.5} />
+                <CalendarClock className="w-3.5 h-3.5" strokeWidth={1.5} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Postpone to tomorrow</TooltipContent>
@@ -67,7 +72,7 @@ const TaskItem = ({ title, status, priority, onComplete, onPostpone, busy }: Tas
       </div>
     )}
 
-    <span className="text-xs text-muted-foreground shrink-0">{priority}</span>
+    <span className="text-xs text-muted-foreground/70 shrink-0">{priority}</span>
   </div>
 );
 
