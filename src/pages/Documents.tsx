@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { Library, Filter, SlidersHorizontal, Upload, FileText, Trash2, Download, Search, StickyNote } from "lucide-react";
+import { Library, Filter, SlidersHorizontal, Upload, FileText, Trash2, Download, Search, StickyNote, ChevronDown } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useDocuments, type DbDocument } from "@/hooks/useDocuments";
 import DocumentPreviewDialog from "@/components/documents/DocumentPreviewDialog";
 import QuickNoteDialog from "@/components/documents/QuickNoteDialog";
@@ -115,14 +121,25 @@ const Documents = () => {
           </div>
           <div className="flex items-center gap-2">
             <input ref={fileRef} type="file" className="hidden" onChange={handleFileChange} />
-            <Button size="sm" className="gap-2" onClick={() => setNoteOpen(true)}>
-              <StickyNote className="w-4 h-4" strokeWidth={1.5} />
-              Quick note
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => fileRef.current?.click()}>
-              <Upload className="w-4 h-4" />
-              Upload
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 pl-3 pr-2">
+                  <Upload className="w-4 h-4" strokeWidth={1.5} />
+                  <span>Upload</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem onClick={() => fileRef.current?.click()} className="gap-2 cursor-pointer">
+                  <Upload className="w-4 h-4" strokeWidth={1.5} />
+                  Upload file
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setNoteOpen(true)} className="gap-2 cursor-pointer">
+                  <StickyNote className="w-4 h-4" strokeWidth={1.5} />
+                  Quick note
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="icon"
