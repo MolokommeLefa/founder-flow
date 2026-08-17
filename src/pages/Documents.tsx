@@ -115,6 +115,10 @@ const Documents = () => {
           </div>
           <div className="flex items-center gap-2">
             <input ref={fileRef} type="file" className="hidden" onChange={handleFileChange} />
+            <Button size="sm" className="gap-2" onClick={() => setNoteOpen(true)}>
+              <StickyNote className="w-4 h-4" strokeWidth={1.5} />
+              Quick note
+            </Button>
             <Button variant="outline" size="sm" className="gap-2" onClick={() => fileRef.current?.click()}>
               <Upload className="w-4 h-4" />
               Upload
@@ -239,6 +243,13 @@ const Documents = () => {
           doc={previewDoc}
           open={!!previewDoc}
           onOpenChange={(o) => !o && setPreviewDoc(null)}
+        />
+
+        <QuickNoteDialog
+          open={noteOpen}
+          onOpenChange={setNoteOpen}
+          onSave={uploadDocument}
+          source="Note"
         />
       </main>
     </div>
