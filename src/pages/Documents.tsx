@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { Library, Filter, SlidersHorizontal, Upload, FileText, Trash2, Download, Search, StickyNote } from "lucide-react";
+import { Library, Filter, SlidersHorizontal, Upload, FileText, Trash2, Download, Search, StickyNote, ChevronDown } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useDocuments, type DbDocument } from "@/hooks/useDocuments";
 import DocumentPreviewDialog from "@/components/documents/DocumentPreviewDialog";
 import QuickNoteDialog from "@/components/documents/QuickNoteDialog";
