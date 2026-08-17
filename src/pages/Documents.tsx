@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { Library, Filter, SlidersHorizontal, Upload, FileText, Trash2, Download, Search } from "lucide-react";
+import { Library, Filter, SlidersHorizontal, Upload, FileText, Trash2, Download, Search, StickyNote } from "lucide-react";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useDocuments, type DbDocument } from "@/hooks/useDocuments";
 import DocumentPreviewDialog from "@/components/documents/DocumentPreviewDialog";
+import QuickNoteDialog from "@/components/documents/QuickNoteDialog";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
@@ -42,6 +43,7 @@ const Documents = () => {
   const [filterType, setFilterType] = useState<"all" | "pdf" | "doc.tx">("all");
   const [pendingDelete, setPendingDelete] = useState<DbDocument | null>(null);
   const [previewDoc, setPreviewDoc] = useState<DbDocument | null>(null);
+  const [noteOpen, setNoteOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { documents, loading: docsLoading, uploadDocument, deleteDocument, downloadDocument } = useDocuments();
