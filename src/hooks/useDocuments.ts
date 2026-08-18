@@ -166,5 +166,5 @@ export const useDocuments = () => {
     return data.signedUrl;
   };
 
-  return { documents, loading, uploadDocument, addDocumentEntry, deleteDocument, downloadDocument, getPreviewUrl, refresh: fetchDocuments };
+  return { documents, loading, uploadDocument, saveNote, addDocumentEntry, deleteDocument, downloadDocument, getPreviewUrl, refresh: fetchDocuments };
 };
