@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Download, ExternalLink, FileText, Loader2 } from "lucide-react";
 import { useDocuments, type DbDocument } from "@/hooks/useDocuments";
+import DOMPurify from "dompurify";
 
 interface Props {
   doc: DbDocument | null;
@@ -45,6 +46,14 @@ const DocumentPreviewDialog = ({ doc, open, onOpenChange }: Props) => {
   if (!doc) return null;
 
   const renderPreview = () => {
+    if (doc.file_type === "note") {
+      return (
+        <div
+          className="note-editor w-full h-full overflow-auto rounded-lg bg-secondary/20 p-5 text-sm leading-relaxed text-foreground"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(doc.content ?? "<p>Empty note.</p>") }}
+        />
+      );
+    }
     if (loading) {
       return (
         <div className="flex items-center justify-center h-full text-muted-foreground">
