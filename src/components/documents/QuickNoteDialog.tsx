@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 interface Props {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  onSave: (file: File, source?: string) => Promise<boolean>;
+  onSave: (title: string, html: string, source?: string) => Promise<boolean>;
   source?: string;
 }
 
@@ -53,80 +53,6 @@ const actions: Action[][] = [
     { icon: Quote, label: "Quote", run: (e) => e("formatBlock", "BLOCKQUOTE") },
   ],
 ];
-
-/** Convert the editor's HTML into markdown for storage. */
-const htmlToMarkdown = (root: HTMLElement): string => {
-  const inline = (node: Node): string => {
-    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
-    if (node.nodeType !== Node.ELEMENT_NODE) return "";
-    const el = node as HTMLElement;
-    const inner = Array.from(el.childNodes).map(inline).join("");
-    switch (el.tagName) {
-      case "B":
-      case "STRONG":
-        return inner ? `**${inner}**` : "";
-      case "I":
-      case "EM":
-        return inner ? `_${inner}_` : "";
-      case "S":
-      case "STRIKE":
-      case "DEL":
-        return inner ? `~~${inner}~~` : "";
-      case "CODE":
-        return inner ? `\`${inner}\`` : "";
-      case "BR":
-        return "\n";
-      case "A":
-        return `[${inner}](${el.getAttribute("href") ?? ""})`;
-      default:
-        return inner;
-    }
-  };
-
-  const block = (el: HTMLElement): string => {
-    switch (el.tagName) {
-      case "H1":
-        return `# ${inline(el)}`;
-      case "H2":
-        return `## ${inline(el)}`;
-      case "H3":
-        return `### ${inline(el)}`;
-      case "BLOCKQUOTE":
-        return inline(el)
-          .split("\n")
-          .map((l) => `> ${l}`)
-          .join("\n");
-      case "PRE":
-        return "```\n" + (el.textContent ?? "") + "\n```";
-      case "UL":
-      case "OL":
-        return Array.from(el.children)
-          .map((li, i) => {
-            const isCheck = li.querySelector('input[type="checkbox"]');
-            const text = inline(li).trim();
-            if (isCheck) {
-              const checked = (isCheck as HTMLInputElement).checked;
-              return `- [${checked ? "x" : " "}] ${text}`;
-            }
-            return el.tagName === "OL" ? `${i + 1}. ${text}` : `- ${text}`;
-          })
-          .join("\n");
-      default: {
-        const t = inline(el).trim();
-        return t;
-      }
-    }
-  };
-
-  return Array.from(root.childNodes)
-    .map((n) => {
-      if (n.nodeType === Node.TEXT_NODE) return (n.textContent ?? "").trim();
-      if (n.nodeType !== Node.ELEMENT_NODE) return "";
-      return block(n as HTMLElement);
-    })
-    .filter((s) => s.length > 0)
-    .join("\n\n");
-};
 
 const QuickNoteDialog = ({ open, onOpenChange, onSave, source }: Props) => {
   const [title, setTitle] = useState("");
@@ -179,16 +105,14 @@ const QuickNoteDialog = ({ open, onOpenChange, onSave, source }: Props) => {
   };
 
   const handleSave = async () => {
-    const md = editorRef.current ? htmlToMarkdown(editorRef.current) : "";
-    if (!title.trim() && !md.trim()) {
+    const html = editorRef.current?.innerHTML ?? "";
+    const text = editorRef.current?.textContent?.trim() ?? "";
+    if (!title.trim() && !text) {
       toast.error("Add a title or some content first");
       return;
     }
-    const safeTitle = (title.trim() || "Quick note").replace(/[\\/:*?"<>|]/g, "-");
-    const content = `# ${title.trim() || "Quick note"}\n\n${md}\n`;
-    const file = new File([content], `${safeTitle}.md`, { type: "text/markdown" });
     setSaving(true);
-    const ok = await onSave(file, source);
+    const ok = await onSave(title.trim() || "Quick note", html, source);
     setSaving(false);
     if (ok) {
       reset();
