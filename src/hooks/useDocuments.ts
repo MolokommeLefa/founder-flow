@@ -9,6 +9,7 @@ export type DbDocument = {
   source: string | null;
   file_type: string;
   file_path: string | null;
+  content: string | null;
   size_bytes: number | null;
   created_at: string;
   updated_at: string;
@@ -64,6 +65,45 @@ export const useDocuments = () => {
       return false;
     }
     toast.success("Document uploaded");
+    fetchDocuments();
+    return true;
+  };
+
+  const saveNote = async (
+    title: string,
+    html: string,
+    source?: string,
+    existingId?: string
+  ) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const name = title.trim() || "Quick note";
+
+    if (existingId) {
+      const { error } = await supabase
+        .from("documents")
+        .update({ name, content: html, updated_at: new Date().toISOString() })
+        .eq("id", existingId);
+      if (error) {
+        toast.error("Failed to update note");
+        return false;
+      }
+      toast.success("Note updated");
+    } else {
+      const { error } = await supabase.from("documents").insert({
+        user_id: user.id,
+        name,
+        source: source ?? "Note",
+        file_type: "note",
+        content: html,
+        size_bytes: new Blob([html]).size,
+      });
+      if (error) {
+        toast.error("Failed to save note");
+        return false;
+      }
+      toast.success("Note saved");
+    }
     fetchDocuments();
     return true;
   };
