@@ -32,6 +32,7 @@ import { formatDistanceToNow } from "date-fns";
 const typeBadgeStyles: Record<string, string> = {
   pdf: "bg-red-500/15 text-red-400 border-red-500/30",
   "doc.tx": "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  note: "bg-amber-500/15 text-amber-400 border-amber-500/30",
 };
 
 const sourceColors = ["bg-orange-500", "bg-emerald-500", "bg-zinc-500", "bg-violet-500", "bg-pink-500"];
@@ -46,13 +47,13 @@ const Documents = () => {
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState<"all" | "pdf" | "doc.tx">("all");
+  const [filterType, setFilterType] = useState<"all" | "pdf" | "doc.tx" | "note">("all");
   const [pendingDelete, setPendingDelete] = useState<DbDocument | null>(null);
   const [previewDoc, setPreviewDoc] = useState<DbDocument | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { documents, loading: docsLoading, uploadDocument, deleteDocument, downloadDocument } = useDocuments();
+  const { documents, loading: docsLoading, uploadDocument, saveNote, deleteDocument, downloadDocument } = useDocuments();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -143,7 +144,7 @@ const Documents = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setFilterType(filterType === "all" ? "pdf" : filterType === "pdf" ? "doc.tx" : "all")}
+              onClick={() => setFilterType(filterType === "all" ? "pdf" : filterType === "pdf" ? "doc.tx" : filterType === "doc.tx" ? "note" : "all")}
               title={`Filter: ${filterType}`}
             >
               <Filter className="w-4 h-4" />
@@ -265,7 +266,7 @@ const Documents = () => {
         <QuickNoteDialog
           open={noteOpen}
           onOpenChange={setNoteOpen}
-          onSave={uploadDocument}
+          onSave={(t, html) => saveNote(t, html, "Note")}
           source="Note"
         />
       </main>
