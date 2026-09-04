@@ -5,7 +5,7 @@ import KanbanCard, { Task } from "./KanbanCard";
 
 interface KanbanColumnProps {
   title: string;
-  status: "not_started" | "in_progress" | "completed";
+  status: "backlog" | "not_started" | "in_progress" | "completed";
   tasks: Task[];
   count: number;
   onAddTask?: () => void;
@@ -14,12 +14,14 @@ interface KanbanColumnProps {
 }
 
 const statusDotStyles = {
+  backlog: "bg-violet-500",
   not_started: "bg-muted-foreground",
   in_progress: "bg-amber-500",
   completed: "bg-green-500",
 };
 
 const statusBadgeStyles = {
+  backlog: "bg-violet-500/10",
   not_started: "bg-muted/50",
   in_progress: "bg-amber-500/10",
   completed: "bg-green-500/10",
