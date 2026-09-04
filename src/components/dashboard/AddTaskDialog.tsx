@@ -24,7 +24,7 @@ interface AddTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (task: NewTask) => Promise<boolean>;
-  defaultStatus?: "not_started" | "in_progress" | "completed";
+  defaultStatus?: "backlog" | "not_started" | "in_progress" | "completed";
 }
 
 const AddTaskDialog = ({ open, onOpenChange, onSubmit, defaultStatus = "not_started" }: AddTaskDialogProps) => {
@@ -108,6 +108,7 @@ const AddTaskDialog = ({ open, onOpenChange, onSubmit, defaultStatus = "not_star
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="backlog">Backlog</SelectItem>
                   <SelectItem value="not_started">Not Started</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>

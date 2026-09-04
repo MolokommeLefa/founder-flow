@@ -117,6 +117,7 @@ const Tasks = () => {
         task.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+  const backlogTasks = filterTasks(tasksByStatus.backlog);
   const notStartedTasks = filterTasks(tasksByStatus.not_started);
   const inProgressTasks = filterTasks(tasksByStatus.in_progress);
   const completedTasks = filterTasks(tasksByStatus.completed);
@@ -185,6 +186,15 @@ const Tasks = () => {
         ) : (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex gap-6 overflow-x-auto pb-4">
+              <KanbanColumn
+                title="Backlog"
+                status="backlog"
+                tasks={formatTasksForColumn(backlogTasks)}
+                count={backlogTasks.length}
+                onAddTask={() => handleAddFromColumn("backlog")}
+                onEditTask={handleEditTask}
+                onDeleteTask={handleDeleteTask}
+              />
               <KanbanColumn
                 title="Not Started"
                 status="not_started"

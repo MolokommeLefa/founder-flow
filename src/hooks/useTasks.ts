@@ -7,7 +7,7 @@ export interface DbTask {
   user_id: string;
   title: string;
   description: string | null;
-  status: "not_started" | "in_progress" | "completed";
+  status: "backlog" | "not_started" | "in_progress" | "completed";
   priority: "low" | "medium" | "high";
   due_date: string | null;
   color: string;
@@ -21,7 +21,7 @@ export interface DbTask {
 export interface NewTask {
   title: string;
   description?: string;
-  status: "not_started" | "in_progress" | "completed";
+  status: "backlog" | "not_started" | "in_progress" | "completed";
   priority: "low" | "medium" | "high";
   due_date?: string;
   color?: string;
@@ -141,6 +141,7 @@ export function useTasks() {
   };
 
   const tasksByStatus = {
+    backlog: tasks.filter((t) => t.status === "backlog"),
     not_started: tasks.filter((t) => t.status === "not_started"),
     in_progress: tasks.filter((t) => t.status === "in_progress"),
     completed: tasks.filter((t) => t.status === "completed"),
