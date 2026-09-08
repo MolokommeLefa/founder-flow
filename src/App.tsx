@@ -18,7 +18,6 @@ import Inbox from "./pages/Inbox.tsx";
 import Automations from "./pages/Automations.tsx";
 import OAuthConsent from "./pages/OAuthConsent.tsx";
 import Pricing from "./pages/Pricing.tsx";
-import Pricing from "./pages/Pricing.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import Terms from "./pages/Terms.tsx";
 import Support from "./pages/Support.tsx";
