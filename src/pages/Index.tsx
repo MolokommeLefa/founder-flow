@@ -3,7 +3,6 @@ import Hero from "@/components/Hero";
 import AppsSection from "@/components/AppsSection";
 import DashboardPreview from "@/components/DashboardPreview";
 import PricingSection from "@/components/PricingSection";
-import NewsletterSection from "@/components/NewsletterSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 
@@ -15,7 +14,6 @@ const Index = () => {
       <AppsSection />
       <DashboardPreview />
       <PricingSection />
-      <NewsletterSection />
       <CTASection />
       <Footer />
     </div>
