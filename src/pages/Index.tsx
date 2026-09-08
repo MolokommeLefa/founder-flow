@@ -14,7 +14,6 @@ const Index = () => {
       <AppsSection />
       <DashboardPreview />
       <PricingSection />
-      <NewsletterSection />
       <CTASection />
       <Footer />
     </div>
