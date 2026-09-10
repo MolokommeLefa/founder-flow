@@ -2,3 +2,6 @@ project_id = "riodqordrumvlqvcahwa"
 
 [functions.polar]
 verify_jwt = false
+
+[functions.beehiiv]
+verify_jwt = false
