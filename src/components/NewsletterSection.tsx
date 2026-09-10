@@ -26,10 +26,36 @@ const perks = [
   },
 ];
 
+type NewsletterPost = {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  excerpt: string | null;
+  thumbnail_url: string | null;
+  web_url: string | null;
+  published_at: string | null;
+};
+
 const NewsletterSection = () => {
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = React.useState<string | null>(null);
+  const [posts, setPosts] = React.useState<NewsletterPost[]>([]);
+
+  React.useEffect(() => {
+    let active = true;
+    supabase
+      .from("newsletter_posts")
+      .select("id,title,subtitle,excerpt,thumbnail_url,web_url,published_at")
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(3)
+      .then(({ data }) => {
+        if (active && data) setPosts(data as NewsletterPost[]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,19 +68,29 @@ const NewsletterSection = () => {
     }
 
     setStatus("loading");
+
+    // Keep a local copy of the subscriber
     const { error: insertError } = await supabase
       .from("newsletter_subscribers")
       .insert({ email: parsed.data });
 
-    if (insertError) {
-      if (insertError.code === "23505") {
-        setStatus("success"); // already subscribed — treat as success
-      } else {
-        setStatus("error");
-        setError("Something went wrong. Please try again.");
-      }
+    if (insertError && insertError.code !== "23505") {
+      setStatus("error");
+      setError("Something went wrong. Please try again.");
       return;
     }
+
+    // Send the subscriber to beehiiv
+    const { data, error: fnError } = await supabase.functions.invoke("beehiiv/subscribe", {
+      body: { email: parsed.data },
+    });
+
+    if (fnError || (data as { error?: string } | null)?.error) {
+      setStatus("error");
+      setError("We saved your email but couldn't confirm the signup. Please try again shortly.");
+      return;
+    }
+
     setStatus("success");
   };
 
@@ -131,6 +167,59 @@ const NewsletterSection = () => {
               </p>
             )}
           </ScrollReveal>
+
+          {posts.length > 0 && (
+            <ScrollReveal delayMs={300} className="mt-16">
+              <h3 className="text-center text-sm uppercase tracking-widest text-muted-foreground mb-6">
+                Latest issues
+              </h3>
+              <div className="grid sm:grid-cols-3 gap-5">
+                {posts.map((post) => (
+                  <a
+                    key={post.id}
+                    href={post.web_url ?? "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="glass rounded-2xl overflow-hidden shadow-soft hover:shadow-card transition-all hover:-translate-y-1 group"
+                  >
+                    <div className="aspect-[16/9] bg-primary/10 overflow-hidden">
+                      {post.thumbnail_url ? (
+                        <img
+                          src={post.thumbnail_url}
+                          alt={post.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Mail className="w-6 h-6 text-primary/60" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-5 text-left">
+                      {post.published_at && (
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {new Date(post.published_at).toLocaleDateString(undefined, {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </p>
+                      )}
+                      <h4 className="font-semibold text-foreground leading-snug mb-1 line-clamp-2">
+                        {post.title}
+                      </h4>
+                      {(post.excerpt ?? post.subtitle) && (
+                        <p className="text-sm text-muted-foreground line-clamp-3">
+                          {post.excerpt ?? post.subtitle}
+                        </p>
+                      )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </ScrollReveal>
+          )}
         </div>
       </div>
     </section>
