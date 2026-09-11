@@ -18,7 +18,7 @@ import Inbox from "./pages/Inbox.tsx";
 import Automations from "./pages/Automations.tsx";
 import OAuthConsent from "./pages/OAuthConsent.tsx";
 import Pricing from "./pages/Pricing.tsx";
-import Privacy from "./pages/Privacy.tsx";
+import Newsletter from "./pages/Newsletter.tsx";
 import Terms from "./pages/Terms.tsx";
 import Support from "./pages/Support.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -45,7 +45,7 @@ const App = () => (
               <Route path="/automations" element={<Automations />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/calendar" element={<Calendar />} />
-              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/newsletter" element={<Newsletter />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/support" element={<Support />} />
 
