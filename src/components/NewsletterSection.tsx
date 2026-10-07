@@ -31,10 +31,7 @@ type NewsletterPost = {
   published_at: string | null;
 };
 
-const NewsletterSection = () => {
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = React.useState<string | null>(null);
+const NewsletterSection = ({ showForm = true }: { showForm?: boolean }) => {
   const [posts, setPosts] = React.useState<NewsletterPost[]>([]);
 
   React.useEffect(() => {
@@ -52,42 +49,6 @@ const NewsletterSection = () => {
     };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const parsed = emailSchema.safeParse(email);
-    if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Invalid email");
-      return;
-    }
-
-    setStatus("loading");
-
-    // Keep a local copy of the subscriber
-    const { error: insertError } = await supabase
-      .from("newsletter_subscribers")
-      .insert({ email: parsed.data });
-
-    if (insertError && insertError.code !== "23505") {
-      setStatus("error");
-      setError("Something went wrong. Please try again.");
-      return;
-    }
-
-    // Send the subscriber to beehiiv
-    const { data, error: fnError } = await supabase.functions.invoke("beehiiv/subscribe", {
-      body: { email: parsed.data },
-    });
-
-    if (fnError || (data as { error?: string } | null)?.error) {
-      setStatus("error");
-      setError("We saved your email but couldn't confirm the signup. Please try again shortly.");
-      return;
-    }
-
-    setStatus("success");
-  };
 
   return (
     <section className="py-24 bg-secondary/30 border-y border-border relative overflow-hidden">
@@ -128,40 +89,11 @@ const NewsletterSection = () => {
             ))}
           </ScrollReveal>
 
-          <ScrollReveal delayMs={200} className="max-w-xl mx-auto">
-            {status === "success" ? (
-              <div className="glass rounded-2xl p-6 text-center animate-scale-in">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <Check className="w-6 h-6 text-primary" />
-                </div>
-                <p className="font-semibold text-foreground">You're in!</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Welcome to the community — keep an eye on your inbox for the next dispatch.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  type="email"
-                  placeholder="you@yourcompany.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 flex-1 rounded-xl"
-                  aria-label="Email address"
-                />
-                <Button type="submit" variant="hero" size="lg" disabled={status === "loading"}>
-                  {status === "loading" ? "Joining..." : "Join the community"}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </form>
-            )}
-            {error && <p className="text-sm text-destructive mt-2 text-center">{error}</p>}
-            {status !== "success" && (
-              <p className="text-xs text-muted-foreground mt-3 text-center">
-                No spam, ever. Unsubscribe anytime.
-              </p>
-            )}
-          </ScrollReveal>
+          {showForm && (
+            <ScrollReveal delayMs={200} className="max-w-xl mx-auto">
+              <NewsletterSignup />
+            </ScrollReveal>
+          )}
 
           {posts.length > 0 && (
             <ScrollReveal delayMs={300} className="mt-16">
