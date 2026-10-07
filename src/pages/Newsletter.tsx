@@ -6,6 +6,7 @@ import NewsletterSignup from "@/components/NewsletterSignup";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Mail, Send, BookOpen, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import newsletterLandscape from "@/assets/newsletter-landscape.png";
 
 type NewsletterPost = {
   id: string;
@@ -77,6 +78,13 @@ const Newsletter = () => {
           className="absolute inset-0 pointer-events-none transition-opacity duration-300 ease-out"
           style={{ opacity: gradientOpacity }}
         >
+          <img
+            src={newsletterLandscape}
+            alt=""
+            width={1920}
+            height={768}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full min-w-[64rem] object-cover object-bottom opacity-60 [mask-image:linear-gradient(to_top,black_55%,transparent_98%)]"
+          />
           <div className="absolute -top-32 left-1/4 w-[30rem] h-[30rem] bg-primary/20 rounded-full blur-3xl" />
           <div className="absolute top-10 right-1/4 w-96 h-96 bg-accent/25 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
