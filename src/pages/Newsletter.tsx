@@ -37,6 +37,18 @@ const highlights = [
 
 const Newsletter = () => {
   const [posts, setPosts] = React.useState<NewsletterPost[]>([]);
+  const [gradientOpacity, setGradientOpacity] = React.useState(1);
+
+  // Fade the hero gradient out as the user scrolls down, back in near the top
+  React.useEffect(() => {
+    const onScroll = () => {
+      const fade = Math.max(0, 1 - window.scrollY / 500);
+      setGradientOpacity(fade);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   React.useEffect(() => {
     let active = true;
