@@ -1,12 +1,7 @@
-import * as React from "react";
-import { z } from "zod";
-import { ArrowRight, Check, Mail, Sparkles, Users } from "lucide-react";
+import { Mail, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import ScrollReveal from "@/components/ScrollReveal";
-
-const emailSchema = z.string().trim().email("Please enter a valid email address").max(255);
 
 const perks = [
   {
