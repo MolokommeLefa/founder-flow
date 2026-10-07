@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Mail, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import NewsletterSignup from "@/components/NewsletterSignup";
