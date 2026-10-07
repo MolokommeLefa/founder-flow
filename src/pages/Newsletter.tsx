@@ -37,6 +37,18 @@ const highlights = [
 
 const Newsletter = () => {
   const [posts, setPosts] = React.useState<NewsletterPost[]>([]);
+  const [gradientOpacity, setGradientOpacity] = React.useState(1);
+
+  // Fade the hero gradient out as the user scrolls down, back in near the top
+  React.useEffect(() => {
+    const onScroll = () => {
+      const fade = Math.max(0, 1 - window.scrollY / 500);
+      setGradientOpacity(fade);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   React.useEffect(() => {
     let active = true;
@@ -61,9 +73,14 @@ const Newsletter = () => {
 
       {/* Hero */}
       <section className="pt-40 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 left-1/3 w-[28rem] h-[28rem] bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        <div
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300 ease-out"
+          style={{ opacity: gradientOpacity }}
+        >
+          <div className="absolute -top-32 left-1/4 w-[30rem] h-[30rem] bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-1/4 w-96 h-96 bg-accent/25 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-64 h-64 bg-secondary/40 rounded-full blur-3xl" />
         </div>
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
