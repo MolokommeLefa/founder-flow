@@ -2,6 +2,7 @@ import * as React from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import NewsletterSection from "@/components/NewsletterSection";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import ScrollReveal from "@/components/ScrollReveal";
 import { Mail, Send, BookOpen, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,6 +81,10 @@ const Newsletter = () => {
               </p>
             </ScrollReveal>
 
+            <ScrollReveal delayMs={80} className="max-w-xl mx-auto mt-8">
+              <NewsletterSignup />
+            </ScrollReveal>
+
             <ScrollReveal delayMs={120} className="grid sm:grid-cols-3 gap-4 mt-12 text-left">
               {highlights.map((item) => (
                 <div key={item.title} className="glass rounded-2xl p-5 shadow-soft">
@@ -96,7 +101,7 @@ const Newsletter = () => {
       </section>
 
       {/* Signup form */}
-      <NewsletterSection />
+      <NewsletterSection showForm={false} />
 
       {/* Archive */}
       {posts.length > 0 && (
