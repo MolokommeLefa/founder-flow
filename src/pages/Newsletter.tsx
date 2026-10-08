@@ -85,10 +85,6 @@ const Newsletter = () => {
             height={768}
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full min-w-[64rem] object-cover object-bottom opacity-60 [mask-image:linear-gradient(to_top,black_55%,transparent_98%)]"
           />
-          <div className="absolute -top-32 left-1/4 w-[30rem] h-[30rem] bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute top-10 right-1/4 w-96 h-96 bg-accent/25 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-64 h-64 bg-secondary/40 rounded-full blur-3xl" />
         </div>
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
