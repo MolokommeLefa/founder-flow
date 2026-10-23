@@ -153,7 +153,7 @@ const Dashboard = () => {
         </aside>
 
         <main className="min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 md:px-7 md:py-7 xl:px-8">
-          <div className="mx-auto max-w-[1600px] space-y-7">
+          <div className="mx-auto max-w-[1600px] space-y-8">
             <DashboardHeader userName={userName} showGreeting priorityCount={highPriorityCount} />
 
            
@@ -162,9 +162,9 @@ const Dashboard = () => {
               </Button>
             </div>
 
-            <section aria-label="Workspace overview" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-4">
+            <section aria-label="Workspace overview" className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 xl:gap-6">
               <Card className="rounded-2xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
-                <CardContent className="p-5 sm:p-6">
+                <CardContent className="p-6 sm:p-7">
                   <div className="flex items-start justify-between">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/70 text-foreground"><TrendingUp className="h-5 w-5" strokeWidth={1.6} /></div>
                     <Badge variant="outline" className="rounded-full border-lime-500/25 bg-lime-500/10 text-xs font-medium text-lime-600 dark:text-lime-400">{revenueChange} this month</Badge>
@@ -181,7 +181,7 @@ const Dashboard = () => {
               </Card>
 
               <Card className="rounded-2xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
-                <CardContent className="flex h-full items-center gap-5 p-5 sm:p-6">
+                <CardContent className="flex h-full items-center gap-5 p-6 sm:p-7">
                   <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
                     <svg viewBox="0 0 44 44" className="h-14 w-14 -rotate-90" aria-label={`${totalCount ? Math.round((completedCount / totalCount) * 100) : 0}% of tasks complete`}>
                       <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="3" />
@@ -211,15 +211,15 @@ const Dashboard = () => {
             </section>
 
             <section className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-[minmax(0,1.8fr)_minmax(290px,0.82fr)]">
-              <Card className="min-h-[390px] rounded-2xl border-border/80 bg-card shadow-none">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
+              <Card className="min-h-[390px] rounded-2xl border-border/70 bg-card shadow-none">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 px-6 pb-4 pt-6 sm:px-7 sm:pt-7">
                   <div>
                     <CardTitle className="text-lg font-semibold tracking-tight">Today’s focus</CardTitle>
                     <CardDescription className="mt-1">{todayTasks.length ? `${todayTasks.length} priorities to give your attention to` : "A clear space to start something meaningful."}</CardDescription>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => navigate("/tasks")} className="rounded-lg text-muted-foreground hover:text-foreground">View all <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" /></Button>
                 </CardHeader>
-                <CardContent className="px-3 pb-5 sm:px-4">
+                <CardContent className="px-4 pb-6 sm:px-5">
                   {tasksLoading ? (
                     <p className="py-10 text-center text-sm text-muted-foreground">Loading your tasks…</p>
                   ) : todayTasks.length === 0 ? (
@@ -248,13 +248,13 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <div className="flex flex-col gap-4">
-                <Card className="flex-1 rounded-2xl border-border/80 bg-card shadow-none">
-                  <CardHeader className="px-5 pb-2 pt-5 sm:px-6">
+              <div className="flex flex-col gap-5">
+                <Card className="flex-1 rounded-2xl border-border/70 bg-card shadow-none">
+                  <CardHeader className="px-6 pb-3 pt-6 sm:px-7">
                     <CardTitle className="text-lg font-semibold tracking-tight">Quick summary</CardTitle>
                     <CardDescription>A softer overview of what’s on your plate.</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-5 px-5 pb-5 sm:px-6">
+                  <CardContent className="space-y-6 px-6 pb-6 sm:px-7">
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Today</p>
                       <div className="flex items-start gap-3">
@@ -274,7 +274,7 @@ const Dashboard = () => {
                     </Button>
                   </CardContent>
                 </Card>
-                <div className="rounded-2xl border border-border/80 bg-card p-5 sm:p-6">
+                <div className="rounded-2xl border border-border/70 bg-card p-6 sm:p-7">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div><p className="text-sm font-medium">Overall performance</p><p className="mt-1 text-xs text-muted-foreground">A snapshot of your momentum</p></div>
                     <FolderKanban className="h-4 w-4 text-muted-foreground" />
@@ -285,7 +285,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </section>
-            <p className="pb-2 text-center text-xs text-muted-foreground/70">Make room for what matters.</p>
+            <p className="pb-3 text-center text-xs text-muted-foreground/70">Make room for what matters.</p>
           </div>
         </main>
       </div>
