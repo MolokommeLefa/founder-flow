@@ -156,12 +156,7 @@ const Dashboard = () => {
           <div className="mx-auto max-w-[1600px] space-y-7">
             <DashboardHeader userName={userName} showGreeting priorityCount={highPriorityCount} />
 
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">{today}</p>
-                <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">A little more clarity. A little less noise.</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Your workspace, at a glance.</p>
-              </div>
+           
               <Button onClick={() => navigate("/tasks")} variant="outline" className="rounded-xl border-border/80">
                 Open task board <ArrowUpRight className="ml-2 h-4 w-4" />
               </Button>
