@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import TaskProgressCard from "@/components/dashboard/TaskProgressCard";
 import TaskItem from "@/components/dashboard/TaskItem";
 import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
@@ -188,7 +187,13 @@ const Dashboard = () => {
 
               <Card className="rounded-2xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
                 <CardContent className="flex h-full items-center gap-5 p-5 sm:p-6">
-                  <TaskProgressCard completed={completedCount} total={totalCount} />
+                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
+                    <svg viewBox="0 0 44 44" className="h-14 w-14 -rotate-90" aria-label={`${totalCount ? Math.round((completedCount / totalCount) * 100) : 0}% of tasks complete`}>
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="3" />
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="#84cc16" strokeWidth="3" strokeLinecap="round" strokeDasharray={`${(completedCount / Math.max(totalCount, 1)) * 113.1} 113.1`} />
+                    </svg>
+                    <span className="absolute text-xs font-semibold">{totalCount ? Math.round((completedCount / totalCount) * 100) : 0}%</span>
+                  </div>
                   <div className="min-w-0 flex-1 border-l border-border pl-5">
                     <p className="text-sm text-muted-foreground">Still in motion</p>
                     <p className="mt-1 text-2xl font-semibold tracking-tight">{openTasks}</p>
