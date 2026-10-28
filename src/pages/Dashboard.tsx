@@ -144,7 +144,7 @@ const Dashboard = () => {
 
         <main className="min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 md:px-7 md:py-7 xl:px-8">
           <div className="mx-auto max-w-[1680px] space-y-6 xl:space-y-7">
-            <DashboardHeader userName={userName} showGreeting priorityCount={highPriorityCount} />
+            <DashboardHeader userName={userName} showGreeting priorityCount={todayTasks.filter((task) => task.priority === "high" && task.status !== "completed").length} />
 
             <div className="flex items-center justify-between gap-3 border-b border-border/70 pb-3">
               <p className="text-xs text-muted-foreground">{today}</p>
