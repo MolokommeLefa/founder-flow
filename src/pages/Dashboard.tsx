@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import {
   ArrowUpRight, CalendarDays, Check, Clock3, FolderKanban, Sparkles,
-  Target, TrendingUp, Zap, CircleCheck, Circle, BriefcaseBusiness,
+  Target, TrendingUp,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
