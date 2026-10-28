@@ -217,7 +217,8 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggle }: DashboardSidebarProps) => {
   const navigate = useNavigate();
-  const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();\n  const [accountOpen, setAccountOpen] = useState(false);
+  const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();
+  const [accountOpen, setAccountOpen] = useState(false);
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
