@@ -247,3 +247,36 @@
   .note-editor pre code { @apply bg-transparent p-0; }
   .note-editor a { @apply text-primary underline underline-offset-2; }
 }
+
+
+/* Calm, low-contrast dashboard treatment inspired by the supplied reference. */
+.dashboard-shell {
+  --background: 0 0% 4%;
+  --foreground: 0 0% 94%;
+  --card: 0 0% 4.8%;
+  --card-foreground: 0 0% 94%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 0 0% 94%;
+  --primary: 96 82% 48%;
+  --primary-foreground: 0 0% 5%;
+  --accent: 96 82% 48%;
+  --accent-foreground: 0 0% 5%;
+  --ring: 96 82% 48%;
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 0 0% 91%;
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 62%;
+  --border: 0 0% 17%;
+  --input: 0 0% 17%;
+  --radius: 0.75rem;
+}
+.dashboard-shell .dashboard-panel {
+  background: hsl(0 0% 4.8%);
+}
+.dashboard-shell ::selection {
+  background: hsl(96 82% 48% / 0.25);
+}
+@media (max-width: 767px) {
+  .dashboard-shell { padding: 0; }
+  .dashboard-shell > div { border-radius: 0; border-left: 0; border-right: 0; }
+}

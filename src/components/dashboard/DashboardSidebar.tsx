@@ -68,14 +68,14 @@ const SidebarItem = ({ icon: Icon, name, active = false, dot, onClick, href, col
           <button
             onClick={handleClick}
             className={cn(
-              "group flex items-center rounded-xl cursor-pointer transition-all duration-300 ease-out w-full text-left overflow-hidden",
-              collapsed ? "px-2 py-2 justify-center gap-0" : "px-3 py-2.5 gap-3",
+              "group flex items-center rounded-lg cursor-pointer transition-colors duration-200 w-full text-left overflow-hidden",
+              collapsed ? "px-2.5 py-3 justify-center gap-0" : "px-3.5 py-3 gap-3.5",
               active
-                ? "bg-secondary/60 text-foreground border border-border/60"
-                : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground"
+                ? "bg-secondary/70 text-foreground border border-border/80"
+                : "border border-transparent text-muted-foreground hover:bg-secondary/45 hover:text-foreground"
             )}
           >
-            <Icon className="w-[18px] h-[18px] flex-shrink-0 transition-all duration-300 ease-out group-hover:scale-110 group-hover:rotate-3" strokeWidth={1.5} />
+            <Icon className="w-[19px] h-[19px] flex-shrink-0 transition-transform duration-200 group-hover:scale-105" strokeWidth={1.65} />
             <span className={cn(
               "text-sm font-medium flex-1 whitespace-nowrap transition-all duration-300 ease-out",
               collapsed ? "opacity-0 max-w-0" : "opacity-100 max-w-[200px]"
@@ -190,13 +190,13 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
   return (
     <aside className={cn(
-      "border-r border-border bg-secondary/30 p-3 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
-      collapsed ? "w-14" : "w-56"
+      "border-r border-border/80 bg-background px-3 py-5 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
+      collapsed ? "w-[76px]" : "w-[252px]"
     )}>
       {/* Toggle button */}
       <button
         onClick={onToggle}
-        className="flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors mb-3"
+        className="flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors mb-5"
       >
         {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
       </button>
@@ -226,7 +226,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       )}
       
       {/* Apps */}
-      <div className="space-y-1 flex-1">
+      <div className="space-y-1.5 flex-1 pt-1">
         {sidebarApps.map((app) => (
           <SidebarItem 
             key={app.name} 
@@ -242,7 +242,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
       
       {/* Settings & Logout */}
-      <div className="pt-4 border-t border-border space-y-1">
+      <div className="pt-5 mt-5 border-t border-border/80 space-y-1.5">
         {/* Settings with expandable theme toggle */}
         <SettingsItem collapsed={collapsed} />
         <SidebarItem icon={LogOut} name="Sign Out" onClick={handleSignOut} collapsed={collapsed} />

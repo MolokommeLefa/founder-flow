@@ -2,14 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import {
-  ArrowUpRight,
-  CalendarDays,
-  Check,
-  Clock3,
-  FolderKanban,
-  Sparkles,
-  Target,
-  TrendingUp,
+  ArrowUpRight, CalendarDays, Check, Clock3, FolderKanban, Sparkles,
+  Target, TrendingUp,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,7 +20,6 @@ import { useFocusSessions } from "@/hooks/useFocusSessions";
 import { useProjects } from "@/hooks/useProjects";
 import { getTodayFocusTasks } from "@/lib/todayFocus";
 import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 
 const mapStatus = (status: DbTask["status"]): "done" | "pending" | "urgent" => {
   if (status === "completed") return "done";
@@ -39,8 +32,8 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { tasks: dbTasks, loading: tasksLoading, updateTaskStatus, updateTask } = useTasks();
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null);
+  const { tasks: dbTasks, loading: tasksLoading, updateTaskStatus, updateTask } = useTasks();
   const { profile } = useProfile();
   const { entries: revenueEntries } = useRevenue();
   const { sessions: focusSessions } = useFocusSessions();
@@ -55,9 +48,9 @@ const Dashboard = () => {
 
   const handlePostpone = async (task: DbTask) => {
     const base = task.due_date ? new Date(task.due_date) : new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const next = base < today ? new Date(today) : base;
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+    const next = base < todayDate ? new Date(todayDate) : base;
     next.setDate(next.getDate() + 1);
     setBusyTaskId(task.id);
     await updateTask(task.id, {
@@ -86,15 +79,13 @@ const Dashboard = () => {
       else if (date >= prevStart) previous += amount;
     });
     const spark: number[] = [];
-    let running = 0;
     for (let i = 6; i >= 0; i--) {
       const day = new Date();
       day.setHours(0, 0, 0, 0);
       day.setDate(day.getDate() - i);
       const key = day.toISOString().slice(0, 10);
-      running += revenueEntries.filter((entry) => entry.entry_date === key)
-        .reduce((sum, entry) => sum + Number(entry.amount), 0);
-      spark.push(running);
+      spark.push(revenueEntries.filter((entry) => entry.entry_date === key)
+        .reduce((sum, entry) => sum + Number(entry.amount), 0));
     }
     const pct = previous > 0 ? ((current - previous) / previous) * 100 : current > 0 ? 100 : 0;
     return {
@@ -127,9 +118,7 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Getting your workspace ready…</div>;
-  }
+  if (loading) return <div className="dark flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Getting your workspace ready…</div>;
   if (!user) return null;
 
   const emailPrefix = user.email?.split("@")[0] || "there";
@@ -144,104 +133,96 @@ const Dashboard = () => {
   const highPriorityCount = dbTasks.filter((task) => task.priority === "high" && task.status !== "completed").length;
   const activeProjects = projects.filter((project: any) => !["completed", "archived"].includes(String(project.status ?? "").toLowerCase())).length;
   const today = new Date().toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" });
+  const completionRate = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-background text-foreground md:h-screen md:overflow-hidden">
-      <div className="flex min-h-screen md:h-full">
+    <div className="dark dashboard-shell min-h-screen bg-background p-2 text-foreground md:h-screen md:overflow-hidden">
+      <div className="flex min-h-[calc(100vh-1rem)] overflow-hidden rounded-2xl border border-border/80 bg-background md:h-[calc(100vh-1rem)]">
         <aside className="hidden shrink-0 md:block">
           <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((value) => !value)} />
         </aside>
 
         <main className="min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 md:px-7 md:py-7 xl:px-8">
-          <div className="mx-auto max-w-[1600px] space-y-8">
+          <div className="mx-auto max-w-[1680px] space-y-6 xl:space-y-7">
             <DashboardHeader userName={userName} showGreeting priorityCount={highPriorityCount} />
 
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">{today}</p>
-              <Button onClick={() => navigate("/tasks")} variant="ghost" size="sm" className="rounded-lg text-muted-foreground hover:text-foreground">
-                All tasks <ArrowUpRight className="ml-1.5 h-4 w-4" />
+            <div className="flex items-center justify-between gap-3 border-b border-border/70 pb-3">
+              <p className="text-xs text-muted-foreground">{today}</p>
+              <Button onClick={() => navigate("/tasks")} variant="ghost" size="sm" className="h-8 rounded-lg text-xs text-muted-foreground hover:text-foreground">
+                All tasks <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
               </Button>
             </div>
 
-            <section aria-label="Workspace overview" className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 xl:gap-6">
-              <Card className="rounded-2xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
-                <CardContent className="p-6 sm:p-7">
+            <section aria-label="Workspace overview" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+              <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
+                <CardContent className="p-5 sm:p-6">
                   <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/70 text-foreground"><TrendingUp className="h-5 w-5" strokeWidth={1.6} /></div>
-                    <Badge variant="outline" className="rounded-full border-lime-500/25 bg-lime-500/10 text-xs font-medium text-lime-600 dark:text-lime-400">{revenueChange} this month</Badge>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"><TrendingUp className="h-5 w-5" strokeWidth={1.5} /></div>
+                    <Badge variant="outline" className="rounded-full border-lime-500/25 bg-lime-500/10 text-[10px] font-medium text-lime-400">{revenueChange} this month</Badge>
                   </div>
-                  <p className="mt-5 text-3xl font-semibold tracking-tight">{monthlyRevenue}</p>
+                  <p className="mt-5 text-3xl font-medium tracking-tight">{monthlyRevenue}</p>
                   <p className="mt-1 text-sm text-muted-foreground">Monthly revenue</p>
-                  <div className="mt-4 flex h-8 items-end gap-1" aria-label="Revenue trend over the last seven days">
+                  <div className="mt-4 flex h-7 items-end gap-1" aria-label="Revenue trend over the last seven days">
                     {revenueSparkline.map((value, index) => {
                       const max = Math.max(...revenueSparkline, 1);
-                      return <span key={index} className="flex-1 rounded-sm bg-lime-500/70" style={{ height: `${Math.max(12, (value / max) * 100)}%` }} />;
+                      return <span key={index} className="flex-1 rounded-sm bg-lime-500/75" style={{ height: `${Math.max(12, (value / max) * 100)}%` }} />;
                     })}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-2xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
-                <CardContent className="flex h-full items-center gap-5 p-6 sm:p-7">
+              <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
+                <CardContent className="flex h-full items-center gap-5 p-5 sm:p-6">
                   <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-                    <svg viewBox="0 0 44 44" className="h-14 w-14 -rotate-90" aria-label={`${totalCount ? Math.round((completedCount / totalCount) * 100) : 0}% of tasks complete`}>
-                      <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="3" />
-                      <circle cx="22" cy="22" r="18" fill="none" stroke="#84cc16" strokeWidth="3" strokeLinecap="round" strokeDasharray={`${(completedCount / Math.max(totalCount, 1)) * 113.1} 113.1`} />
+                    <svg viewBox="0 0 44 44" className="h-14 w-14 -rotate-90" aria-label={`${completionRate}% of tasks complete`}>
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="2.5" />
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="#65d91b" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${(completionRate / 100) * 113.1} 113.1`} />
                     </svg>
-                    <span className="absolute text-xs font-semibold">{totalCount ? Math.round((completedCount / totalCount) * 100) : 0}%</span>
+                    <span className="absolute text-xs font-medium">{completionRate}%</span>
                   </div>
                   <div className="min-w-0 flex-1 border-l border-border pl-5">
-                    <p className="text-sm text-muted-foreground">Still in motion</p>
-                    <p className="mt-1 text-2xl font-semibold tracking-tight">{openTasks}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Tasks left to move forward</p>
+                    <p className="text-sm text-muted-foreground">Tasks in motion</p>
+                    <p className="mt-1 text-2xl font-medium tracking-tight">{openTasks}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Still to move forward</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-2xl border-border/80 bg-card shadow-none transition-colors hover:border-border sm:col-span-2 xl:col-span-1">
+              <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none transition-colors hover:border-border sm:col-span-2 xl:col-span-1">
                 <CardContent className="p-5 sm:p-6">
                   <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/70 text-foreground"><Clock3 className="h-5 w-5" strokeWidth={1.6} /></div>
-                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-lime-500" /> Last 7 days</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"><Clock3 className="h-5 w-5" strokeWidth={1.5} /></div>
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-lime-400" /> Last 7 days</span>
                   </div>
-                  <p className="mt-5 text-3xl font-semibold tracking-tight">{weekFocusHours}</p>
+                  <p className="mt-5 text-3xl font-medium tracking-tight">{weekFocusHours}</p>
                   <p className="mt-1 text-sm text-muted-foreground">Time spent in focus</p>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Sparkles className="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" /> Progress comes from showing up.</div>
+                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Sparkles className="h-3.5 w-3.5 text-lime-400" /> Progress comes from showing up.</div>
                 </CardContent>
               </Card>
             </section>
 
             <section className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-[minmax(0,1.8fr)_minmax(290px,0.82fr)]">
-              <Card className="min-h-[390px] rounded-2xl border-border/70 bg-card shadow-none">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 px-6 pb-4 pt-6 sm:px-7 sm:pt-7">
+              <Card className="dashboard-panel min-h-[380px] rounded-xl border-border/80 bg-card shadow-none">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
                   <div>
-                    <CardTitle className="text-lg font-semibold tracking-tight">Today’s focus</CardTitle>
-                    <CardDescription className="mt-1">{todayTasks.length ? `${todayTasks.length} priorities to give your attention to` : "A clear space to start something meaningful."}</CardDescription>
+                    <CardTitle className="text-xl font-medium tracking-tight">Today’s focus</CardTitle>
+                    <CardDescription className="mt-1.5 text-xs">{todayTasks.length ? `${todayTasks.length} priorities to give your attention to` : "A clear space to start something meaningful."}</CardDescription>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={() => navigate("/tasks")} className="rounded-lg text-muted-foreground hover:text-foreground">View all <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => navigate("/tasks")} className="rounded-lg text-xs text-muted-foreground hover:text-foreground">View all <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" /></Button>
                 </CardHeader>
-                <CardContent className="px-4 pb-6 sm:px-5">
-                  {tasksLoading ? (
-                    <p className="py-10 text-center text-sm text-muted-foreground">Loading your tasks…</p>
-                  ) : todayTasks.length === 0 ? (
+                <CardContent className="px-3 pb-5 sm:px-4">
+                  {tasksLoading ? <p className="py-10 text-center text-sm text-muted-foreground">Loading your tasks…</p> : todayTasks.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-14 text-center">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary/70"><Check className="h-5 w-5 text-lime-600 dark:text-lime-400" /></div>
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full border border-border"><Check className="h-5 w-5 text-lime-400" /></div>
                       <p className="mt-3 text-sm font-medium">You’re all caught up</p>
                       <p className="mt-1 max-w-xs text-xs text-muted-foreground">Take a breath, or choose one small thing to make progress on.</p>
                       <Button variant="outline" size="sm" onClick={() => navigate("/tasks")} className="mt-4 rounded-lg">Plan a task</Button>
                     </div>
                   ) : (
-                    <div className="divide-y divide-border/70">
+                    <div className="divide-y divide-border/60">
                       {todayTasks.map((task) => (
                         <div key={task.id} className="py-1 first:pt-0 last:pb-0">
-                          <TaskItem
-                            title={task.title}
-                            status={mapStatus(task.status)}
-                            priority={task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
-                            busy={busyTaskId === task.id}
-                            onComplete={() => handleComplete(task)}
-                            onPostpone={() => handlePostpone(task)}
-                          />
+                          <TaskItem title={task.title} status={mapStatus(task.status)} priority={task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} busy={busyTaskId === task.id} onComplete={() => handleComplete(task)} onPostpone={() => handlePostpone(task)} />
                         </div>
                       ))}
                     </div>
@@ -249,44 +230,46 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              <div className="flex flex-col gap-5">
-                <Card className="flex-1 rounded-2xl border-border/70 bg-card shadow-none">
-                  <CardHeader className="px-6 pb-3 pt-6 sm:px-7">
-                    <CardTitle className="text-lg font-semibold tracking-tight">Quick summary</CardTitle>
-                    <CardDescription>A softer overview of what’s on your plate.</CardDescription>
+              <div className="flex flex-col gap-4">
+                <Card className="dashboard-panel flex-1 rounded-xl border-border/80 bg-card shadow-none">
+                  <CardHeader className="px-5 pb-3 pt-5 sm:px-6">
+                    <CardTitle className="text-xl font-medium tracking-tight">Quick summary</CardTitle>
+                    <CardDescription className="text-xs">A quiet overview of what’s on your plate.</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6 px-6 pb-6 sm:px-7">
+                  <CardContent className="space-y-5 px-5 pb-5 sm:px-6">
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Today</p>
+                      <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">Today</p>
                       <div className="flex items-start gap-3">
-                        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/70"><Target className="h-4 w-4" /></div>
-                        <div><p className="text-sm font-medium">{todayTasks.length} focus {todayTasks.length === 1 ? "priority" : "priorities"}</p><p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{highPriorityCount ? `${highPriorityCount} high-priority items need a little extra care.` : "Keep your pace steady and intentional."}</p></div>
+                        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg border border-border/80 text-muted-foreground"><Target className="h-4 w-4" /></div>
+                        <div><p className="text-sm font-medium">{todayTasks.length} focus {todayTasks.length === 1 ? "priority" : "priorities"}</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">{highPriorityCount ? `${highPriorityCount} high-priority items need a little extra care.` : "Keep your pace steady and intentional."}</p></div>
                       </div>
                     </div>
                     <div className="border-t border-border/70 pt-4">
-                      <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">This week</p>
+                      <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">This week</p>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-xl bg-secondary/35 p-3"><p className="text-2xl font-semibold">{openTasks}</p><p className="mt-1 text-xs text-muted-foreground">Open tasks</p></div>
-                        <div className="rounded-xl bg-secondary/35 p-3"><p className="text-2xl font-semibold">{activeProjects}</p><p className="mt-1 text-xs text-muted-foreground">Active projects</p></div>
+                        <div className="rounded-lg border border-border/70 p-3"><p className="text-2xl font-medium">{openTasks}</p><p className="mt-1 text-xs text-muted-foreground">Open tasks</p></div>
+                        <div className="rounded-lg border border-border/70 p-3"><p className="text-2xl font-medium">{activeProjects}</p><p className="mt-1 text-xs text-muted-foreground">Active projects</p></div>
                       </div>
                     </div>
-                    <Button variant="ghost" onClick={() => navigate("/calendar")} className="h-auto w-full justify-between rounded-xl px-3 py-3 text-sm text-muted-foreground hover:text-foreground">
+                    <Button variant="ghost" onClick={() => navigate("/calendar")} className="h-auto w-full justify-between rounded-lg px-3 py-3 text-sm text-muted-foreground hover:text-foreground">
                       <span className="flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Review your week</span><ArrowUpRight className="h-4 w-4" />
                     </Button>
                   </CardContent>
                 </Card>
-                <div className="rounded-2xl border border-border/70 bg-card p-6 sm:p-7">
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div><p className="text-sm font-medium">Overall performance</p><p className="mt-1 text-xs text-muted-foreground">A snapshot of your momentum</p></div>
+                <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-3 pt-5 sm:px-6">
+                    <div><CardTitle className="text-sm font-medium">Overall performance</CardTitle><CardDescription className="mt-1 text-xs">A snapshot of your momentum</CardDescription></div>
                     <FolderKanban className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div className={cn("[&>div]:border-0 [&>div]:bg-transparent [&>div]:p-0 [&_svg]:max-w-full")}>
-                    <OverallPerformance tasks={dbTasks} />
-                  </div>
-                </div>
+                  </CardHeader>
+                  <CardContent className="px-5 pb-5 sm:px-6">
+                    <div className="[&>div]:border-0 [&>div]:bg-transparent [&>div]:p-0 [&_svg]:max-w-full">
+                      <OverallPerformance tasks={dbTasks} />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </section>
-            <p className="pb-3 text-center text-xs text-muted-foreground/70">Make room for what matters.</p>
+            <p className="pb-2 text-center text-[11px] text-muted-foreground/70">Make room for what matters.</p>
           </div>
         </main>
       </div>
