@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Sparkles } from "lucide-react";
 import WorkspaceSearch from "@/components/search/WorkspaceSearch";
 import HeaderQuickActions from "./HeaderQuickActions";
 
@@ -15,7 +16,7 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setSearchOpen((o) => !o);
+        setSearchOpen((open) => !open);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -38,18 +39,20 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
   return (
     <div className={`flex items-start gap-4 ${showGreeting ? "justify-between mb-5" : "justify-end mb-4"}`}>
       {showGreeting && (
-        <div>
+        <div className="min-w-0">
           <h1 className="text-[26px] font-medium leading-tight tracking-[-0.035em] text-foreground sm:text-[29px]">
             {getGreeting()}, {userName}
           </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {priorityCount > 0
-              ? `You have ${priorityCount} ${priorityCount === 1 ? "priority" : "priorities"} for today`
-              : "No priorities for today"}
-          </p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span>Here’s what’s on the agenda today.</span>
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-foreground/80">
+              <Sparkles className="h-3 w-3 text-muted-foreground" strokeWidth={1.6} />
+              {priorityCount} core {priorityCount === 1 ? "priority" : "priorities"}
+            </span>
+          </div>
         </div>
       )}
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         <WorkspaceSearch open={searchOpen} onOpenChange={setSearchOpen} />
         <HeaderQuickActions />
       </div>
