@@ -35,48 +35,6 @@ const sidebarApps: Array<{ icon: React.ElementType; name: string; href?: string;
   { icon: BarChart4, name: "Analytics", href: "/analytics" },
   { icon: Folder, name: "Projects", href: "/projects" },
   { icon: Zap, name: "Automations", href: "/automations" },
-];port { useState } from "react";
-import {
-  LayoutDashboard,
-  SquarePen,
-  Calendar,
-  Folder,
-  Library,
-  StickyNote,
-  UserRound,
-  BarChart4,
-  Inbox,
-  Zap,
-  Settings,
-  Search,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  ChevronDown,
-  PanelRight,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
-import ThemeToggle from "./ThemeToggle";
-import { useNotificationAlerts } from "@/hooks/useNotificationAlerts";
-import { useProfile } from "@/hooks/useProfile";
-
-type AlertKey = "tasks" | "inbox";
-const sidebarApps: Array<{ icon: React.ElementType; name: string; href?: string; alertKey?: AlertKey }> = [
-  { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
-  { icon: SquarePen, name: "Tasks", alertKey: "tasks", href: "/tasks" },
-  { icon: Calendar, name: "Calendar", href: "/calendar" },
-  { icon: Folder, name: "Projects", href: "/projects" },
-  { icon: Library, name: "Media Library" },
-  { icon: StickyNote, name: "Documents", href: "/documents" },
-  { icon: UserRound, name: "Team" },
-  { icon: BarChart4, name: "Analytics", href: "/analytics" },
-  { icon: Inbox, name: "Inbox", alertKey: "inbox", href: "/inbox" },
-  { icon: Zap, name: "Automations", href: "/automations" },
 ];
 
 interface SidebarItemProps {
