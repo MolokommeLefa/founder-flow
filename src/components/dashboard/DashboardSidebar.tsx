@@ -282,11 +282,29 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       </div>
 
       
-      {/* Settings & Logout */}
-      <div className="pt-5 mt-5 border-t border-border/80 space-y-1.5">
-        {/* Settings with expandable theme toggle */}
-        <SettingsItem collapsed={collapsed} />
-        <SidebarItem icon={LogOut} name="Sign Out" onClick={handleSignOut} collapsed={collapsed} />
+      {/* Account area */}
+      <div className="mt-4 border-t border-border/80 pt-4">
+        {!collapsed ? (
+          <div className="flex items-center gap-2 rounded-lg px-2 py-2 hover:bg-secondary/40">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-secondary text-[10px] font-medium text-foreground">LM</div>
+            <button onClick={() => setAccountOpen((open) => !open)} className="flex min-w-0 flex-1 items-center gap-1 text-left">
+              <span className="truncate text-[11px] text-foreground">Lefa molokomme</span>
+              <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
+            </button>
+            <button onClick={onToggle} aria-label="Collapse sidebar" className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><PanelRight className="h-4 w-4" /></button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-secondary text-[10px] font-medium">LM</div>
+            <button onClick={onToggle} aria-label="Expand sidebar" className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><PanelRight className="h-4 w-4" /></button>
+          </div>
+        )}
+        {accountOpen && !collapsed && (
+          <div className="mt-2 space-y-1 rounded-lg border border-border bg-card p-2">
+            <SettingsItem collapsed={false} />
+            <SidebarItem icon={LogOut} name="Sign out" onClick={handleSignOut} collapsed={false} />
+          </div>
+        )}
       </div>
     </aside>
   );
