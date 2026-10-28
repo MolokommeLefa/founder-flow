@@ -235,13 +235,22 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       "border-r border-border/80 bg-background px-3 py-4 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
       collapsed ? "w-[76px]" : "w-[252px]"
     )}>
-      {/* Toggle button */}
-      <button
-        onClick={onToggle}
-        className="flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors mb-3"
-      >
-        {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-      </button>
+      {/* Brand and compact utility control */}
+      <div className={cn("mb-5 flex items-center", collapsed ? "justify-center" : "justify-between px-1")}>
+        {!collapsed && (
+          <div className="flex items-center gap-2.5 text-foreground">
+            <Sparkles className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
+            <span className="text-base font-semibold tracking-tight">Lefa</span>
+          </div>
+        )}
+        <button
+          onClick={onToggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+        >
+          {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+        </button>
+      </div>
 
       {/* Search */}
       {!collapsed ? (
