@@ -14,7 +14,48 @@ import {
   Search,
   LogOut,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  ChevronDown,
+  PanelRight,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import ThemeToggle from "./ThemeToggle";
+import { useNotificationAlerts } from "@/hooks/useNotificationAlerts";
+import { useProfile } from "@/hooks/useProfile";
+
+type AlertKey = "tasks" | "inbox";
+const sidebarApps: Array<{ icon: React.ElementType; name: string; href?: string; alertKey?: AlertKey }> = [
+  { icon: LayoutDashboard, name: "Dashboard", href: "/dashboard" },
+  { icon: SquarePen, name: "Tasks", alertKey: "tasks", href: "/tasks" },
+  { icon: Calendar, name: "Calendar", href: "/calendar" },
+  { icon: StickyNote, name: "Notes", href: "/documents" },
+  { icon: BarChart4, name: "Analytics", href: "/analytics" },
+  { icon: Folder, name: "Projects", href: "/projects" },
+  { icon: Zap, name: "Automations", href: "/automations" },
+];port { useState } from "react";
+import {
+  LayoutDashboard,
+  SquarePen,
+  Calendar,
+  Folder,
+  Library,
+  StickyNote,
+  UserRound,
+  BarChart4,
+  Inbox,
+  Zap,
+  Settings,
+  Search,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ChevronDown,
+  PanelRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,7 +110,7 @@ const SidebarItem = ({ icon: Icon, name, active = false, dot, onClick, href, col
             onClick={handleClick}
             className={cn(
               "group flex items-center rounded-lg cursor-pointer transition-colors duration-200 w-full text-left overflow-hidden",
-              collapsed ? "px-2.5 py-3 justify-center gap-0" : "px-3.5 py-3 gap-3.5",
+              collapsed ? "px-2.5 py-2.5 justify-center gap-0" : "px-3 py-2.5 gap-3",
               active
                 ? "bg-secondary/70 text-foreground border border-border/80"
                 : "border border-transparent text-muted-foreground hover:bg-secondary/45 hover:text-foreground"
@@ -176,7 +217,7 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggle }: DashboardSidebarProps) => {
   const navigate = useNavigate();
-  const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();
+  const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();\n  const [accountOpen, setAccountOpen] = useState(false);
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -190,13 +231,13 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
   return (
     <aside className={cn(
-      "border-r border-border/80 bg-background px-3 py-5 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
+      "border-r border-border/80 bg-background px-3 py-4 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
       collapsed ? "w-[76px]" : "w-[252px]"
     )}>
       {/* Toggle button */}
       <button
         onClick={onToggle}
-        className="flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors mb-5"
+        className="flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-colors mb-3"
       >
         {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
       </button>
@@ -226,7 +267,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       )}
       
       {/* Apps */}
-      <div className="space-y-1.5 flex-1 pt-1">
+      <div className="space-y-1 flex-1 pt-1">
         {sidebarApps.map((app) => (
           <SidebarItem 
             key={app.name} 
