@@ -40,7 +40,7 @@ const TaskItem = ({ title, status, priority, onComplete, onPostpone, busy }: Tas
         status === "urgent" && "border-border bg-secondary/50 text-muted-foreground"
       )}>
         <span className={cn("h-1.5 w-1.5 rounded-full", status === "done" ? "bg-lime-400" : status === "pending" ? "bg-yellow-400" : "bg-muted-foreground")} />
-        {status === "done" ? "Completed" : status === "pending" ? "In progress" : "Draft"}
+        {status === "done" ? "Completed" : status === "pending" ? "In progress" : "Not started"}
       </Badge>
       <Badge variant="outline" className={cn(
         "min-w-[66px] justify-center rounded-full px-2.5 py-1 text-[10px] font-medium",
