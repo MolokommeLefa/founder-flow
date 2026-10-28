@@ -36,13 +36,13 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
   };
 
   return (
-    <div className={`flex items-center ${showGreeting ? "justify-between mb-8" : "justify-end mb-4"}`}>
+    <div className={`flex items-start gap-4 ${showGreeting ? "justify-between mb-5" : "justify-end mb-4"}`}>
       {showGreeting && (
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-[26px] font-medium leading-tight tracking-[-0.035em] text-foreground sm:text-[29px]">
             {getGreeting()}, {userName}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground">
             {priorityCount > 0
               ? `You have ${priorityCount} ${priorityCount === 1 ? "priority" : "priorities"} for today`
               : "No priorities for today"}
