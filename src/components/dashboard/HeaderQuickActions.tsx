@@ -10,7 +10,12 @@ import { getTodayFocusTasks } from "@/lib/todayFocus";
 
 const DEFAULT_WEEKLY_GOAL_HOURS = 20;
 
-const HeaderQuickActions = () => {
+interface HeaderQuickActionsProps {
+  compact?: boolean;
+  vertical?: boolean;
+}
+
+const HeaderQuickActions = ({ compact = false, vertical = false }: HeaderQuickActionsProps) => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const { tasks } = useTasks();
   const { sessions: focusSessions } = useFocusSessions();
@@ -74,13 +79,13 @@ const HeaderQuickActions = () => {
   const strokeDashoffset = circumference - (seconds / 60) * circumference;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex ${vertical ? "flex-col" : "flex-row"} items-center gap-1.5`}>
       {/* Bell — priorities & quick summary */}
       <Popover>
         <PopoverTrigger asChild>
           <button
             aria-label="Priorities and reminders"
-            className="relative w-10 h-10 rounded-full border border-border bg-card hover:bg-secondary/60 flex items-center justify-center transition-colors"
+            className={`relative flex items-center justify-center transition-colors ${compact ? "h-9 w-9 rounded-lg border-0 bg-transparent hover:bg-secondary/60" : "h-10 w-10 rounded-full border border-border bg-card hover:bg-secondary/60"}`}
           >
             <Bell className="w-[18px] h-[18px] text-foreground" strokeWidth={1.75} />
             {hasAlert && (
@@ -88,7 +93,7 @@ const HeaderQuickActions = () => {
             )}
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-80 p-4">
+        <PopoverContent side={compact ? "right" : "bottom"} align={compact ? "start" : "end"} className="w-80 p-4">
           <div className="mb-3">
             <div className="text-sm font-semibold text-foreground">Today's priorities</div>
             <div className="text-xs text-muted-foreground mt-0.5">{format(new Date(), "EEEE, d MMM")}</div>
@@ -128,7 +133,7 @@ const HeaderQuickActions = () => {
         <PopoverTrigger asChild>
           <button
             aria-label="Focus timer"
-            className="relative w-10 h-10 rounded-full border border-border bg-card hover:bg-secondary/60 flex items-center justify-center transition-colors"
+            className={`relative flex items-center justify-center transition-colors ${compact ? "h-9 w-9 rounded-lg border-0 bg-transparent hover:bg-secondary/60" : "h-10 w-10 rounded-full border border-border bg-card hover:bg-secondary/60"}`}
           >
             {isRunning ? (
               <svg width="20" height="20" viewBox="0 0 22 22">
@@ -148,7 +153,7 @@ const HeaderQuickActions = () => {
             )}
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-72 p-4">
+        <PopoverContent side={compact ? "right" : "bottom"} align={compact ? "start" : "end"} className="w-72 p-4">
           <div className="text-xs font-medium text-muted-foreground">Focus timer</div>
           <div className={`mt-1 font-mono text-3xl font-semibold tracking-tight ${isRunning ? "text-[hsl(145,60%,42%)]" : "text-foreground"}`}>
             {formattedTime}
