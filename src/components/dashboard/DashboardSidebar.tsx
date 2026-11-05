@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   SquarePen,
@@ -13,7 +13,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ChevronDown,
-  PanelRight,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,7 +21,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
+import WorkspaceSearch from "@/components/search/WorkspaceSearch";
 import ThemeToggle from "./ThemeToggle";
+import HeaderQuickActions from "./HeaderQuickActions";
 import { useNotificationAlerts } from "@/hooks/useNotificationAlerts";
 import { useProfile } from "@/hooks/useProfile";
 
@@ -175,6 +176,23 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
   const navigate = useNavigate();
   const { hasPendingTasks, hasUnreadInbox } = useNotificationAlerts();
   const [accountOpen, setAccountOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpen = () => setSearchOpen(true);
+    const handleShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("open-workspace-search", handleOpen);
+    window.addEventListener("keydown", handleShortcut);
+    return () => {
+      window.removeEventListener("open-workspace-search", handleOpen);
+      window.removeEventListener("keydown", handleShortcut);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -188,49 +206,35 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
   return (
     <aside className={cn(
-      "border-r border-border/80 bg-background px-3 py-4 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
-      collapsed ? "w-[76px]" : "w-[252px]"
+      "bg-background px-2.5 py-4 flex flex-col h-full transition-all duration-300 ease-out overflow-hidden",
+      collapsed ? "w-[64px]" : "w-[228px]"
     )}>
-      {/* Brand and compact utility control */}
-      <div className={cn("mb-5 flex items-center", collapsed ? "justify-center" : "justify-between px-1")}>
+      {/* Brand and compact utility controls */}
+      <div className={cn("mb-4 flex items-center", collapsed ? "flex-col gap-2" : "justify-between gap-2 px-1")}>
         {!collapsed && (
           <div className="flex items-center gap-2.5 text-foreground">
             <Sparkles className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
             <span className="text-base font-semibold tracking-tight">Lefa</span>
           </div>
         )}
-        <button
-          onClick={onToggle}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
-        >
-          {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-        </button>
+        <HeaderQuickActions compact vertical={collapsed} />
       </div>
 
-      {/* Search */}
-      {!collapsed ? (
-        <div
-          onClick={() => window.dispatchEvent(new CustomEvent("open-workspace-search"))}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border mb-4 cursor-pointer hover:bg-secondary/50 transition-colors animate-fade-in"
-        >
-          <Search className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Search...</span>
-          <span className="ml-auto text-xs text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">⌘K</span>
-        </div>
-      ) : (
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <div
-              onClick={() => window.dispatchEvent(new CustomEvent("open-workspace-search"))}
-              className="flex items-center justify-center p-2 rounded-lg bg-background border border-border mb-4 cursor-pointer hover:bg-secondary/50 transition-colors"
-            >
-              <Search className="w-4 h-4 text-muted-foreground" />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>Search (⌘K)</TooltipContent>
-        </Tooltip>
-      )}
+      {/* Search opens the full workspace search */}
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            aria-label="Search workspace"
+            onClick={() => setSearchOpen(true)}
+            className={cn("mb-3 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground", collapsed ? "mx-auto" : "ml-1")}
+          >
+            <Search className="h-4 w-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>Search workspace</TooltipContent>
+      </Tooltip>
+      <WorkspaceSearch open={searchOpen} onOpenChange={setSearchOpen} />
       
       {/* Apps */}
       <div className="space-y-1 flex-1 pt-1">
@@ -249,7 +253,7 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
 
       
       {/* Account area */}
-      <div className="mt-4 border-t border-border/80 pt-4">
+      <div className="mt-4 pt-2">
         {!collapsed ? (
           <div className="flex items-center gap-2 rounded-lg px-2 py-2 hover:bg-secondary/40">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-secondary text-[10px] font-medium text-foreground">LM</div>
@@ -257,12 +261,12 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
               <span className="truncate text-[11px] text-foreground">Lefa molokomme</span>
               <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground" />
             </button>
-            <button onClick={onToggle} aria-label="Collapse sidebar" className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><PanelRight className="h-4 w-4" /></button>
+            <button onClick={onToggle} aria-label="Collapse sidebar" className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><PanelLeftClose className="h-4 w-4" /></button>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-secondary text-[10px] font-medium">LM</div>
-            <button onClick={onToggle} aria-label="Expand sidebar" className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><PanelRight className="h-4 w-4" /></button>
+            <button onClick={onToggle} aria-label="Expand sidebar" className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><PanelLeftOpen className="h-4 w-4" /></button>
           </div>
         )}
         {accountOpen && !collapsed && (
