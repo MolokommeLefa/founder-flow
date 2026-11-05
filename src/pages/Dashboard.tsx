@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import {
-  ArrowUpRight, CalendarDays, Check, Clock3, FolderKanban, Sparkles,
-  Target, TrendingUp,
+  ArrowUpRight, CalendarDays, Check, FolderKanban, Target, Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -15,8 +13,6 @@ import TaskItem from "@/components/dashboard/TaskItem";
 import OverallPerformance from "@/components/dashboard/OverallPerformance";
 import { useTasks, DbTask } from "@/hooks/useTasks";
 import { useProfile } from "@/hooks/useProfile";
-import { useRevenue } from "@/hooks/useRevenue";
-import { useFocusSessions } from "@/hooks/useFocusSessions";
 import { useProjects } from "@/hooks/useProjects";
 import { getTodayFocusTasks } from "@/lib/todayFocus";
 import { toast } from "@/hooks/use-toast";
@@ -35,9 +31,17 @@ const Dashboard = () => {
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null);
   const { tasks: dbTasks, loading: tasksLoading, updateTaskStatus, updateTask } = useTasks();
   const { profile } = useProfile();
-  const { entries: revenueEntries } = useRevenue();
-  const { sessions: focusSessions } = useFocusSessions();
   const { projects } = useProjects();
+  const [activeAutomationCount, setActiveAutomationCount] = useState(() => {
+    try {
+      const stored = localStorage.getItem("lumaco:automations");
+      if (stored === null) return 1;
+      const workflows: Array<{ active?: boolean }> = JSON.parse(stored);
+      return Array.isArray(workflows) ? workflows.filter((workflow) => workflow.active).length : 0;
+    } catch {
+      return 0;
+    }
+  });
 
   const handleComplete = async (task: DbTask) => {
     setBusyTaskId(task.id);
@@ -66,44 +70,6 @@ const Dashboard = () => {
     setBusyTaskId(null);
   };
 
-  const { monthlyRevenue, revenueChange, revenueSparkline } = useMemo(() => {
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    let current = 0;
-    let previous = 0;
-    revenueEntries.forEach((entry) => {
-      const date = new Date(entry.entry_date);
-      const amount = Number(entry.amount);
-      if (date >= monthStart) current += amount;
-      else if (date >= prevStart) previous += amount;
-    });
-    const spark: number[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const day = new Date();
-      day.setHours(0, 0, 0, 0);
-      day.setDate(day.getDate() - i);
-      const key = day.toISOString().slice(0, 10);
-      spark.push(revenueEntries.filter((entry) => entry.entry_date === key)
-        .reduce((sum, entry) => sum + Number(entry.amount), 0));
-    }
-    const pct = previous > 0 ? ((current - previous) / previous) * 100 : current > 0 ? 100 : 0;
-    return {
-      monthlyRevenue: current >= 1000 ? `$${(current / 1000).toFixed(1)}k` : `$${current.toFixed(0)}`,
-      revenueChange: `${pct >= 0 ? "+" : ""}${pct.toFixed(0)}%`,
-      revenueSparkline: spark,
-    };
-  }, [revenueEntries]);
-
-  const weekFocusHours = useMemo(() => {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    start.setDate(start.getDate() - 6);
-    const seconds = focusSessions.filter((session) => new Date(session.started_at) >= start)
-      .reduce((sum, session) => sum + session.duration_seconds, 0);
-    return seconds / 3600 >= 1 ? `${(seconds / 3600).toFixed(1)}h` : `${Math.round(seconds / 60)}m`;
-  }, [focusSessions]);
-
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
@@ -117,6 +83,21 @@ const Dashboard = () => {
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    const syncAutomationCount = () => {
+      try {
+        const stored = localStorage.getItem("lumaco:automations");
+        if (stored === null) return;
+        const workflows: Array<{ active?: boolean }> = JSON.parse(stored);
+        setActiveAutomationCount(Array.isArray(workflows) ? workflows.filter((workflow) => workflow.active).length : 0);
+      } catch {
+        setActiveAutomationCount(0);
+      }
+    };
+    window.addEventListener("storage", syncAutomationCount);
+    return () => window.removeEventListener("storage", syncAutomationCount);
+  }, []);
 
   if (loading) return <div className="dark flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Getting your workspace ready…</div>;
   if (!user) return null;
@@ -133,11 +114,9 @@ const Dashboard = () => {
   const highPriorityCount = dbTasks.filter((task) => task.priority === "high" && task.status !== "completed").length;
   const activeProjects = projects.filter((project: any) => !["completed", "archived"].includes(String(project.status ?? "").toLowerCase())).length;
   const today = new Date().toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" });
-  const completionRate = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
-
   return (
-    <div className="dark dashboard-shell min-h-screen bg-background p-2 text-foreground md:h-screen md:overflow-hidden">
-      <div className="flex min-h-[calc(100vh-1rem)] overflow-hidden rounded-2xl border border-border/80 bg-background md:h-[calc(100vh-1rem)]">
+    <div className="dark dashboard-shell min-h-screen bg-background text-foreground md:h-screen md:overflow-hidden">
+      <div className="flex min-h-screen overflow-hidden bg-background md:h-screen">
         <aside className="hidden shrink-0 md:block">
           <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((value) => !value)} />
         </aside>
@@ -153,50 +132,41 @@ const Dashboard = () => {
               </Button>
             </div>
 
-            <section aria-label="Workspace overview" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
-              <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"><TrendingUp className="h-5 w-5" strokeWidth={1.5} /></div>
-                    <Badge variant="outline" className="rounded-full border-lime-500/25 bg-lime-500/10 text-[10px] font-medium text-lime-400">{revenueChange} this month</Badge>
+            <section aria-label="Workspace overview" className="grid grid-cols-3 gap-2.5 sm:gap-3 xl:gap-4">
+              <Card className="dashboard-panel min-w-0 rounded-lg border-border/70 bg-card shadow-none">
+                <CardContent className="flex min-h-[112px] flex-col justify-between gap-3 p-3.5 sm:min-h-[132px] sm:p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs leading-snug text-muted-foreground sm:text-sm">Total tasks done</p>
+                    <Check className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.7} />
                   </div>
-                  <p className="mt-5 text-3xl font-medium tracking-tight">{monthlyRevenue}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Monthly revenue</p>
-                  <div className="mt-4 flex h-7 items-end gap-1" aria-label="Revenue trend over the last seven days">
-                    {revenueSparkline.map((value, index) => {
-                      const max = Math.max(...revenueSparkline, 1);
-                      return <span key={index} className="flex-1 rounded-sm bg-lime-500/75" style={{ height: `${Math.max(12, (value / max) * 100)}%` }} />;
-                    })}
+                  <div>
+                    <p className="text-2xl font-medium tracking-tight sm:text-3xl">{completedCount}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">of {totalCount} total tasks</p>
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none transition-colors hover:border-border">
-                <CardContent className="flex h-full items-center gap-5 p-5 sm:p-6">
-                  <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-                    <svg viewBox="0 0 44 44" className="h-14 w-14 -rotate-90" aria-label={`${completionRate}% of tasks complete`}>
-                      <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" strokeOpacity=".12" strokeWidth="2.5" />
-                      <circle cx="22" cy="22" r="18" fill="none" stroke="#65d91b" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={`${(completionRate / 100) * 113.1} 113.1`} />
-                    </svg>
-                    <span className="absolute text-xs font-medium">{completionRate}%</span>
+              <Card className="dashboard-panel min-w-0 rounded-lg border-border/70 bg-card shadow-none">
+                <CardContent className="flex min-h-[112px] flex-col justify-between gap-3 p-3.5 sm:min-h-[132px] sm:p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs leading-snug text-muted-foreground sm:text-sm">Active projects</p>
+                    <FolderKanban className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.7} />
                   </div>
-                  <div className="min-w-0 flex-1 border-l border-border pl-5">
-                    <p className="text-sm text-muted-foreground">Tasks in motion</p>
-                    <p className="mt-1 text-2xl font-medium tracking-tight">{openTasks}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Still to move forward</p>
+                  <div>
+                    <p className="text-2xl font-medium tracking-tight sm:text-3xl">{activeProjects}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">In progress</p>
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none transition-colors hover:border-border sm:col-span-2 xl:col-span-1">
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/80 text-muted-foreground"><Clock3 className="h-5 w-5" strokeWidth={1.5} /></div>
-                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-lime-400" /> Last 7 days</span>
+              <Card className="dashboard-panel min-w-0 rounded-lg border-border/70 bg-card shadow-none">
+                <CardContent className="flex min-h-[112px] flex-col justify-between gap-3 p-3.5 sm:min-h-[132px] sm:p-5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs leading-snug text-muted-foreground sm:text-sm">Active automations</p>
+                    <Zap className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.7} />
                   </div>
-                  <p className="mt-5 text-3xl font-medium tracking-tight">{weekFocusHours}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Time spent in focus</p>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Sparkles className="h-3.5 w-3.5 text-lime-400" /> Progress comes from showing up.</div>
+                  <div>
+                    <p className="text-2xl font-medium tracking-tight sm:text-3xl">{activeAutomationCount}</p>
+                    <p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">Running workflows</p>
+                  </div>
                 </CardContent>
               </Card>
             </section>
