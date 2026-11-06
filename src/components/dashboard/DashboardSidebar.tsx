@@ -13,8 +13,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ChevronDown,
-  Sparkles,
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -213,27 +213,12 @@ const DashboardSidebar = ({ activeItem = "Dashboard", collapsed = false, onToggl
       <div className={cn("mb-4 flex items-center", collapsed ? "flex-col gap-2" : "justify-between gap-2 px-1")}>
         {!collapsed && (
           <div className="flex items-center gap-2.5 text-foreground">
-            <Sparkles className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
-            <span className="text-base font-semibold tracking-tight">Lefa</span>
+            <img src={logo} alt="FounderOS" className="h-7 w-7 object-contain" />
           </div>
         )}
-        <HeaderQuickActions compact vertical={collapsed} />
+        <HeaderQuickActions compact vertical={collapsed} onSearchClick={() => setSearchOpen(true)} />
       </div>
 
-      {/* Search opens the full workspace search */}
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
-          <button
-            type="button"
-            aria-label="Search workspace"
-            onClick={() => setSearchOpen(true)}
-            className={cn("mb-3 flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground", collapsed ? "mx-auto" : "ml-1")}
-          >
-            <Search className="h-4 w-4" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="right" sideOffset={8}>Search workspace</TooltipContent>
-      </Tooltip>
       <WorkspaceSearch open={searchOpen} onOpenChange={setSearchOpen} />
       
       {/* Apps */}

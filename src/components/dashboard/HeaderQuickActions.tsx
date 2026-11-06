@@ -1,4 +1,4 @@
-import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays, Target, Pencil } from "lucide-react";
+import { Bell, Clock, Play, Pause, RotateCcw, Calendar, CalendarDays, Target, Pencil, Search } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { format, startOfWeek, startOfDay, isSameDay, isWithinInterval } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -13,9 +13,10 @@ const DEFAULT_WEEKLY_GOAL_HOURS = 20;
 interface HeaderQuickActionsProps {
   compact?: boolean;
   vertical?: boolean;
+  onSearchClick?: () => void;
 }
 
-const HeaderQuickActions = ({ compact = false, vertical = false }: HeaderQuickActionsProps) => {
+const HeaderQuickActions = ({ compact = false, vertical = false, onSearchClick }: HeaderQuickActionsProps) => {
   const { elapsedSeconds, isRunning, toggle, reset, formattedTime } = useFocusTimer();
   const { tasks } = useTasks();
   const { sessions: focusSessions } = useFocusSessions();
@@ -128,8 +129,17 @@ const HeaderQuickActions = ({ compact = false, vertical = false }: HeaderQuickAc
         </PopoverContent>
       </Popover>
 
-      {/* Clock — focus timer */}
-      <Popover>
+      {/* Compact sidebar search replaces the timer shortcut. */}
+      {compact && onSearchClick ? (
+        <button
+          type="button"
+          aria-label="Search workspace"
+          onClick={onSearchClick}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border-0 bg-transparent text-foreground transition-colors hover:bg-secondary/60"
+        >
+          <Search className="h-[18px] w-[18px]" strokeWidth={1.75} />
+        </button>
+      ) : <Popover>
         <PopoverTrigger asChild>
           <button
             aria-label="Focus timer"
@@ -256,7 +266,7 @@ const HeaderQuickActions = ({ compact = false, vertical = false }: HeaderQuickAc
             );
           })()}
         </PopoverContent>
-      </Popover>
+      </Popover>}
     </div>
   );
 };
