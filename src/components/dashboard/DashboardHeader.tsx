@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Sunset } from "lucide-react";
 
 interface DashboardHeaderProps {
   userName?: string;
@@ -25,7 +25,7 @@ const DashboardHeader = ({ userName = "there", showGreeting = true, priorityCoun
         <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <span>Here’s what’s on the agenda today.</span>
           <span className="inline-flex items-center gap-1.5 text-[11px] text-foreground/80">
-            <Sparkles className="h-3 w-3 text-muted-foreground" strokeWidth={1.6} />
+            <Sunset className="h-3 w-3 text-muted-foreground" strokeWidth={1.6} />
             {priorityCount} core {priorityCount === 1 ? "priority" : "priorities"}
           </span>
         </div>

@@ -113,7 +113,6 @@ const Dashboard = () => {
   const openTasks = dbTasks.filter((task) => task.status !== "completed").length;
   const highPriorityCount = dbTasks.filter((task) => task.priority === "high" && task.status !== "completed").length;
   const activeProjects = projects.filter((project: any) => !["completed", "archived"].includes(String(project.status ?? "").toLowerCase())).length;
-  const today = new Date().toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" });
   return (
     <div className="dark dashboard-shell min-h-screen bg-background text-foreground md:h-screen md:overflow-hidden">
       <div className="flex min-h-screen overflow-hidden bg-background md:h-screen">
@@ -124,13 +123,6 @@ const Dashboard = () => {
         <main className="min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 md:px-7 md:py-7 xl:px-8">
           <div className="mx-auto max-w-[1680px] space-y-6 xl:space-y-7">
             <DashboardHeader userName={userName} showGreeting priorityCount={todayTasks.filter((task) => task.priority === "high" && task.status !== "completed").length} />
-
-            <div className="flex items-center justify-between gap-3 border-b border-border/70 pb-3">
-              <p className="text-xs text-muted-foreground">{today}</p>
-              <Button onClick={() => navigate("/tasks")} variant="ghost" size="sm" className="h-8 rounded-lg text-xs text-muted-foreground hover:text-foreground">
-                All tasks <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
-              </Button>
-            </div>
 
             <section aria-label="Workspace overview" className="grid grid-cols-3 gap-2.5 sm:gap-3 xl:gap-4">
               <Card className="dashboard-panel min-w-0 rounded-lg border-border/70 bg-card shadow-none">
@@ -173,14 +165,7 @@ const Dashboard = () => {
 
             <section className="grid grid-cols-1 items-stretch gap-4 xl:grid-cols-[minmax(0,1.8fr)_minmax(290px,0.82fr)]">
               <Card className="dashboard-panel min-h-[380px] rounded-xl border-border/80 bg-card shadow-none">
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
-                  <div>
-                    <CardTitle className="text-xl font-medium tracking-tight">Today’s focus</CardTitle>
-                    <CardDescription className="mt-1.5 text-xs">{todayTasks.length ? `${todayTasks.length} priorities to give your attention to` : "A clear space to start something meaningful."}</CardDescription>
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => navigate("/tasks")} className="rounded-lg text-xs text-muted-foreground hover:text-foreground">View all <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" /></Button>
-                </CardHeader>
-                <CardContent className="px-3 pb-5 sm:px-4">
+                <CardContent className="px-3 py-5 sm:px-4">
                   {tasksLoading ? <p className="py-10 text-center text-sm text-muted-foreground">Loading your tasks…</p> : todayTasks.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-14 text-center">
                       <div className="flex h-11 w-11 items-center justify-center rounded-full border border-border"><Check className="h-5 w-5 text-lime-400" /></div>
