@@ -8,7 +8,6 @@ import {
   BarChart4,
   Zap,
   Settings,
-  Search,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
