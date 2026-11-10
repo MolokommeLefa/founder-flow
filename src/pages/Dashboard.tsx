@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@supabase/supabase-js";
 import {
-  ArrowUpRight, CalendarDays, Check, FolderKanban, Target, Zap,
+  ArrowUpRight, CalendarDays, Check, FolderKanban, Lightbulb, ListTodo, Target, Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -113,6 +113,21 @@ const Dashboard = () => {
   const openTasks = dbTasks.filter((task) => task.status !== "completed").length;
   const highPriorityCount = dbTasks.filter((task) => task.priority === "high" && task.status !== "completed").length;
   const activeProjects = projects.filter((project: any) => !["completed", "archived"].includes(String(project.status ?? "").toLowerCase())).length;
+  const now = new Date();
+  const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const dueTodayTasks = dbTasks.filter((task) => task.status !== "completed" && task.due_date === todayKey);
+  const scheduledTodayTasks = dueTodayTasks.filter((task) => task.start_time);
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  const suggestedTask = [...dueTodayTasks].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])[0];
+  const focusSuggestion = suggestedTask
+    ? `Start with “${suggestedTask.title}” to make progress on today’s most immediate deadline.`
+    : scheduledTodayTasks.length > 0
+      ? "Leave a little breathing room around your scheduled work today."
+      : activeProjects > 0
+        ? "Choose one clear next step on an active project and give it your best focus."
+        : openTasks > 0
+          ? "Pick one open task and decide when you’ll tackle it."
+          : "You’re clear for today. Use the space to plan what matters next.";
   return (
     <div className="dark dashboard-shell min-h-screen bg-background text-foreground md:h-screen md:overflow-hidden">
       <div className="flex min-h-screen overflow-hidden bg-background md:h-screen">
@@ -209,6 +224,44 @@ const Dashboard = () => {
                     <Button variant="ghost" onClick={() => navigate("/calendar")} className="h-auto w-full justify-between rounded-lg px-3 py-3 text-sm text-muted-foreground hover:text-foreground">
                       <span className="flex items-center gap-2"><CalendarDays className="h-4 w-4" /> Review your week</span><ArrowUpRight className="h-4 w-4" />
                     </Button>
+                  </CardContent>
+                </Card>
+                <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none">
+                  <CardHeader className="px-5 pb-3 pt-4 sm:px-6">
+                    <CardTitle className="text-sm font-medium">Today at a glance</CardTitle>
+                    <CardDescription className="text-xs">A live overview of your workspace.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 px-5 pb-4 sm:px-6">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="min-w-0">
+                        <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
+                          <ListTodo className="h-3.5 w-3.5 shrink-0" strokeWidth={1.7} />
+                          <span className="truncate text-[11px]">Due today</span>
+                        </div>
+                        <p className="text-lg font-medium">{dueTodayTasks.length}</p>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
+                          <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={1.7} />
+                          <span className="truncate text-[11px]">Scheduled</span>
+                        </div>
+                        <p className="text-lg font-medium">{scheduledTodayTasks.length}</p>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
+                          <FolderKanban className="h-3.5 w-3.5 shrink-0" strokeWidth={1.7} />
+                          <span className="truncate text-[11px]">Projects</span>
+                        </div>
+                        <p className="text-lg font-medium">{activeProjects}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2.5 border-t border-border/70 pt-3">
+                      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.7} />
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-medium text-foreground">Suggested focus</p>
+                        <p className="mt-1 break-words text-xs leading-relaxed text-muted-foreground">{focusSuggestion}</p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
                 <Card className="dashboard-panel rounded-xl border-border/80 bg-card shadow-none">
