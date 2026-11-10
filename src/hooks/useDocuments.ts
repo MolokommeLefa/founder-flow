@@ -69,15 +69,16 @@ export const useDocuments = () => {
     return true;
   };
 
-  const saveNote = async (
+  const saveNote = useCallback(async (
     title: string,
     html: string,
     source?: string,
-    existingId?: string
-  ) => {
+    existingId?: string,
+    options?: { silent?: boolean }
+  ): Promise<string | false> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return false;
-    const name = title.trim() || "Quick note";
+    const name = title.trim() || "Untitled note";
 
     if (existingId) {
       const { error } = await supabase
@@ -85,28 +86,34 @@ export const useDocuments = () => {
         .update({ name, content: html, updated_at: new Date().toISOString() })
         .eq("id", existingId);
       if (error) {
-        toast.error("Failed to update note");
+        if (!options?.silent) toast.error("Failed to update note");
         return false;
       }
-      toast.success("Note updated");
-    } else {
-      const { error } = await supabase.from("documents").insert({
+      if (!options?.silent) toast.success("Note updated");
+      fetchDocuments();
+      return existingId;
+    }
+
+    const { data, error } = await supabase
+      .from("documents")
+      .insert({
         user_id: user.id,
         name,
         source: source ?? "Note",
         file_type: "note",
         content: html,
         size_bytes: new Blob([html]).size,
-      });
-      if (error) {
-        toast.error("Failed to save note");
-        return false;
-      }
-      toast.success("Note saved");
+      })
+      .select("id")
+      .single();
+    if (error || !data) {
+      if (!options?.silent) toast.error("Failed to save note");
+      return false;
     }
+    if (!options?.silent) toast.success("Note saved");
     fetchDocuments();
-    return true;
-  };
+    return data.id as string;
+  }, [fetchDocuments]);
 
   const addDocumentEntry = async (name: string, source?: string, file_type?: string) => {
     const { data: { user } } = await supabase.auth.getUser();
