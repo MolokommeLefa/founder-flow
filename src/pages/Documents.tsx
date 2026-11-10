@@ -32,6 +32,7 @@ const Documents = () => {
   const [toolbarPosition, setToolbarPosition] = useState<ToolbarPosition | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const selectionToken = useRef(0);
+  const hydratedNoteId = useRef<string | null>(null);
 
   const { documents, loading: docsLoading, saveNote } = useDocuments();
   const notes = useMemo(() => documents.filter((doc) => doc.file_type === "note"), [documents]);
@@ -51,19 +52,25 @@ const Documents = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const loadedNoteId = activeNote?.id;
+  const loadedNoteTitle = activeNote?.name;
+  const loadedNoteContent = activeNote?.content;
+
   useEffect(() => {
     if (activeNoteId === null) {
+      hydratedNoteId.current = null;
       setTitle("");
       setBody("");
       if (editorRef.current) editorRef.current.innerHTML = "";
       return;
     }
-    if (!activeNote || revision > savedRevision) return;
-    const safeHtml = DOMPurify.sanitize(activeNote.content ?? "");
-    setTitle(activeNote.name);
+    if (!loadedNoteId || !loadedNoteTitle || hydratedNoteId.current === loadedNoteId || revision > savedRevision) return;
+    const safeHtml = DOMPurify.sanitize(loadedNoteContent ?? "");
+    hydratedNoteId.current = loadedNoteId;
+    setTitle(loadedNoteTitle);
     setBody(safeHtml);
     if (editorRef.current) editorRef.current.innerHTML = safeHtml;
-  }, [activeNoteId, activeNote?.id]);
+  }, [activeNoteId, loadedNoteId, loadedNoteTitle, loadedNoteContent, revision, savedRevision]);
 
   const persistDraft = useCallback(async (
     draftTitle: string,
@@ -125,7 +132,7 @@ const Documents = () => {
   };
 
   const startFresh = async () => {
-    await flushDraft();
+    if (!(await flushDraft())) return;
     selectionToken.current += 1;
     setActiveNoteId(null);
     setRecentOpen(false);
@@ -136,7 +143,7 @@ const Documents = () => {
   };
 
   const openNote = async (noteId: string) => {
-    await flushDraft();
+    if (!(await flushDraft())) return;
     selectionToken.current += 1;
     setActiveNoteId(noteId);
     setRecentOpen(false);
