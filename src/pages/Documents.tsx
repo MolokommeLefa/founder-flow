@@ -88,7 +88,7 @@ const Documents = () => {
 
   const startNewNote = () => {
     setFilesView(false);
-    setActiveNoteId(null);
+    setActiveNoteId("__new__");
     setTitle("");
     if (editorRef.current) editorRef.current.innerHTML = "";
     window.setTimeout(() => editorRef.current?.focus(), 0);
@@ -133,10 +133,11 @@ const Documents = () => {
       return;
     }
     setSaving(true);
-    const ok = await saveNote(title.trim() || "Untitled note", html, "Note", activeNoteId ?? undefined);
+    const ok = await saveNote(title.trim() || "Untitled note", html, "Note", activeNoteId && activeNoteId !== "__new__" ? activeNoteId : undefined);
     setSaving(false);
     if (ok) {
       await refresh();
+      if (activeNoteId === "__new__") setActiveNoteId(null);
       toast.success("All changes saved");
     }
   };
