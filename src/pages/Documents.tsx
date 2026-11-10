@@ -58,10 +58,12 @@ const Documents = () => {
 
   useEffect(() => {
     if (activeNoteId === null) {
-      hydratedNoteId.current = null;
-      setTitle("");
-      setBody("");
-      if (editorRef.current) editorRef.current.innerHTML = "";
+      if (hydratedNoteId.current !== null) {
+        hydratedNoteId.current = null;
+        setTitle("");
+        setBody("");
+        if (editorRef.current) editorRef.current.innerHTML = "";
+      }
       return;
     }
     if (!loadedNoteId || !loadedNoteTitle || hydratedNoteId.current === loadedNoteId || revision > savedRevision) return;
