@@ -214,8 +214,8 @@ const Documents = () => {
     : format(new Date(), "EEEE, d MMMM yyyy");
 
   return (
-    <div className="dashboard-shell min-h-screen bg-[#0d0d0d] text-[#f6eee3] flex overflow-hidden">
-      <div className="hidden md:block shrink-0 border-r border-white/[0.06]">
+    <div className="dark dashboard-shell min-h-screen bg-background text-foreground flex overflow-hidden">
+      <div className="hidden md:block shrink-0 border-r border-border/70">
         <DashboardSidebar activeItem="Notes" collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((value) => !value)} />
       </div>
 
@@ -242,7 +242,7 @@ const Documents = () => {
             aria-expanded={false}
             aria-controls="recent-notes-sidebar"
             onClick={() => setRecentOpen(true)}
-            className="fixed right-4 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/10 bg-[#111] text-[#f6eee3]/70 shadow-lg shadow-black/30 transition-all duration-200 hover:scale-105 hover:bg-[#1b1b1b] hover:text-white"
+            className="fixed right-4 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-border/70 bg-background/80 text-foreground/70 shadow-lg shadow-black/30 backdrop-blur-xl transition-transform duration-150 hover:scale-105 hover:bg-card active:scale-[0.97]"
           >
             <PanelRightOpen className="h-4 w-4" strokeWidth={1.6} />
           </Button>
@@ -276,7 +276,7 @@ const Documents = () => {
             onMouseUp={updateToolbarPosition}
             onKeyUp={updateToolbarPosition}
             onTouchEnd={updateToolbarPosition}
-            className="note-editor mt-8 min-h-[calc(100vh-18rem)] w-full overflow-visible border-0 px-0 py-2 text-[clamp(1.25rem,1.8vw,1.5rem)] leading-[1.9] text-[#f6eee3]/90 outline-none"
+            className="note-editor mt-8 min-h-[calc(100vh-18rem)] w-full overflow-visible border-0 px-0 py-2 text-[clamp(1.25rem,1.8vw,1.5rem)] leading-[1.65] text-foreground/90 outline-none"
           />
 
           <footer className="mt-6 flex items-center gap-2 border-t border-white/[0.07] pt-4 text-xs text-white/35" aria-live="polite">
@@ -320,21 +320,19 @@ const Documents = () => {
           </div>
         )}
 
-        {recentOpen && (
-          <>
-            <button
-              type="button"
-              aria-label="Close recent notes"
-              className="fixed inset-0 z-30 cursor-default bg-black/40"
-              onClick={() => setRecentOpen(false)}
-            />
-            <aside
+        <aside
               id="recent-notes-sidebar"
               aria-label="Recent notes"
-              className="fixed bottom-3 right-3 top-3 z-40 flex w-[min(500px,calc(100vw-24px))] flex-col overflow-hidden rounded-[20px] border border-[#3a3939] bg-[#0d0d0d] shadow-2xl shadow-black/50 motion-safe:animate-in motion-safe:slide-in-from-right-4 motion-safe:duration-300"
+              aria-hidden={!recentOpen}
+              inert={!recentOpen}
+              className={cn(
+                "fixed bottom-3 right-3 top-3 z-40 flex w-[min(500px,calc(100vw-24px))] flex-col overflow-hidden rounded-[20px] border border-border/70 bg-background/80 text-foreground shadow-2xl shadow-black/50 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70 transition-[transform,opacity] duration-300 ease-out will-change-transform",
+                recentOpen ? "translate-x-0 opacity-100" : "translate-x-[calc(100%+0.75rem)] opacity-0 pointer-events-none",
+                "motion-reduce:translate-x-0 motion-reduce:duration-200 motion-reduce:ease-linear"
+              )}
             >
-              <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-4 sm:px-5">
-                <h2 className="text-sm font-medium text-[#f6eee3]">Recent notes</h2>
+              <div className="flex items-center justify-between border-b border-border/70 px-4 py-4 sm:px-5">
+                <h2 className="text-sm font-medium tracking-[0.01em] text-foreground">Recent notes</h2>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
@@ -343,7 +341,7 @@ const Documents = () => {
                     aria-label="Start a new note"
                     title="New note"
                     onClick={() => void startFresh()}
-                    className="h-8 w-8 rounded-md text-[#f6eee3]/70 hover:bg-white/10 hover:text-white"
+                    className="h-8 w-8 rounded-md text-foreground/70 transition-transform duration-150 hover:bg-foreground/10 hover:text-foreground active:scale-[0.97]"
                   >
                     <SquarePen className="h-4 w-4" strokeWidth={1.5} />
                   </Button>
@@ -373,23 +371,21 @@ const Documents = () => {
                         type="button"
                         onClick={() => void openNote(note.id)}
                         className={cn(
-                          "min-h-[126px] w-full rounded-xl border border-white/[0.08] bg-gradient-to-b from-[#101010] to-[#090909] px-4 py-3.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.025)] transition-all duration-200 hover:border-white/[0.14] hover:from-[#141414] sm:min-h-[150px] sm:px-5 sm:py-4",
-                          activeNoteId === note.id ? "ring-1 ring-white/[0.14]" : ""
+                          "min-h-[126px] w-full rounded-xl border border-border/60 bg-card/40 px-4 py-3.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.025)] transition-colors duration-200 hover:border-border hover:bg-card/65 active:scale-[0.99] sm:min-h-[150px] sm:px-5 sm:py-4",
+                          activeNoteId === note.id ? "ring-1 ring-primary/40" : ""
                         )}
                       >
-                        <span className="block truncate text-sm font-medium text-[#f6eee3]">{note.name || "Untitled document"}</span>
-                        <span className="mt-6 block line-clamp-5 text-xs leading-relaxed text-white/55">
+                        <span className="block truncate text-sm font-medium text-foreground">{note.name || "Untitled document"}</span>
+                        <span className="mt-6 block line-clamp-5 text-xs leading-relaxed text-muted-foreground">
                           {(note.content ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim() || "No text yet"}
                         </span>
-                        <span className="mt-2 block text-[10px] text-white/25">{formatDistanceToNow(new Date(note.updated_at), { addSuffix: true })}</span>
+                        <span className="mt-2 block text-[10px] tracking-[0.02em] text-muted-foreground/75">{formatDistanceToNow(new Date(note.updated_at), { addSuffix: true })}</span>
                       </button>
                     ))}
                   </div>
                 )}
               </div>
             </aside>
-          </>
-        )}
       </main>
     </div>
   );
