@@ -243,14 +243,14 @@ const Dashboard = () => {
                       <div className="min-w-0">
                         <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
                           <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={1.7} />
-                          <span className="truncate text-[11px]">On calendar</span>
+                          <span className="truncate text-[11px]">Scheduled</span>
                         </div>
                         <p className="text-lg font-medium">{scheduledTodayTasks.length}</p>
                       </div>
                       <div className="min-w-0">
                         <div className="mb-1.5 flex items-center gap-1.5 text-muted-foreground">
                           <FolderKanban className="h-3.5 w-3.5 shrink-0" strokeWidth={1.7} />
-                          <span className="truncate text-[11px]">Active projects</span>
+                          <span className="truncate text-[11px]">Projects</span>
                         </div>
                         <p className="text-lg font-medium">{activeProjects}</p>
                       </div>
