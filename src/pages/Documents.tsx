@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   Bold, Check, Code2, Heading1, Heading2, Italic, List, ListOrdered,
-  Loader2, PanelRightOpen, Plus, Quote, Strikethrough,
+  Loader2, PanelRightClose, PanelRightOpen, Plus, Quote, SquarePen, Strikethrough,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -22,7 +22,7 @@ const Documents = () => {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [recentOpen, setRecentOpen] = useState(true);
+  const [recentOpen, setRecentOpen] = useState(false);
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -219,7 +219,7 @@ const Documents = () => {
         <DashboardSidebar activeItem="Notes" collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((value) => !value)} />
       </div>
 
-      <main className="relative min-w-0 flex-1 overflow-y-auto px-5 py-5 sm:px-8 lg:px-12 lg:py-8 lg:pr-[clamp(300px,25.4vw,670px)]">
+      <main className="relative min-w-0 flex-1 overflow-y-auto px-5 py-5 sm:px-8 lg:px-12 lg:py-8">
         <header className="mb-10 flex items-center justify-between gap-4">
           <button
             type="button"
@@ -230,19 +230,23 @@ const Documents = () => {
           >
             <Plus className="h-5 w-5" strokeWidth={1.5} />
           </button>
+
+        </header>
+
+        {!recentOpen && (
           <Button
             type="button"
             variant="ghost"
-            size="sm"
-            aria-expanded={recentOpen}
+            size="icon"
+            aria-label="Open recent notes"
+            aria-expanded={false}
             aria-controls="recent-notes-sidebar"
-            onClick={() => setRecentOpen((open) => !open)}
-            className={cn("gap-2 text-[#f6eee3]/60 hover:bg-white/[0.06] hover:text-[#f6eee3]", recentOpen && "bg-white/[0.06] text-[#f6eee3]")}
+            onClick={() => setRecentOpen(true)}
+            className="fixed right-4 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/10 bg-[#111] text-[#f6eee3]/70 shadow-lg shadow-black/30 transition-all duration-200 hover:scale-105 hover:bg-[#1b1b1b] hover:text-white"
           >
             <PanelRightOpen className="h-4 w-4" strokeWidth={1.6} />
-            <span>Recent</span>
           </Button>
-        </header>
+        )}
 
         <section className="w-full min-w-0">
           <div className="mb-3 text-xs tracking-wide text-white/35">{dateLabel}</div>
@@ -321,17 +325,40 @@ const Documents = () => {
             <button
               type="button"
               aria-label="Close recent notes"
-              className="fixed inset-0 z-30 cursor-default bg-black/25 lg:hidden"
+              className="fixed inset-0 z-30 cursor-default bg-black/40"
               onClick={() => setRecentOpen(false)}
             />
             <aside
               id="recent-notes-sidebar"
               aria-label="Recent notes"
-              className="fixed right-4 top-20 z-40 flex max-h-[calc(100vh-6rem)] w-[min(360px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#121212] shadow-2xl shadow-black/50 lg:right-5 lg:top-5 lg:h-[calc(100vh-2.5rem)] lg:max-h-none lg:w-[clamp(300px,25.4vw,670px)] lg:rounded-[30px] lg:border-[#3a3939] lg:bg-[#0d0d0d] motion-safe:animate-in motion-safe:slide-in-from-right-4 motion-safe:duration-300"
+              className="fixed bottom-3 right-3 top-3 z-40 flex w-[min(500px,calc(100vw-24px))] flex-col overflow-hidden rounded-[20px] border border-[#3a3939] bg-[#0d0d0d] shadow-2xl shadow-black/50 motion-safe:animate-in motion-safe:slide-in-from-right-4 motion-safe:duration-300"
             >
-              <div className="border-b border-white/[0.07] px-5 py-4">
+              <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-4 sm:px-5">
                 <h2 className="text-sm font-medium text-[#f6eee3]">Recent notes</h2>
-                <p className="mt-1 text-xs text-white/35">Continue an earlier thought</p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Start a new note"
+                    title="New note"
+                    onClick={() => void startFresh()}
+                    className="h-8 w-8 rounded-md text-[#f6eee3]/70 hover:bg-white/10 hover:text-white"
+                  >
+                    <SquarePen className="h-4 w-4" strokeWidth={1.5} />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Close recent notes"
+                    title="Close sidebar"
+                    onClick={() => setRecentOpen(false)}
+                    className="h-8 w-8 rounded-md text-[#f6eee3]/70 hover:bg-white/10 hover:text-white"
+                  >
+                    <PanelRightClose className="h-4 w-4" strokeWidth={1.5} />
+                  </Button>
+                </div>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto p-2">
                 {docsLoading ? (
@@ -339,19 +366,19 @@ const Documents = () => {
                 ) : notes.length === 0 ? (
                   <p className="px-3 py-8 text-center text-xs leading-relaxed text-white/40">Your notes will appear here as you write.</p>
                 ) : (
-                  <div className="space-y-1">
+                  <div className="space-y-5 p-2 sm:p-1.5">
                     {notes.map((note) => (
                       <button
                         key={note.id}
                         type="button"
                         onClick={() => void openNote(note.id)}
                         className={cn(
-                          "w-full rounded-xl border px-3.5 py-3 text-left transition-colors",
-                          activeNoteId === note.id ? "border-white/[0.12] bg-white/[0.06]" : "border-transparent hover:bg-white/[0.04]"
+                          "min-h-[126px] w-full rounded-xl border border-white/[0.08] bg-gradient-to-b from-[#101010] to-[#090909] px-4 py-3.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.025)] transition-all duration-200 hover:border-white/[0.14] hover:from-[#141414] sm:min-h-[150px] sm:px-5 sm:py-4",
+                          activeNoteId === note.id ? "ring-1 ring-white/[0.14]" : ""
                         )}
                       >
                         <span className="block truncate text-sm font-medium text-[#f6eee3]">{note.name || "Untitled document"}</span>
-                        <span className="mt-1.5 block line-clamp-2 text-xs leading-relaxed text-white/40">
+                        <span className="mt-6 block line-clamp-5 text-xs leading-relaxed text-white/55">
                           {(note.content ?? "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim() || "No text yet"}
                         </span>
                         <span className="mt-2 block text-[10px] text-white/25">{formatDistanceToNow(new Date(note.updated_at), { addSuffix: true })}</span>
