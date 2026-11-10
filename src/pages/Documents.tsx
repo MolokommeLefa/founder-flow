@@ -238,7 +238,7 @@ const Documents = () => {
             className={cn("gap-2 text-[#f6eee3]/60 hover:bg-white/[0.06] hover:text-[#f6eee3]", recentOpen && "bg-white/[0.06] text-[#f6eee3]")}
           >
             <PanelRightOpen className="h-4 w-4" strokeWidth={1.6} />
-            
+            <span>Recent</span>
           </Button>
         </header>
 
