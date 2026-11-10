@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
 import { format, formatDistanceToNow } from "date-fns";
 import {
   Bold, Check, Code2, Heading1, Heading2, Italic, List, ListOrdered,
-  Loader2, PanelRightOpen, Quote, StickyNote, Strikethrough,
+  Loader2, PanelRightOpen, Plus, Quote, Strikethrough,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -225,10 +225,10 @@ const Documents = () => {
             type="button"
             onClick={() => void startFresh()}
             aria-label="Start a fresh note"
-            className="inline-flex items-center gap-3 text-left text-sm font-medium tracking-wide text-[#f6eee3]/80 transition-colors hover:text-white"
+            title="New note"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#f6eee3]/60 transition-colors hover:bg-white/[0.06] hover:text-white"
           >
-            <StickyNote className="h-5 w-5" strokeWidth={1.5} />
-            <span>Notes</span>
+            <Plus className="h-5 w-5" strokeWidth={1.5} />
           </button>
           <Button
             type="button"
@@ -244,7 +244,7 @@ const Documents = () => {
           </Button>
         </header>
 
-        <section className="mx-auto w-full max-w-[1518px]">
+        <section className="w-full min-w-0">
           <div className="mb-3 text-xs tracking-wide text-white/35">{dateLabel}</div>
           <Input
             aria-label="Note title"
@@ -256,29 +256,6 @@ const Documents = () => {
             }}
             className="h-auto border-0 bg-transparent px-0 py-1 text-[clamp(2.5rem,4vw,3rem)] font-medium tracking-[-0.04em] text-[#f6eee3] shadow-none placeholder:text-white/30 focus-visible:ring-0"
           />
-
-          <div role="toolbar" aria-label="Note formatting" className="mb-7 flex min-h-12 w-fit max-w-full flex-wrap items-center gap-1 rounded-full border-2 border-white/80 px-3 py-1.5 text-[#f6eee3]">
-            {formatActions.map((group, groupIndex) => (
-              <div key={groupIndex} className="flex items-center gap-1">
-                {groupIndex > 0 && <span className="mx-2 h-6 w-px bg-white/20" />}
-                {group.map(({ label, icon: Icon, command, value }) => (
-                  <Button
-                    key={label}
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    title={label}
-                    aria-label={label}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => applyFormat(command, value)}
-                    className="h-9 w-9 rounded-full text-[#f6eee3]/85 hover:bg-white/10 hover:text-white"
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.6} />
-                  </Button>
-                ))}
-              </div>
-            ))}
-          </div>
 
           <div
             ref={editorRef}
@@ -295,7 +272,7 @@ const Documents = () => {
             onMouseUp={updateToolbarPosition}
             onKeyUp={updateToolbarPosition}
             onTouchEnd={updateToolbarPosition}
-            className="note-editor mt-4 min-h-[58vh] max-h-[72vh] overflow-y-auto rounded-xl border border-transparent px-0 py-2 text-[clamp(1.25rem,1.8vw,1.5rem)] leading-[1.9] text-[#f6eee3]/90 outline-none focus:border-white/[0.04]"
+            className="note-editor mt-8 min-h-[calc(100vh-18rem)] w-full overflow-visible border-0 px-0 py-2 text-[clamp(1.25rem,1.8vw,1.5rem)] leading-[1.9] text-[#f6eee3]/90 outline-none"
           />
 
           <footer className="mt-6 flex items-center gap-2 border-t border-white/[0.07] pt-4 text-xs text-white/35" aria-live="polite">
@@ -350,7 +327,7 @@ const Documents = () => {
             <aside
               id="recent-notes-sidebar"
               aria-label="Recent notes"
-              className="fixed right-4 top-20 z-40 flex max-h-[calc(100vh-6rem)] w-[min(360px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#121212] shadow-2xl shadow-black/50 lg:right-5 lg:top-5 lg:h-[calc(100vh-2.5rem)] lg:max-h-none lg:w-[clamp(300px,25.4vw,670px)] lg:rounded-[30px] lg:border-[#3a3939] lg:bg-[#0d0d0d]"
+              className="fixed right-4 top-20 z-40 flex max-h-[calc(100vh-6rem)] w-[min(360px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#121212] shadow-2xl shadow-black/50 lg:right-5 lg:top-5 lg:h-[calc(100vh-2.5rem)] lg:max-h-none lg:w-[clamp(300px,25.4vw,670px)] lg:rounded-[30px] lg:border-[#3a3939] lg:bg-[#0d0d0d] motion-safe:animate-in motion-safe:slide-in-from-right-4 motion-safe:duration-300"
             >
               <div className="border-b border-white/[0.07] px-5 py-4">
                 <h2 className="text-sm font-medium text-[#f6eee3]">Recent notes</h2>
