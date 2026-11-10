@@ -4,7 +4,7 @@ import { User } from "@supabase/supabase-js";
 import DOMPurify from "dompurify";
 import { format, formatDistanceToNow } from "date-fns";
 import {
-  ArrowDownToLine, Bold, CalendarDays, Check, ChevronDown, Code2, FileText,
+  ArrowDownToLine, Bold, Check, ChevronDown, Code2, FileText,
   Heading1, Heading2, Italic, List, ListOrdered, Loader2, MoreHorizontal,
   Plus, Quote, Search, Share2, StickyNote, Strikethrough, Trash2, Upload,
 } from "lucide-react";
