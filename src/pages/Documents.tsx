@@ -324,7 +324,9 @@ const Documents = () => {
               id="recent-notes-sidebar"
               aria-label="Recent notes"
               aria-hidden={!recentOpen}
-              inert={!recentOpen}
+              ref={(element) => {
+                if (element) element.inert = !recentOpen;
+              }}
               className={cn(
                 "fixed bottom-3 right-3 top-3 z-40 flex w-[min(500px,calc(100vw-24px))] flex-col overflow-hidden rounded-[20px] border border-border/70 bg-background/80 text-foreground shadow-2xl shadow-black/50 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/70 transition-[transform,opacity] duration-300 ease-out will-change-transform",
                 recentOpen ? "translate-x-0 opacity-100" : "translate-x-[calc(100%+0.75rem)] opacity-0 pointer-events-none",

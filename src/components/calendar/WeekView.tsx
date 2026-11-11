@@ -30,6 +30,7 @@ interface DragState {
 export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick, onTimeRangeSelect }: WeekViewProps) {
   const weekStart = startOfWeek(currentDate);
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const currentDayIndex = weekDays.findIndex(isToday);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -243,6 +244,19 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick, onT
       {/* Scrollable time grid */}
       <div ref={scrollRef} className="flex-1 overflow-auto">
         <div className="grid grid-cols-[56px_repeat(7,1fr)] relative">
+          {/* Current time line extends from today through the remaining calendar days */}
+          {currentDayIndex >= 0 && (
+            <div
+              className="absolute left-[56px] right-0 z-20 pointer-events-none"
+              style={{ top: `${currentHour * SLOT_HEIGHT + currentMinute}px` }}
+            >
+              <div className="flex" style={{ marginLeft: `${(currentDayIndex / 7) * 100}%` }}>
+                <div className="w-2.5 h-2.5 shrink-0 rounded-full bg-destructive -ml-1" />
+                <div className="flex-1 h-[2px] self-center bg-destructive" />
+              </div>
+            </div>
+          )}
+
           {/* Time labels */}
           <div className="relative">
             {HOURS.map((hour) => (
@@ -295,18 +309,6 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick, onT
                   </div>
                 </div>
 
-                {/* Current time indicator */}
-                {isToday(day) && (
-                  <div
-                    className="absolute left-0 right-0 z-20 pointer-events-none"
-                    style={{ top: `${currentHour * SLOT_HEIGHT + currentMinute}px` }}
-                  >
-                    <div className="flex items-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-destructive -ml-1" />
-                      <div className="flex-1 h-[2px] bg-destructive" />
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
