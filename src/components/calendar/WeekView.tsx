@@ -16,6 +16,10 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const VISIBLE_START = 7;
 const SLOT_HEIGHT = 60; // px per hour
 const HALF_SLOT = 30; // px per 30 min
+const TIME_ZONE_LABEL = new Intl.DateTimeFormat("en", { timeZoneName: "shortOffset" })
+  .formatToParts(new Date())
+  .find(({ type }) => type === "timeZoneName")?.value
+  .replace(/^GMT(?=[+-])/, "GMT ") ?? "GMT";
 
 interface DragState {
   day: Date;
@@ -173,24 +177,27 @@ export function WeekView({ currentDate, tasks, onTaskClick, onTimeSlotClick, onT
   const hasAllDayTasks = weekDays.some(d => getAllDayTasks(d).length > 0);
 
   return (
-    <div className="flex flex-col h-full border border-border rounded-lg overflow-hidden bg-background">
+    <div className="flex h-full min-w-0 flex-col overflow-hidden rounded-[20px] border border-border bg-background">
       {/* Sticky header */}
       <div className="sticky top-0 z-10 bg-background border-b border-border">
         <div className="grid grid-cols-[56px_repeat(7,1fr)]">
-          <div className="border-r border-border" />
+          <div className="flex items-center justify-end border-r border-border px-2"><span className="text-[10px] text-muted-foreground">{TIME_ZONE_LABEL}</span></div>
           {weekDays.map((day) => (
             <div
               key={day.toISOString()}
               className={cn(
-                "py-3 text-center border-r border-border last:border-r-0",
+                "py-3 text-center text-xs sm:text-sm border-r border-border last:border-r-0",
                 isToday(day) && "bg-primary/5"
               )}
             >
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground sm:hidden" aria-hidden="true">
                 {format(day, 'EEE')}
               </span>
+              <span className="hidden text-sm font-medium text-muted-foreground sm:inline">
+                {format(day, 'EEEE')}
+              </span>
               <span className={cn(
-                "ml-2 text-sm font-semibold",
+                "ml-1.5 text-xs font-semibold sm:ml-2 sm:text-sm",
                 isToday(day)
                   ? "bg-primary text-primary-foreground rounded-full inline-flex items-center justify-center w-6 h-6"
                   : "text-foreground"
