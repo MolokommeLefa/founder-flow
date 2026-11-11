@@ -134,13 +134,15 @@ const Calendar = () => {
           </div>
         ) : (
           <div className="relative min-h-0 flex-1">
-            <WeekView
+            <div className="absolute inset-x-0 bottom-0 top-10">
+              <WeekView
               currentDate={currentDate}
               tasks={filteredTasks}
               onTaskClick={handleTaskClick}
               onTimeSlotClick={handleTimeSlotClick}
               onTimeRangeSelect={handleTimeRangeSelect}
-            />
+              />
+            </div>
             <Button
               type="button"
               variant="ghost"
@@ -148,7 +150,7 @@ const Calendar = () => {
               aria-label="Create event"
               title="Create event"
               onClick={() => handleDayClick(currentDate)}
-              className="absolute right-3 top-3 z-20 h-8 w-8 rounded-full border border-border/50 bg-background/75 text-muted-foreground shadow-sm backdrop-blur-xl transition-colors hover:bg-card hover:text-foreground active:scale-[0.97]"
+              className="absolute right-3 top-1 z-20 h-8 w-8 rounded-full border border-border/50 bg-background/75 text-muted-foreground shadow-sm backdrop-blur-xl transition-colors hover:bg-card hover:text-foreground active:scale-[0.97]"
             >
               <Pencil className="h-3.5 w-3.5" strokeWidth={1.7} />
             </Button>
